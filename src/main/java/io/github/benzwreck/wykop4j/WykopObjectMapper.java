@@ -24,7 +24,6 @@ class WykopObjectMapper {
     public WykopObjectMapper() {
         LocalDateTimeDeserializer localDateTimeDeserializer =
                 new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        SimpleModule authorModule = new ProfileMappingModule();
         SimpleModule javaTimeModule = new JavaTimeModule()
                 .addDeserializer(LocalDateTime.class, localDateTimeDeserializer);
         objectMapper = new ObjectMapper()
@@ -34,7 +33,8 @@ class WykopObjectMapper {
                 .registerModule(new ParameterNamesModule(JsonCreator.Mode.PROPERTIES))
                 .registerModule(new Jdk8Module())
                 .registerModule(javaTimeModule)
-                .registerModule(authorModule);
+                .registerModule(new EntryMappingModule())
+                .registerModule(new ProfileMappingModule());
     }
 
     public <T> T map(String payload, Class<T> clazz) {

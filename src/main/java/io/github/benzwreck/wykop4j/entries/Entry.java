@@ -18,14 +18,14 @@ public class Entry {
     private final Survey survey;
     private final Boolean canComment;
     private final Embed embed;
-    private final Integer userVote;
+    private final UserVote userVote;
     private final String app;
     private final String violationUrl;
     private final String original;
     private final String url;
 
 
-    public Entry(Integer id, LocalDateTime date, String body, SimpleProfile author, Boolean blocked, Boolean favorite, Integer voteCount, Integer commentsCount, String status, Survey survey, Boolean canComment, Embed embed, Integer userVote, String app, String violationUrl, String original, String url) {
+    public Entry(Integer id, LocalDateTime date, String body, SimpleProfile author, Boolean blocked, Boolean favorite, Integer voteCount, Integer commentsCount, String status, Survey survey, Boolean canComment, Embed embed, UserVote userVote, String app, String violationUrl, String original, String url) {
         this.id = id;
         this.date = date;
         this.body = body;
@@ -111,7 +111,7 @@ public class Entry {
     /**
      * @return current user's vote.
      */
-    public Integer userVote() {
+    public UserVote userVote() {
         return userVote;
     }
 

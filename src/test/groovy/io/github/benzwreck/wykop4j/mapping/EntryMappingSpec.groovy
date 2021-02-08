@@ -1,17 +1,19 @@
 package io.github.benzwreck.wykop4j.mapping
 
 import io.github.benzwreck.wykop4j.WykopMappingTestObject
+import io.github.benzwreck.wykop4j.entries.Answer
 import io.github.benzwreck.wykop4j.entries.Entry
+import io.github.benzwreck.wykop4j.entries.Survey
 import io.github.benzwreck.wykop4j.profiles.Color
 import spock.lang.Specification
 
 import java.time.LocalDateTime
 
 class EntryMappingSpec extends Specification {
+    WykopMappingTestObject mapper = new WykopMappingTestObject()
 
     def "should map json to Entry class"() {
         when:
-        WykopMappingTestObject mapper = new WykopMappingTestObject()
         String json = "{\n" +
                 "   \"data\":{\n" +
                 "      \"id\":55333215,\n" +
@@ -56,7 +58,7 @@ class EntryMappingSpec extends Specification {
         author.color() == Color.ORANGE
         author.sex() == Optional.empty()
         author.avatar() == "https://www.wykop.pl/cdn/c3397992/avatar_def,q150.png"
-        author.signupAt() == LocalDateTime.of(2018,05,21,10,04,29)
+        author.signupAt() == LocalDateTime.of(2018, 05, 21, 10, 04, 29)
         author.background() == Optional.empty()
         author.violationUrl() == "https://a2.wykop.pl/naruszenia/form/ot/profile/od/1502911/ud/5xOL/hs/6f8032abfc29cc66d25ce46e12488af58eb88708/rn/ZhasKJWMCf/"
         entry.blocked() == false
@@ -80,5 +82,66 @@ class EntryMappingSpec extends Specification {
         entry.url() == "https://www.wykop.pl/wpis/55333215/jp2gmd-2137-jp2-papiez-juz-za-chwilke/"
     }
 
+    def "should map json to Entry class with survey and canVote"() {
+        when:
+        String json = "{\n" +
+                "   \"data\":{\n" +
+                "      \"id\":54760047,\n" +
+                "      \"date\":\"2021-01-08 02:38:08\",\n" +
+                "      \"body\":\"ankieta\",\n" +
+                "      \"author\":{\n" +
+                "         \"login\":\"ZycieJestNobelon\",\n" +
+                "         \"color\":1,\n" +
+                "         \"sex\":\"male\",\n" +
+                "         \"avatar\":\"https:\\/\\/www.wykop.pl\\/cdn\\/c3397992\\/ZycieJestNobelon_2WW7g3RXYw,q150.jpg\",\n" +
+                "         \"signup_at\":\"2017-12-31 19:36:07\",\n" +
+                "         \"background\":\"https:\\/\\/www.wykop.pl\\/cdn\\/c3397992\\/profile_background-ZycieJestNobelon_RnfuZp4Nya,w500.jpg\"\n" +
+                "      },\n" +
+                "      \"blocked\":false,\n" +
+                "      \"favorite\":false,\n" +
+                "      \"vote_count\":0,\n" +
+                "      \"comments_count\":0,\n" +
+                "      \"status\":\"visible\",\n" +
+                "      \"survey\":{\n" +
+                "         \"question\":\"Ankieta\",\n" +
+                "         \"answers\":[\n" +
+                "            {\n" +
+                "               \"id\":1,\n" +
+                "               \"answer\":\"odp1\",\n" +
+                "               \"count\":4,\n" +
+                "               \"percentage\":36.36363636363637\n" +
+                "            },\n" +
+                "            {\n" +
+                "               \"id\":2,\n" +
+                "               \"answer\":\"odp2\",\n" +
+                "               \"count\":7,\n" +
+                "               \"percentage\":63.63636363636363\n" +
+                "            }\n" +
+                "         ]\n" +
+                "      },\n" +
+                "      \"can_comment\":true,\n" +
+                "      \"user_vote\":0,\n" +
+                "      \"original\":\"ankieta\",\n" +
+                "      \"url\":\"https:\\/\\/www.wykop.pl\\/wpis\\/54760047\\/ankieta\\/\"\n" +
+                "   }\n" +
+                "}"
+        def entry = mapper.map(json, Entry.class)
+        then:
+        entry.canComment() == true
+        def survey = entry.survey().get()
+        survey.question() == "Ankieta"
+        def answers = survey.answers()
+        def firstAnswer = answers.get(0)
+        firstAnswer.id() == 1
+        firstAnswer.answer() == "odp1"
+        firstAnswer.count() == 4
+        firstAnswer.percentage() == Float.valueOf("36.36363636363637")
+        def secondAnswer = answers.get(1)
+        secondAnswer.id() == 2
+        secondAnswer.answer() == "odp2"
+        secondAnswer.count() == 7
+        secondAnswer.percentage() == Float.valueOf("63.63636363636363")
+
+    }
 
 }
