@@ -5,6 +5,7 @@ import io.github.benzwreck.wykop4j.entries.EntriesStreamPage;
 import io.github.benzwreck.wykop4j.entries.Entry;
 
 import java.util.List;
+import java.util.Optional;
 
 public class WykopClient {
     private final static String WYKOP_URL = "https://a2.wykop.pl";
@@ -47,6 +48,13 @@ public class WykopClient {
         });
     }
 
+    public Chain<Optional<Entry>> entry(int id){
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Entries/Entry/entry/")
+                .apiParam("entry", String.valueOf(id))
+                .build(), new TypeReference<Optional<Entry>>() {
+        });
+    }
 
     public static final class Builder {
         private UserCredentials userCredentials;

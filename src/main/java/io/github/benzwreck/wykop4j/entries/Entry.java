@@ -15,6 +15,8 @@ public class Entry {
     private final Integer voteCount;
     private final Integer commentsCount;
     private final String status;
+    private final Survey survey;
+    private final Boolean canComment;
     private final Embed embed;
     private final Integer userVote;
     private final String app;
@@ -22,7 +24,8 @@ public class Entry {
     private final String original;
     private final String url;
 
-    public Entry(Integer id, LocalDateTime date, String body, SimpleProfile author, Boolean blocked, Boolean favorite, Integer voteCount, Integer commentsCount, String status, Embed embed, Integer userVote, String app, String violationUrl, String original, String url) {
+
+    public Entry(Integer id, LocalDateTime date, String body, SimpleProfile author, Boolean blocked, Boolean favorite, Integer voteCount, Integer commentsCount, String status, Survey survey, Boolean canComment, Embed embed, Integer userVote, String app, String violationUrl, String original, String url) {
         this.id = id;
         this.date = date;
         this.body = body;
@@ -32,6 +35,8 @@ public class Entry {
         this.voteCount = voteCount;
         this.commentsCount = commentsCount;
         this.status = status;
+        this.survey = survey;
+        this.canComment = canComment;
         this.embed = embed;
         this.userVote = userVote;
         this.app = app;
@@ -127,8 +132,8 @@ public class Entry {
     /**
      * @return url to violation form.
      */
-    public String violationUrl() {
-        return violationUrl;
+    public Optional<String> violationUrl() {
+        return Optional.ofNullable(violationUrl);
     }
 
     /**
@@ -145,11 +150,25 @@ public class Entry {
         return url;
     }
 
+    /**
+     * @return possible {@link Survey}
+     */
+    public Optional<Survey> survey() {
+        return Optional.ofNullable(survey);
+    }
+
+    /**
+     * @return if user can comment this entry.
+     */
+    public Boolean canComment() {
+        return canComment;
+    }
+
     @Override
     public String toString() {
         return "Entry{" +
                 "id=" + id +
-                ", date='" + date + '\'' +
+                ", date=" + date +
                 ", body='" + body + '\'' +
                 ", author=" + author +
                 ", blocked=" + blocked +
@@ -157,10 +176,17 @@ public class Entry {
                 ", voteCount=" + voteCount +
                 ", commentsCount=" + commentsCount +
                 ", status='" + status + '\'' +
+                ", survey=" + survey +
+                ", canComment=" + canComment +
                 ", embed=" + embed +
                 ", userVote=" + userVote +
                 ", app='" + app + '\'' +
+                ", violationUrl='" + violationUrl + '\'' +
+                ", original='" + original + '\'' +
+                ", url='" + url + '\'' +
                 '}';
     }
+
+
 }
 

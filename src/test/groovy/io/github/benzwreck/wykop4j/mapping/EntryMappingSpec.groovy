@@ -75,7 +75,7 @@ class EntryMappingSpec extends Specification {
         embed.ratio() == 0.982f
         entry.userVote() == 0
         entry.app().get() == "Android"
-        entry.violationUrl() == "https://a2.wykop.pl/naruszenia/form/ot/entry/od/55333215/ud/5xOL/hs/69ab7ab81eef21c24ac559438e9ed9125d73d5cb/rn/RZj76Aozhe/"
+        entry.violationUrl().get() == "https://a2.wykop.pl/naruszenia/form/ot/entry/od/55333215/ud/5xOL/hs/69ab7ab81eef21c24ac559438e9ed9125d73d5cb/rn/RZj76Aozhe/"
         entry.original() == "#jp2gmd #2137 #jp2 #papiez\nJuż za chwilkę"
         entry.url() == "https://www.wykop.pl/wpis/55333215/jp2gmd-2137-jp2-papiez-juz-za-chwilke/"
     }
