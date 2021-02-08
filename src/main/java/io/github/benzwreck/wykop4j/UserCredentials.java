@@ -1,4 +1,4 @@
-package io.github.benzwreck.wykop4j.client;
+package io.github.benzwreck.wykop4j;
 
 public class UserCredentials {
     private final String login;

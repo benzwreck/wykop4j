@@ -9,13 +9,21 @@ version '1.0-SNAPSHOT'
 repositories {
     mavenCentral()
 }
+tasks.withType(JavaCompile) {
+    options.compilerArgs += ['-parameters']
+}
 
 test {
     useJUnitPlatform()
 }
 dependencies {
-    implementation 'com.squareup.okhttp3:okhttp:4.7.2'
+    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.7.2'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.1'
+    implementation group: 'com.fasterxml.jackson.module', name: 'jackson-module-parameter-names', version: '2.12.1'
+    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.12.1'
     testImplementation group: 'org.codehaus.groovy', name: 'groovy-all', version: '3.0.4', ext: 'pom'
     testImplementation group: 'org.spockframework', name: 'spock-core', version: '2.0-M3-groovy-3.0'
     testImplementation group: 'junit', name: 'junit', version: '4.12'
+    testImplementation group: 'cglib', name: 'cglib', version: '3.3.0'
+
 }

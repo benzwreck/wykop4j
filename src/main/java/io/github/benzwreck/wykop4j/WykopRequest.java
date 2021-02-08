@@ -1,4 +1,4 @@
-package io.github.benzwreck.wykop4j.client;
+package io.github.benzwreck.wykop4j;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -38,7 +38,7 @@ class WykopRequest {
         for (Map.Entry<String, String> entry : namedParams.entrySet()) {
             tempUrl = tempUrl.replaceFirst(entry.getKey() + "\\/(\\w*)\\/", entry.getKey() + "/" + entry.getValue() + "/");
         }
-        tempUrl += "output/clear/";
+        tempUrl += "output/clear/data/full/";
         requestBuilder.url(tempUrl);
 
         if (postParams.isEmpty() && file == null) {

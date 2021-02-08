@@ -1,4 +1,4 @@
-package io.github.benzwreck.wykop4j.client;
+package io.github.benzwreck.wykop4j;
 
 import okhttp3.FormBody;
 import okhttp3.MultipartBody;

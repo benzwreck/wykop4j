@@ -1,6 +1,5 @@
-package io.github.benzwreck.wykop4j.client;
+package io.github.benzwreck.wykop4j;
 
-import io.github.benzwreck.wykop4j.WykopException;
 import okhttp3.*;
 import okio.BufferedSource;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +14,7 @@ class AuthInterceptor implements Interceptor {
     private final ApplicationCredentials applicationCredentials;
     private final ApiSignCalculator apiSignCalculator;
 
-    private String userKey = "";
+    private String userKey;
 
     public AuthInterceptor(UserCredentials userCredentials, ApplicationCredentials applicationCredentials) {
         this.userCredentials = userCredentials;
