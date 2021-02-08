@@ -39,7 +39,6 @@ class EntrySpec extends Specification {
         when:
         def entry = wykop.entry(54760047).execute()
         then:
-        println(entry)
-        1==1
+        54760047 == entry.get().id()
     }
 }
