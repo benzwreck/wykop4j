@@ -124,6 +124,26 @@ public class WykopClient {
         });
     }
 
+    /**
+     * @return List of Observed Entries from first page.
+     */
+    public Chain<List<Entry>> observedEntries() {
+        return observedEntries(Page.of(1));
+    }
+
+    /**
+     * @param page given observed entries page.
+     * @return List of Observed Entries from given page.
+     */
+    public Chain<List<Entry>> observedEntries(Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Entries/Observed/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .build(), new TypeReference<List<Entry>>() {
+        }
+        );
+    }
+
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;
@@ -167,8 +187,9 @@ public class WykopClient {
             String response = WykopClient.this.client.execute(wykopRequest);
             if (clazz != null) {
                 return WykopClient.this.wykopObjectMapper.map(response, clazz);
-            } else
+            } else {
                 return WykopClient.this.wykopObjectMapper.map(response, typeReference);
+            }
 
         }
 

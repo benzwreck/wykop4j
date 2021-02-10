@@ -68,4 +68,25 @@ class EntrySpec extends Specification {
         then: "active entries must contain comments"
         entries.each { it.commentsCount() > 0 }
     }
+
+    def "should return empty list of active entries from non-existent page"() {
+        when:
+        def entries = wykop.activeEntries(Page.of(10000)).execute()
+        then:
+        entries.isEmpty()
+    }
+
+    def "should return list of observed entries from first page"() {
+        when:
+        def entries = wykop.observedEntries().execute()
+        then:
+        entries.each { it.favorite() }
+    }
+
+    def "should return empty list of observed entries from non-existent page"() {
+        when:
+        def entries = wykop.observedEntries(Page.of(10000)).execute()
+        then:
+        entries.isEmpty()
+    }
 }
