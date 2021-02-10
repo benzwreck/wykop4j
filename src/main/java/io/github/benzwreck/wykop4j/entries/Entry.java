@@ -3,6 +3,7 @@ package io.github.benzwreck.wykop4j.entries;
 import io.github.benzwreck.wykop4j.profiles.SimpleProfile;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public class Entry {
@@ -14,6 +15,7 @@ public class Entry {
     private final Boolean favorite;
     private final Integer voteCount;
     private final Integer commentsCount;
+    private final List<Comment> comments;
     private final String status;
     private final Survey survey;
     private final Boolean canComment;
@@ -25,7 +27,7 @@ public class Entry {
     private final String url;
 
 
-    public Entry(Integer id, LocalDateTime date, String body, SimpleProfile author, Boolean blocked, Boolean favorite, Integer voteCount, Integer commentsCount, String status, Survey survey, Boolean canComment, Embed embed, UserVote userVote, String app, String violationUrl, String original, String url) {
+    public Entry(Integer id, LocalDateTime date, String body, SimpleProfile author, Boolean blocked, Boolean favorite, Integer voteCount, Integer commentsCount, List<Comment> comments, String status, Survey survey, Boolean canComment, Embed embed, UserVote userVote, String app, String violationUrl, String original, String url) {
         this.id = id;
         this.date = date;
         this.body = body;
@@ -34,6 +36,7 @@ public class Entry {
         this.favorite = favorite;
         this.voteCount = voteCount;
         this.commentsCount = commentsCount;
+        this.comments = comments;
         this.status = status;
         this.survey = survey;
         this.canComment = canComment;
@@ -92,6 +95,13 @@ public class Entry {
      */
     public Integer commentsCount() {
         return commentsCount;
+    }
+
+    /**
+     * @return list of comments.
+     */
+    public List<Comment> comments() {
+        return comments;
     }
 
     /**

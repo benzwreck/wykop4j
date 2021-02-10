@@ -1,6 +1,7 @@
 package io.github.benzwreck.wykop4j.mapping
 
 import io.github.benzwreck.wykop4j.WykopMappingTestObject
+import io.github.benzwreck.wykop4j.entries.Comment
 import io.github.benzwreck.wykop4j.entries.Entry
 import io.github.benzwreck.wykop4j.entries.UserVote
 import io.github.benzwreck.wykop4j.profiles.Color
@@ -70,4 +71,21 @@ class EntryMappingSpec extends Specification {
 
     }
 
+    def "should map json to Entry class with comments"(){
+        when:
+        String json = SampleEntries.entryWithComments()
+        def entry = mapper.map(json, Entry.class)
+        then:
+        def comments = entry.comments()
+        def firstComment = comments.get(0)
+        firstComment.id() == 197386491
+        firstComment.author().login() == "MarianoaItaliano"
+        firstComment.entryId() == 55470093
+        def secondComment = comments.get(1)
+        secondComment.id() == 197386571
+        secondComment.author().login() == "IdillaMZ"
+        secondComment.entryId() == 55470093
+
+
+    }
 }
