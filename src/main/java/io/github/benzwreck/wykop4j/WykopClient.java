@@ -3,6 +3,7 @@ package io.github.benzwreck.wykop4j;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.github.benzwreck.wykop4j.entries.Entry;
 import io.github.benzwreck.wykop4j.entries.Page;
+import io.github.benzwreck.wykop4j.entries.Period;
 
 import java.util.List;
 import java.util.Optional;
@@ -60,6 +61,47 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Entries/Entry/entry/")
                 .apiParam("entry", String.valueOf(id))
                 .build(), new TypeReference<Optional<Entry>>() {
+        });
+    }
+
+    /**
+     * @return First page of 12 hours hot entries.
+     */
+    public Chain<List<Entry>> hotEntries() {
+        return hotEntries(Page.of(1), Period.TWELVE_HOURS);
+    }
+
+    /**
+     * @param page given hot entries page. Has to be from 1 to 20.
+     * @return List of Hot Entries from last 12 hours.
+     * @throws IllegalArgumentException if page is not from 1 to 20.
+     */
+    public Chain<List<Entry>> hotEntries(Page page) {
+        return hotEntries(page, Period.TWELVE_HOURS);
+    }
+
+    /**
+     * @param period available pages for Entries' Hot
+     * @return First page of the Hot Entries for a given period.
+     */
+    public Chain<List<Entry>> hotEntries(Period period) {
+        return hotEntries(Page.of(1), period);
+    }
+
+    /**
+     * @param page   given hot entries page. Has to be between 1 and 20. Throws exception otherwise.
+     * @param period available pages for Entries' Hot
+     * @return List of Hot Entries for a given page and period.
+     * @throws IllegalArgumentException if page is not from 1 to 20.
+     */
+    public Chain<List<Entry>> hotEntries(Page page, Period period) {
+        if (page.value() < 0 || page.value() > 20)
+            throw new IllegalArgumentException("Page" + page + "is forbidden. Only pages from 1 to 20 are possible to fetch.");
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Entries/Hot/page/int/period/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .namedParam("period", String.valueOf(period.value()))
+                .build(), new TypeReference<List<Entry>>() {
         });
     }
 
