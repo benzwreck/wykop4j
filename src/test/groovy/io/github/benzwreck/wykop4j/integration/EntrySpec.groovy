@@ -2,8 +2,7 @@ package io.github.benzwreck.wykop4j.integration
 
 import io.github.benzwreck.wykop4j.IntegrationWykopClient
 import io.github.benzwreck.wykop4j.WykopClient
-import io.github.benzwreck.wykop4j.entries.EntriesStreamPage
-import io.github.benzwreck.wykop4j.entries.Entry
+import io.github.benzwreck.wykop4j.entries.Page
 import spock.lang.Specification
 
 class EntrySpec extends Specification {
@@ -11,8 +10,8 @@ class EntrySpec extends Specification {
 
     def "should return first and second page of entries' stream"() {
         when:
-        def entries1 = wykop.entriesStream(EntriesStreamPage.FIRST).execute()
-        def entries2 = wykop.entriesStream(EntriesStreamPage.SECOND).execute()
+        def entries1 = wykop.entriesStream(Page.of(1)).execute()
+        def entries2 = wykop.entriesStream(Page.of(2)).execute()
 
         then:
         def allEntries = entries1 + entries2
@@ -42,5 +41,4 @@ class EntrySpec extends Specification {
         then:
         entry == Optional.empty()
     }
-
 }
