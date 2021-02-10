@@ -16,18 +16,11 @@ class EntrySpec extends Specification {
 
         then:
         def allEntries = entries1 + entries2
-        for (i in 0..<allEntries.size()-1) {
-            allEntries[i].id() > allEntries[i+1].id()
+        for (i in 0..<allEntries.size() - 1) {
+            allEntries[i].id() > allEntries[i + 1].id()
         }
     }
-    def "should return first page of entries' stream"() {
-        when:
-        def entries = wykop.entriesStream().execute()
-        then:
-        for (i in 0..<entries.size() - 1) {
-            entries[i].id() > entries[i + 1].id()
-        }
-    }
+
     def "should return list of entries where first entry is the second one from all entries' stream"() {
         when:
         def entriesStream = wykop.entriesStream().execute()
@@ -35,10 +28,19 @@ class EntrySpec extends Specification {
         then:
         execute.get(0).id() == entriesStream.get(1).id()
     }
-    def "should return entry"(){
+
+    def "should return entry"() {
         when:
         def entry = wykop.entry(54760047).execute()
         then:
         54760047 == entry.get().id()
     }
+
+    def "should return an empty Optional - entry id doesn't exist"() {
+        when:
+        def entry = wykop.entry(-1000000).execute()
+        then:
+        entry == Optional.empty()
+    }
+
 }
