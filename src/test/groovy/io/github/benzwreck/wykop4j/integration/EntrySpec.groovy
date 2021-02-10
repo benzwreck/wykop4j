@@ -61,4 +61,11 @@ class EntrySpec extends Specification {
         period << [Period.SIX_HOURS, Period.TWELVE_HOURS, Period.TWENTY_FOUR_HOURS]
 
     }
+
+    def "should return list of active entries from first page"() {
+        when:
+        def entries = wykop.activeEntries().execute()
+        then: "active entries must contain comments"
+        entries.each { it.commentsCount() > 0 }
+    }
 }

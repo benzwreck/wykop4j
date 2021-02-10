@@ -105,6 +105,25 @@ public class WykopClient {
         });
     }
 
+    /**
+     * @return List of Active Entries from first page.
+     */
+    public Chain<List<Entry>> activeEntries() {
+        return activeEntries(Page.of(1));
+    }
+
+    /**
+     * @param page given active entries page.
+     * @return List of Active Entries from given page.
+     */
+    public Chain<List<Entry>> activeEntries(Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Entries/Active/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .build(), new TypeReference<List<Entry>>() {
+        });
+    }
+
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;
