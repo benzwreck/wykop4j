@@ -98,10 +98,13 @@ public class Entry {
     }
 
     /**
-     * @return list of comments.
+     * If {@code Entry::commentsCount} > 0, you should use {@code WykopClient::entry}
+     * with this entry's id to get those comments.
+     *
+     * @return possible list of comments.
      */
-    public List<Comment> comments() {
-        return comments;
+    public Optional<List<Comment>> comments() {
+        return Optional.ofNullable(comments);
     }
 
     /**
