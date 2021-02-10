@@ -1,8 +1,8 @@
 package io.github.benzwreck.wykop4j;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import io.github.benzwreck.wykop4j.entries.EntriesStreamPage;
 import io.github.benzwreck.wykop4j.entries.Entry;
+import io.github.benzwreck.wykop4j.entries.Page;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,17 +21,20 @@ public class WykopClient {
      * @return First page of the latest Microblog's Entries.
      */
     public Chain<List<Entry>> entriesStream() {
-        return entriesStream(EntriesStreamPage.FIRST);
+        return entriesStream(Page.of(1));
     }
 
     /**
-     * @param page available pages for Entries' Stream
+     * @param page available pages for Entries' Stream. Has to be 1 or 2.
      * @return Given page of the latest Microblog's Entries.
+     * @throws IllegalArgumentException if page is different than 1 or 2.
      */
-    public Chain<List<Entry>> entriesStream(EntriesStreamPage page) {
+    public Chain<List<Entry>> entriesStream(Page page) {
+        if (page.value() < 0 || page.value() > 2)
+            throw new IllegalArgumentException("Page" + page + "is forbidden. Only page 1 and page 2 are possible to fetch.");
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/Stream/page/int/")
-                .namedParam("page", page.value())
+                .namedParam("page", String.valueOf(page.value()))
                 .build(), new TypeReference<List<Entry>>() {
         });
     }
@@ -48,7 +51,11 @@ public class WykopClient {
         });
     }
 
-    public Chain<Optional<Entry>> entry(int id){
+    /**
+     * @param id id of the {@link Entry} you are looking for.
+     * @return possible {@link Entry}
+     */
+    public Chain<Optional<Entry>> entry(int id) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/Entry/entry/")
                 .apiParam("entry", String.valueOf(id))
@@ -73,7 +80,7 @@ public class WykopClient {
             return this;
         }
 
-        public WykopClient build(){
+        public WykopClient build() {
             WykopHttpClient client = new WykopHttpClient(userCredentials, applicationCredentials);
             WykopObjectMapper wykopObjectMapper = new WykopObjectMapper();
             return new WykopClient(client, wykopObjectMapper);
