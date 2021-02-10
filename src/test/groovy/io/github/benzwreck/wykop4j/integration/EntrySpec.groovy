@@ -35,9 +35,10 @@ class EntrySpec extends Specification {
 
     def "should return entry"() {
         when:
-        def entry = wykop.entry(54760047).execute()
+        def randomEntryId = wykop.hotEntries().execute().get(0).id()
+        def entry = wykop.entry(randomEntryId).execute()
         then:
-        54760047 == entry.get().id()
+        randomEntryId == entry.get().id()
     }
 
     def "should return an empty Optional - entry id doesn't exist"() {
