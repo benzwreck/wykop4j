@@ -14,9 +14,7 @@ class WykopHttpClient {
                 .addInterceptor(new AuthInterceptor(userCredentials, applicationCredentials))
                 .build();
     }
-    WykopHttpClient(OkHttpClient httpClient){
-        this.httpClient = httpClient;
-    }
+
     public String execute(WykopRequest wykopRequest) {
         Request request = wykopRequest.toOkHttpRequest();
         try (Response response = httpClient.newCall(request).execute()) {

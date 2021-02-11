@@ -63,10 +63,10 @@ public class Entry {
     }
 
     /**
-     * @return body.
+     * @return possible body.
      */
-    public String body() {
-        return body;
+    public Optional<String> body() {
+        return Optional.ofNullable(body);
     }
 
     /**

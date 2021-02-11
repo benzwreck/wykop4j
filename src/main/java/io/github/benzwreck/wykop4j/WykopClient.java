@@ -2,9 +2,11 @@ package io.github.benzwreck.wykop4j;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.github.benzwreck.wykop4j.entries.Entry;
+import io.github.benzwreck.wykop4j.entries.NewEntry;
 import io.github.benzwreck.wykop4j.entries.Page;
 import io.github.benzwreck.wykop4j.entries.Period;
 
+import java.io.File;
 import java.util.List;
 import java.util.Optional;
 
@@ -142,6 +144,31 @@ public class WykopClient {
                 .build(), new TypeReference<List<Entry>>() {
         }
         );
+    }
+
+    public Chain<Entry> deleteEntry(int entryId) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Entries/Delete/entry_id/")
+                .apiParam("entry_id", String.valueOf(entryId))
+                .build(), Entry.class);
+    }
+
+    public Chain<Entry> addEntry(NewEntry newEntry) {
+        WykopRequest.Builder requestBuilder = new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Entries/Add/")
+                .postParam("adultmedia", String.valueOf(newEntry.adultOnly()));
+        newEntry.body().ifPresent(body -> requestBuilder.postParam("body", body));
+        newEntry.urlEmbed().ifPresent(url -> requestBuilder.postParam("embed", url));
+        Optional<File> fileEmbed = newEntry.fileEmbed();
+        if (fileEmbed.isPresent()) {
+            Optional<String> shownFileName = newEntry.shownFileName();
+            if (shownFileName.isPresent()) {
+                requestBuilder.file(fileEmbed.get(), shownFileName.get());
+            } else {
+                requestBuilder.file(fileEmbed.get());
+            }
+        }
+        return new Chain<>(requestBuilder.build(), Entry.class);
     }
 
     public static final class Builder {

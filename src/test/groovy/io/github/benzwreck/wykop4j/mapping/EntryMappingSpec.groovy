@@ -1,7 +1,6 @@
 package io.github.benzwreck.wykop4j.mapping
 
 import io.github.benzwreck.wykop4j.WykopMappingTestObject
-import io.github.benzwreck.wykop4j.entries.Comment
 import io.github.benzwreck.wykop4j.entries.Entry
 import io.github.benzwreck.wykop4j.entries.UserVote
 import io.github.benzwreck.wykop4j.profiles.Color
@@ -19,7 +18,7 @@ class EntryMappingSpec extends Specification {
         then:
         entry.id() == 55333215
         entry.date() == LocalDateTime.of(2021, 02, 03, 21, 35, 36)
-        entry.body() == "Już za chwilkę"
+        entry.body().get() == "Już za chwilkę"
         def author = entry.author()
         author.login() == "quatroo96"
         author.color() == Color.ORANGE
@@ -71,12 +70,12 @@ class EntryMappingSpec extends Specification {
 
     }
 
-    def "should map json to Entry class with comments"(){
+    def "should map json to Entry class with comments"() {
         when:
         String json = SampleEntries.entryWithComments()
         def entry = mapper.map(json, Entry.class)
         then:
-        def comments = entry.comments()
+        def comments = entry.comments().get()
         def firstComment = comments.get(0)
         firstComment.id() == 197386491
         firstComment.author().login() == "MarianoaItaliano"

@@ -2,6 +2,7 @@ package io.github.benzwreck.wykop4j.integration
 
 import io.github.benzwreck.wykop4j.IntegrationWykopClient
 import io.github.benzwreck.wykop4j.WykopClient
+import io.github.benzwreck.wykop4j.entries.NewEntry
 import io.github.benzwreck.wykop4j.entries.Page
 import io.github.benzwreck.wykop4j.entries.Period
 import spock.lang.Specification
@@ -88,5 +89,67 @@ class EntrySpec extends Specification {
         def entries = wykop.observedEntries(Page.of(10000)).execute()
         then:
         entries.isEmpty()
+    }
+
+    def "should add new entry with jpg file and delete it"() {
+        def newEntry = new NewEntry.Builder()
+                .withBody("obraz")
+                .withMedia(new File("src/test/resources/white.jpg"), "bialo")
+                .adultOnly()
+                .build()
+
+        when:
+        def addEntry = wykop.addEntry(newEntry).execute()
+        then:
+        addEntry.body().get() == "obraz"
+        def embed = addEntry.embed().get()
+        embed.source() == "bialo"
+        embed.plus18()
+
+        cleanup:
+        wykop.deleteEntry(addEntry.id()).execute()
+    }
+
+    def "should add new entry with jpg url"() {
+        def newEntry = new NewEntry.Builder()
+                .withBody("obraz")
+                .withMedia("https://www.wykop.pl/cdn/c3201142/comment_1613001626Mwe2NcUAMJ1yLKZJumQQjC.jpg")
+                .build()
+
+        when:
+        def addEntry = wykop.addEntry(newEntry).execute()
+        then:
+        addEntry.body().get() == "obraz"
+        def embed = addEntry.embed().get()
+        embed.source() == "wykop.pl"
+        !embed.plus18()
+
+        cleanup:
+        wykop.deleteEntry(addEntry.id()).execute()
+    }
+
+    def "should add new entry without embed when given media url does not exist"() {
+        def newEntry = new NewEntry.Builder()
+                .withMedia("https://www.wykop.pl/cdn/c3201142/comment_1613001626Mwe2NcUAMJ1yLKZJumQQjC.jpg")
+                .build()
+
+        when:
+        def entry = wykop.addEntry(newEntry).execute()
+        then:
+        entry.embed().isPresent()
+        !entry.body().isPresent()
+
+        cleanup:
+        wykop.deleteEntry(entry.id()).execute()
+    }
+
+    def "should throw an exception when neither body nor media is provided"(){
+        when:
+        new NewEntry.Builder()
+                .adultOnly()
+                .build()
+
+        then:
+        thrown IllegalArgumentException
     }
 }
