@@ -5,6 +5,7 @@ import io.github.benzwreck.wykop4j.entries.Entry;
 import io.github.benzwreck.wykop4j.entries.NewEntry;
 import io.github.benzwreck.wykop4j.entries.Page;
 import io.github.benzwreck.wykop4j.entries.Period;
+import io.github.benzwreck.wykop4j.entries.Vote;
 import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException;
 
@@ -228,6 +229,18 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Entries/VoteRemove/id/")
                 .apiParam("id", String.valueOf(entryId))
                 .build(), Void.class);
+    }
+
+    /**
+     * @param entryId entry's id to fetch voters from.
+     * @return List of {@link Vote}s.
+     */
+    public Chain<List<Vote>> allUpvotes(int entryId) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Entries/Upvoters/entry_id/")
+                .apiParam("entry_id", String.valueOf(entryId))
+                .build(), new TypeReference<List<Vote>>() {
+        });
     }
 
     public static final class Builder {

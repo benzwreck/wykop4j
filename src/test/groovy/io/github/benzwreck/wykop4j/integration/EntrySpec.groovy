@@ -253,4 +253,14 @@ class EntrySpec extends Specification {
         then:
         thrown ArchivalContentException
     }
+
+    def "should return list of upvoters"() {
+        setup:
+        def randomId = wykop.hotEntries().execute().get(0).id()
+        when:
+        def votes = wykop.allUpvotes(randomId).execute()
+        then:
+        votes.get(0).author().tap { println(it) }
+        !votes.isEmpty()
+    }
 }
