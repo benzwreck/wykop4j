@@ -73,11 +73,14 @@ public class SimpleProfile {
 
     @Override
     public String toString() {
-        return "Profile{" +
+        return "SimpleProfile{" +
                 "login='" + login + '\'' +
                 ", color=" + color +
-                ", sex='" + sex + '\'' +
+                ", sex=" + sex +
                 ", avatar='" + avatar + '\'' +
+                ", signupAt=" + signupAt +
+                ", background='" + background + '\'' +
+                ", violationUrl='" + violationUrl + '\'' +
                 '}';
     }
 
