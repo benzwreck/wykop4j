@@ -5,6 +5,7 @@ import io.github.benzwreck.wykop4j.WykopClient
 import io.github.benzwreck.wykop4j.entries.NewEntry
 import io.github.benzwreck.wykop4j.entries.Page
 import io.github.benzwreck.wykop4j.entries.Period
+import io.github.benzwreck.wykop4j.exceptions.ActionForbiddenException
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -91,7 +92,27 @@ class EntrySpec extends Specification {
         entries.isEmpty()
     }
 
-    def "should add new entry with jpg file and delete it"() {
+    def "should add and delete entry"() {
+        def newEntry = new NewEntry.Builder()
+                .withBody("toDelete")
+                .build()
+        when:
+        def addEntry = wykop.addEntry(newEntry).execute()
+        def deletedEntry = wykop.deleteEntry(addEntry.id()).execute()
+
+        then:
+        deletedEntry.status() == "deleted"
+    }
+
+    def "should throw an exception when try to delete somebody else's entry"() {
+        when:
+        wykop.deleteEntry(-10000).execute()
+
+        then:
+        thrown ActionForbiddenException
+    }
+
+    def "should add new entry with jpg file"() {
         def newEntry = new NewEntry.Builder()
                 .withBody("obraz")
                 .withMedia(new File("src/test/resources/white.jpg"), "bialo")
@@ -143,7 +164,7 @@ class EntrySpec extends Specification {
         wykop.deleteEntry(entry.id()).execute()
     }
 
-    def "should throw an exception when neither body nor media is provided"(){
+    def "should throw an exception when neither body nor media is provided"() {
         when:
         new NewEntry.Builder()
                 .adultOnly()

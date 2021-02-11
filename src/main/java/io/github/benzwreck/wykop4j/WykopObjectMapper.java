@@ -8,12 +8,12 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
+import io.github.benzwreck.wykop4j.exceptions.ActionForbiddenException;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -42,7 +42,8 @@ class WykopObjectMapper {
     public <T> T map(String payload, Class<T> clazz) {
         try {
             JsonNode jsonNode = objectMapper.readTree(payload);
-            return objectMapper.readValue(objectMapper.treeAsTokens(jsonNode.get("data")), clazz);
+            JsonNode data = handleResponse(jsonNode);
+            return objectMapper.readValue(objectMapper.treeAsTokens(data), clazz);
         } catch (IOException e) {
             throw new WykopException(e);
         }
@@ -52,10 +53,27 @@ class WykopObjectMapper {
         try {
             //todo: proper response handling -> data, error
             JsonNode jsonNode = objectMapper.readTree(payload);
-            JsonNode node = jsonNode.get("data");
+            JsonNode node = handleResponse(jsonNode);
             return objectMapper.readValue(objectMapper.treeAsTokens(node), typeReference);
         } catch (IOException e) {
             throw new WykopException(e);
         }
+    }
+
+    private JsonNode handleResponse(JsonNode node) {
+        if (node.hasNonNull("data")) {
+            return node.get("data");
+        }
+        if (node.hasNonNull("error")) {
+            JsonNode error = node.get("error");
+            int errorCode = error.get("code").intValue();
+            String messageEn = error.get("message_en").asText();
+            String messagePl = error.get("message_pl").asText();
+            switch (errorCode){
+                case 552:
+                    throw new ActionForbiddenException(errorCode, messageEn, messagePl);
+            }
+        }
+        throw new WykopException("default");
     }
 }
