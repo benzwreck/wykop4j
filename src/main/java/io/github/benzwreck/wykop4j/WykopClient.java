@@ -1,6 +1,7 @@
 package io.github.benzwreck.wykop4j;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import io.github.benzwreck.wykop4j.entries.Comment;
 import io.github.benzwreck.wykop4j.entries.Entry;
 import io.github.benzwreck.wykop4j.entries.NewEntry;
 import io.github.benzwreck.wykop4j.entries.Page;
@@ -183,7 +184,7 @@ public class WykopClient {
     }
 
     /**
-     * @param entryId id of modifying entry.
+     * @param entryId  id of modifying entry.
      * @param newEntry new entry body.
      * @return modified {@link Entry}
      * @throws UnableToModifyEntryException when user has no permission to modify this entry.
@@ -240,6 +241,18 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Entries/Upvoters/entry_id/")
                 .apiParam("entry_id", String.valueOf(entryId))
                 .build(), new TypeReference<List<Vote>>() {
+        });
+    }
+
+    /**
+     * @param commentId comment's id.
+     * @return possible {@link Comment}
+     */
+    public Chain<Optional<Comment>> comment(int commentId) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Entries/Comment/comment_id/")
+                .apiParam("comment_id", String.valueOf(commentId))
+                .build(), new TypeReference<Optional<Comment>>() {
         });
     }
 
