@@ -5,10 +5,12 @@ import io.github.benzwreck.wykop4j.WykopClient
 import io.github.benzwreck.wykop4j.entries.NewEntry
 import io.github.benzwreck.wykop4j.entries.Page
 import io.github.benzwreck.wykop4j.entries.Period
-import io.github.benzwreck.wykop4j.exceptions.ActionForbiddenException
+import io.github.benzwreck.wykop4j.entries.UserVote
+import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException
 import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException
 import spock.lang.Specification
 import spock.lang.Unroll
+import spock.util.concurrent.PollingConditions
 
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -110,7 +112,7 @@ class EntrySpec extends Specification {
         wykop.deleteEntry(-10000).execute()
 
         then:
-        thrown ActionForbiddenException
+        thrown ArchivalContentException
     }
 
     def "should add new entry with jpg file"() {
@@ -206,9 +208,49 @@ class EntrySpec extends Specification {
                 .build()
 
         when:
-        def editedEntry = wykop.editEntry(-100000, editedNewEntry).execute()
+        wykop.editEntry(-100000, editedNewEntry).execute()
 
         then:
         thrown UnableToModifyEntryException
+    }
+
+    def "should upvote entry and then remove vote"() {
+        def conditions = new PollingConditions(timeout: 5, initialDelay: 1)
+        def randomId = wykop.entriesStream().execute().get(0).id()
+        when:
+        wykop.voteUp(randomId).execute()
+        then:
+        conditions.eventually {
+            assert wykop.entry(randomId).execute()
+                    .map(e -> e.userVote())
+                    .filter(userVote -> userVote == UserVote.VOTED)
+                    .isPresent()
+        }
+
+        when:
+        wykop.removeVote(randomId).execute()
+        then:
+        conditions.eventually {
+            assert wykop.entry(randomId).execute()
+                    .map(e -> e.userVote())
+                    .filter(userVote -> userVote == UserVote.NOT_VOTED)
+                    .isPresent()
+        }
+    }
+
+    def "should throw an exception when try to upvote non-existing entry"() {
+        when:
+        wykop.voteUp(-100000).execute()
+
+        then:
+        thrown ArchivalContentException
+    }
+
+    def "should throw an exception when try to remove vote from non-existing entry"() {
+        when:
+        wykop.removeVote(-100000).execute()
+
+        then:
+        thrown ArchivalContentException
     }
 }

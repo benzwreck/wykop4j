@@ -1,19 +1,25 @@
 package io.github.benzwreck.wykop4j;
 
 public class WykopException extends RuntimeException {
+    protected final int code;
+    protected final String messageEn;
+    protected final String messagePl;
 
-    public WykopException() {
+    public int code() {
+        return code;
     }
 
-    public WykopException(String message) {
-        super(message);
+    public String messageEn() {
+        return messageEn;
     }
 
-    public WykopException(String message, Throwable cause) {
-        super(message, cause);
+    public String messagePl() {
+        return messagePl;
     }
-
-    public WykopException(Throwable cause) {
-        super(cause);
+    public WykopException(int code, String messageEn, String messagePl) {
+        super(messageEn);
+        this.code = code;
+        this.messageEn = messageEn;
+        this.messagePl = messagePl;
     }
 }

@@ -92,7 +92,7 @@ public class NewEntry {
         }
 
         public NewEntry build() {
-            if (body == null && (fileEmbed == null || urlEmbed == null)) {
+            if ((body == null && fileEmbed == null && urlEmbed == null)) {
                 throw new IllegalArgumentException("Between Body or Media, at least one of them should be provided.");
             }
             return new NewEntry(body, urlEmbed, fileEmbed, shownFileName, isAdult);

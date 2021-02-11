@@ -5,6 +5,7 @@ import io.github.benzwreck.wykop4j.entries.Entry;
 import io.github.benzwreck.wykop4j.entries.NewEntry;
 import io.github.benzwreck.wykop4j.entries.Page;
 import io.github.benzwreck.wykop4j.entries.Period;
+import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException;
 
 import java.io.File;
@@ -186,7 +187,7 @@ public class WykopClient {
      * @return modified {@link Entry}
      * @throws UnableToModifyEntryException when user has no permission to modify this entry.
      */
-    public Chain<Entry> editEntry(int entryId, NewEntry newEntry){
+    public Chain<Entry> editEntry(int entryId, NewEntry newEntry) {
         WykopRequest.Builder requestBuilder = new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/Edit/entry_id/")
                 .apiParam("entry_id", String.valueOf(entryId))
@@ -204,6 +205,31 @@ public class WykopClient {
         }
         return new Chain<>(requestBuilder.build(), Entry.class);
     }
+
+    /**
+     * @param entryId entry's id to vote up.
+     * @return nothing.
+     * @throws ArchivalContentException when non-existing entryId provided.
+     */
+    public Chain<Void> voteUp(int entryId) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Entries/VoteUp/id/")
+                .apiParam("id", String.valueOf(entryId))
+                .build(), Void.class);
+    }
+
+    /**
+     * @param entryId entry's id to vote remove.
+     * @return nothing.
+     * @throws ArchivalContentException when non-existing entryId provided.
+     */
+    public Chain<Void> removeVote(int entryId) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Entries/VoteRemove/id/")
+                .apiParam("id", String.valueOf(entryId))
+                .build(), Void.class);
+    }
+
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;

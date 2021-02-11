@@ -20,7 +20,7 @@ class WykopHttpClient {
         try (Response response = httpClient.newCall(request).execute()) {
             return response.body().string();
         } catch (IOException e) {
-            throw new WykopException(e);
+            throw new WykopException(0, e.getMessage(), e.getMessage());
         }
     }
 

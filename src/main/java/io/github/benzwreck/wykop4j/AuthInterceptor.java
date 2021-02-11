@@ -102,7 +102,7 @@ class AuthInterceptor implements Interceptor {
         Matcher matcher = pattern.matcher(authResponseString);
         if (matcher.find()) {
             return matcher.group(1);
-        } else throw new WykopException("Could not extract userkey.");
+        } else throw new WykopException(0, "Could not extract userkey.", "Nie można pobrać klucza użytkownika.");
     }
 
     private String md5(String data) {

@@ -13,7 +13,8 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
-import io.github.benzwreck.wykop4j.exceptions.ActionForbiddenException;
+import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException;
+import io.github.benzwreck.wykop4j.exceptions.LimitExceededException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException;
 
 import java.io.IOException;
@@ -46,7 +47,7 @@ class WykopObjectMapper {
             JsonNode data = handleResponse(jsonNode);
             return objectMapper.readValue(objectMapper.treeAsTokens(data), clazz);
         } catch (IOException e) {
-            throw new WykopException(e);
+            throw new WykopException(0, e.getMessage(), e.getMessage()); //todo magic numbers
         }
     }
 
@@ -57,26 +58,32 @@ class WykopObjectMapper {
             JsonNode node = handleResponse(jsonNode);
             return objectMapper.readValue(objectMapper.treeAsTokens(node), typeReference);
         } catch (IOException e) {
-            throw new WykopException(e);
+            throw new WykopException(0, e.getMessage(), e.getMessage()); //todo magic numbers
         }
     }
 
     private JsonNode handleResponse(JsonNode node) {
+        int entryDoesNotExistCode = 61;
+        if (node.hasNonNull("error")) {
+            if (node.get("error").get("code").intValue() == entryDoesNotExistCode)
+                return node.get("data");
+        }
         if (node.hasNonNull("data")) {
             return node.get("data");
         }
-        if (node.hasNonNull("error")) {
-            JsonNode error = node.get("error");
-            int errorCode = error.get("code").intValue();
-            String messageEn = error.get("message_en").asText();
-            String messagePl = error.get("message_pl").asText();
-            switch (errorCode){
-                case 552:
-                    throw new ActionForbiddenException(errorCode, messageEn, messagePl);
-                case 35:
-                    throw new UnableToModifyEntryException(errorCode, messageEn, messagePl);
-            }
+        JsonNode error = node.get("error");
+        int errorCode = error.get("code").intValue();
+        String messageEn = error.get("message_en").asText();
+        String messagePl = error.get("message_pl").asText();
+        switch (errorCode) {
+            case 552:
+            case 24:
+                throw new ArchivalContentException(errorCode, messageEn, messagePl);
+            case 35:
+                throw new UnableToModifyEntryException(errorCode, messageEn, messagePl);
+            case 506:
+                throw new LimitExceededException(errorCode, messageEn, messagePl);
         }
-        throw new WykopException("default");
+        throw new WykopException(errorCode, messageEn, messagePl);
     }
 }
