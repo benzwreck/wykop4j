@@ -260,7 +260,6 @@ class EntrySpec extends Specification {
         when:
         def votes = wykop.allUpvotes(randomId).execute()
         then:
-        votes.get(0).author().tap { println(it) }
         !votes.isEmpty()
     }
 }
