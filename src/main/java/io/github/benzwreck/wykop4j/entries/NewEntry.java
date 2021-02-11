@@ -83,6 +83,9 @@ public class NewEntry {
             return this;
         }
 
+        /**
+         * @return Builder with adult only content enabled. Only works when Media is provided. Does nothing otherwise.
+         */
         public Builder adultOnly() {
             this.isAdult = true;
             return this;

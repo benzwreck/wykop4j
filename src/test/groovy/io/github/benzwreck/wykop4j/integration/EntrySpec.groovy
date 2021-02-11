@@ -6,6 +6,7 @@ import io.github.benzwreck.wykop4j.entries.NewEntry
 import io.github.benzwreck.wykop4j.entries.Page
 import io.github.benzwreck.wykop4j.entries.Period
 import io.github.benzwreck.wykop4j.exceptions.ActionForbiddenException
+import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -172,5 +173,42 @@ class EntrySpec extends Specification {
 
         then:
         thrown IllegalArgumentException
+    }
+
+    def "should edit entry"() {
+        setup:
+        def newEntry = new NewEntry.Builder()
+                .withBody("obraz")
+                .withMedia("https://www.wykop.pl/cdn/c3201142/comment_1613001626Mwe2NcUAMJ1yLKZJumQQjC.jpg")
+                .build()
+        def addEntry = wykop.addEntry(newEntry).execute()
+        def editedNewEntry = new NewEntry.Builder(newEntry)
+                .adultOnly()
+                .build()
+
+        when:
+        def editedEntry = wykop.editEntry(addEntry.id(), editedNewEntry).execute()
+
+        then:
+        addEntry.embed().filter(e -> !e.plus18()).isPresent()
+        editedEntry.embed().filter(e -> e.plus18()).isPresent()
+
+        cleanup:
+        wykop.deleteEntry(addEntry.id()).execute()
+        wykop.deleteEntry(editedEntry.id()).execute()
+    }
+
+    def "should throw an exception when try to edit entry"() {
+        setup:
+        def editedNewEntry = new NewEntry.Builder()
+                .withBody("obraz")
+                .withMedia("https://www.wykop.pl/cdn/c3201142/comment_1613001626Mwe2NcUAMJ1yLKZJumQQjC.jpg")
+                .build()
+
+        when:
+        def editedEntry = wykop.editEntry(-100000, editedNewEntry).execute()
+
+        then:
+        thrown UnableToModifyEntryException
     }
 }

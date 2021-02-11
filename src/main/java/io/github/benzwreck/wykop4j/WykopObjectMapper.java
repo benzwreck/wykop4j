@@ -14,6 +14,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import io.github.benzwreck.wykop4j.exceptions.ActionForbiddenException;
+import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -72,6 +73,8 @@ class WykopObjectMapper {
             switch (errorCode){
                 case 552:
                     throw new ActionForbiddenException(errorCode, messageEn, messagePl);
+                case 35:
+                    throw new UnableToModifyEntryException(errorCode, messageEn, messagePl);
             }
         }
         throw new WykopException("default");

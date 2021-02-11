@@ -179,6 +179,24 @@ public class WykopClient {
         return new Chain<>(requestBuilder.build(), Entry.class);
     }
 
+    public Chain<Entry> editEntry(int entryId, NewEntry newEntry){
+        WykopRequest.Builder requestBuilder = new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Entries/Edit/entry_id/")
+                .apiParam("entry_id", String.valueOf(entryId))
+                .postParam("adultmedia", String.valueOf(newEntry.adultOnly()));
+        newEntry.body().ifPresent(body -> requestBuilder.postParam("body", body));
+        newEntry.urlEmbed().ifPresent(url -> requestBuilder.postParam("embed", url));
+        Optional<File> fileEmbed = newEntry.fileEmbed();
+        if (fileEmbed.isPresent()) {
+            Optional<String> shownFileName = newEntry.shownFileName();
+            if (shownFileName.isPresent()) {
+                requestBuilder.file(fileEmbed.get(), shownFileName.get());
+            } else {
+                requestBuilder.file(fileEmbed.get());
+            }
+        }
+        return new Chain<>(requestBuilder.build(), Entry.class);
+    }
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;
