@@ -5,6 +5,7 @@ import io.github.benzwreck.wykop4j.entries.Entry;
 import io.github.benzwreck.wykop4j.entries.NewEntry;
 import io.github.benzwreck.wykop4j.entries.Page;
 import io.github.benzwreck.wykop4j.entries.Period;
+import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException;
 
 import java.io.File;
 import java.util.List;
@@ -179,6 +180,12 @@ public class WykopClient {
         return new Chain<>(requestBuilder.build(), Entry.class);
     }
 
+    /**
+     * @param entryId id of modifying entry.
+     * @param newEntry new entry body.
+     * @return modified {@link Entry}
+     * @throws UnableToModifyEntryException when user has no permission to modify this entry.
+     */
     public Chain<Entry> editEntry(int entryId, NewEntry newEntry){
         WykopRequest.Builder requestBuilder = new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/Edit/entry_id/")
