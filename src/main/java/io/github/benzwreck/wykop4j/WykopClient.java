@@ -146,6 +146,10 @@ public class WykopClient {
         );
     }
 
+    /**
+     * @param entryId given entry's id.
+     * @return Deleted {@link Entry} - status changes to "deleted"
+     */
     public Chain<Entry> deleteEntry(int entryId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/Delete/entry_id/")
@@ -153,6 +157,10 @@ public class WykopClient {
                 .build(), Entry.class);
     }
 
+    /**
+     * @param newEntry new entry to be added.
+     * @return Added {@link Entry}
+     */
     public Chain<Entry> addEntry(NewEntry newEntry) {
         WykopRequest.Builder requestBuilder = new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/Add/")
