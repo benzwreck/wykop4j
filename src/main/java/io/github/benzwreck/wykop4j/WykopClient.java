@@ -248,7 +248,7 @@ public class WykopClient {
      * @param commentId comment's id.
      * @return possible {@link Comment}
      */
-    public Chain<Optional<Comment>> comment(int commentId) {
+    public Chain<Optional<Comment>> entryComment(int commentId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/Comment/comment_id/")
                 .apiParam("comment_id", String.valueOf(commentId))

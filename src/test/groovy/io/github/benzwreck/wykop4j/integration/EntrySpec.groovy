@@ -2,7 +2,6 @@ package io.github.benzwreck.wykop4j.integration
 
 import io.github.benzwreck.wykop4j.IntegrationWykopClient
 import io.github.benzwreck.wykop4j.WykopClient
-import io.github.benzwreck.wykop4j.entries.Entry
 import io.github.benzwreck.wykop4j.entries.NewEntry
 import io.github.benzwreck.wykop4j.entries.Page
 import io.github.benzwreck.wykop4j.entries.Period
@@ -270,13 +269,13 @@ class EntrySpec extends Specification {
         def entry = wykop.entry(hotEntries.get(0).id()).execute()
         def id = entry.get().comments().get().get(0).id()
         when:
-        def comment = wykop.comment(id).execute()
+        def comment = wykop.entryComment(id).execute()
         then:
         comment.isPresent()
     }
     def "should return empty Optional when given non-existent entry's id"(){
         when:
-        def comment = wykop.comment(-100000).execute()
+        def comment = wykop.entryComment(-100000).execute()
         then:
         !comment.isPresent()
     }
