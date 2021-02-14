@@ -258,7 +258,7 @@ public class WykopClient {
     }
 
     /**
-     * @param entryId entry's id
+     * @param entryId entry's id.
      * @param newComment new comment to be added.
      * @return Added comment.
      * @throws ArchivalContentException when non-existing id is provided.
@@ -267,6 +267,31 @@ public class WykopClient {
         WykopRequest.Builder requestBuilder = new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/CommentAdd/entry_id/")
                 .apiParam("entry_id", String.valueOf(entryId));
+        newComment.body().ifPresent(body -> requestBuilder.postParam("body", body));
+        newComment.urlEmbed().ifPresent(url -> requestBuilder.postParam("embed", url));
+        Optional<File> fileEmbed = newComment.fileEmbed();
+        if (fileEmbed.isPresent()) {
+            Optional<String> shownFileName = newComment.shownFileName();
+            if (shownFileName.isPresent()) {
+                requestBuilder.file(fileEmbed.get(), shownFileName.get());
+            } else {
+                requestBuilder.file(fileEmbed.get());
+            }
+        }
+        return new Chain<>(requestBuilder.build(), EntryComment.class);
+    }
+
+    /**
+     * @param commentId entry's id.
+     * @param newComment new comment to be changed.
+     * @return Changed comment.
+     * @throws UnableToModifyEntryException when provided commentId does not belong to user's comment.
+     * @throws ArchivalContentException when provided commentId does not exist.
+     */
+    public Chain<EntryComment> editEntryComment(int commentId, NewComment newComment){
+        WykopRequest.Builder requestBuilder = new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Entries/CommentEdit/comment_id/")
+                .apiParam("comment_id", String.valueOf(commentId));
         newComment.body().ifPresent(body -> requestBuilder.postParam("body", body));
         newComment.urlEmbed().ifPresent(url -> requestBuilder.postParam("embed", url));
         Optional<File> fileEmbed = newComment.fileEmbed();

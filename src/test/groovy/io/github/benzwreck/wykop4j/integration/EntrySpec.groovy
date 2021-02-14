@@ -305,5 +305,36 @@ class EntrySpec extends Specification {
         thrown ArchivalContentException
     }
 
+    def "should edit comment"() {
+        def differentNewComment = new NewComment.Builder()
+                .withBody("lolol")
+                .build()
+        when:
+        def addEntryId = wykop.addEntry(newEntryWithBodyAndUrlMedia).execute().id()
+        def entryComment = wykop.addEntryComment(addEntryId, newCommentWithBodyAndUrlMedia).execute()
+        then:
+        entryComment.body() == "obraz"
+        when:
+        def editedComment = wykop.editEntryComment(entryComment.id(), differentNewComment).execute()
+        then:
+        editedComment.body() == "lolol"
+        cleanup:
+        wykop.deleteEntry(addEntryId).execute()
+    }
 
+    def "should throw an exception when given commentId does not belong to user's entry"() {
+        when:
+        def randomId = wykop.activeEntries().execute().get(0).id()
+        def randomEntryCommentId = wykop.entry(randomId).execute().get().comments().get().get(0).id()
+        wykop.editEntryComment(randomEntryCommentId, newCommentWithBodyAndUrlMedia).execute()
+        then:
+        thrown UnableToModifyEntryException
+    }
+
+    def "should throw an exception when given commentId does not exist"() {
+        when:
+        wykop.editEntryComment(nonexistingId, newCommentWithBodyAndUrlMedia).execute()
+        then:
+        thrown ArchivalContentException
+    }
 }
