@@ -40,12 +40,12 @@ class EntrySpec extends Specification {
         }
     }
 
-    def "should return list of entries where first entry is the second one from all entries' stream"() {
+    def "should return list of entries where first entry is the next one of all entries' stream"() {
         when:
         def entriesStream = wykop.entriesStream().execute()
         def execute = wykop.entriesStream(entriesStream.get(0).id()).execute()
         then:
-        execute.get(0).id() == entriesStream.get(1).id()
+        execute.get(0).id() <= entriesStream.get(0).id()
     }
 
     def "should return entry"() {
@@ -58,7 +58,7 @@ class EntrySpec extends Specification {
 
     def "should return an empty Optional - entry id doesn't exist"() {
         when:
-        def entry = wykop.entry(-1000000).execute()
+        def entry = wykop.entry(nonexistingId).execute()
         then:
         entry == Optional.empty()
     }
@@ -106,11 +106,8 @@ class EntrySpec extends Specification {
     }
 
     def "should add and delete entry"() {
-        def newEntry = new NewEntry.Builder()
-                .withBody("toDelete")
-                .build()
         when:
-        def addEntry = wykop.addEntry(newEntry).execute()
+        def addEntry = wykop.addEntry(newEntryWithBodyAndUrlMedia).execute()
         def deletedEntry = wykop.deleteEntry(addEntry.id()).execute()
 
         then:
@@ -118,8 +115,10 @@ class EntrySpec extends Specification {
     }
 
     def "should throw an exception when try to delete somebody else's entry"() {
+        setup:
+        def randomId = wykop.entriesStream().execute().get(0).id()
         when:
-        wykop.deleteEntry(-10000).execute()
+        wykop.deleteEntry(randomId).execute()
 
         then:
         thrown ArchivalContentException
@@ -145,13 +144,8 @@ class EntrySpec extends Specification {
     }
 
     def "should add new entry with jpg url"() {
-        def newEntry = new NewEntry.Builder()
-                .withBody("obraz")
-                .withMedia("https://www.wykop.pl/cdn/c3201142/comment_1613001626Mwe2NcUAMJ1yLKZJumQQjC.jpg")
-                .build()
-
         when:
-        def addEntry = wykop.addEntry(newEntry).execute()
+        def addEntry = wykop.addEntry(newEntryWithBodyAndUrlMedia).execute()
         then:
         addEntry.body().get() == "obraz"
         def embed = addEntry.embed().get()
@@ -187,7 +181,7 @@ class EntrySpec extends Specification {
         thrown IllegalArgumentException
     }
 
-    def "should edit entry"() {
+    def "should be able to edit entry"() {
         setup:
         def newEntry = new NewEntry.Builder()
                 .withBody("obraz")
@@ -250,7 +244,7 @@ class EntrySpec extends Specification {
 
     def "should throw an exception when try to upvote non-existing entry"() {
         when:
-        wykop.voteUp(-100000).execute()
+        wykop.voteUp(nonexistingId).execute()
 
         then:
         thrown ArchivalContentException
@@ -258,7 +252,7 @@ class EntrySpec extends Specification {
 
     def "should throw an exception when try to remove vote from non-existing entry"() {
         when:
-        wykop.removeVote(-100000).execute()
+        wykop.removeVote(nonexistingId).execute()
 
         then:
         thrown ArchivalContentException
@@ -273,7 +267,7 @@ class EntrySpec extends Specification {
         !votes.isEmpty()
     }
 
-    def "should return comment"(){
+    def "should return comment"() {
         setup:
         def hotEntries = wykop.hotEntries().execute()
         def entry = wykop.entry(hotEntries.get(0).id()).execute()
@@ -283,9 +277,10 @@ class EntrySpec extends Specification {
         then:
         comment.isPresent()
     }
-    def "should return empty Optional when given non-existent entry's id"(){
+
+    def "should return empty Optional when given non-existent entry's id"() {
         when:
-        def comment = wykop.entryComment(-100000).execute()
+        def comment = wykop.entryComment(nonexistingId).execute()
         then:
         !comment.isPresent()
     }
