@@ -8,6 +8,7 @@ import io.github.benzwreck.wykop4j.entries.Page
 import io.github.benzwreck.wykop4j.entries.Period
 import io.github.benzwreck.wykop4j.entries.UserVote
 import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException
+import io.github.benzwreck.wykop4j.exceptions.UnableToDeleteCommentException
 import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -337,4 +338,32 @@ class EntrySpec extends Specification {
         then:
         thrown ArchivalContentException
     }
+
+    def "should delete comment"() {
+        when:
+        def entryId = wykop.addEntry(newEntryWithBodyAndUrlMedia).execute().id()
+        def commentId = wykop.addEntryComment(entryId, newCommentWithBodyAndUrlMedia).execute().id()
+        def deletedComment = wykop.deleteEntryComment(commentId).execute()
+        then:
+        deletedComment.body() == "[Komentarz usunięty]"
+        cleanup:
+        wykop.deleteEntry(entryId).execute()
+    }
+
+    def "should throw an exception when try to delete unreachable comment"() {
+        when:
+        wykop.deleteEntryComment(nonexistingId).execute()
+        then:
+        thrown ArchivalContentException
+    }
+
+    def "should throw an exception when try to delete a comment which does not belong to user"() {
+        when:
+        def randomEntryId = wykop.activeEntries().execute().get(0).id()
+        def randomCommentId = wykop.entry(randomEntryId).execute().get().comments().get().get(0).id()
+        wykop.deleteEntryComment(randomCommentId).execute()
+        then:
+        thrown UnableToDeleteCommentException
+    }
+
 }

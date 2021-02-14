@@ -306,6 +306,13 @@ public class WykopClient {
         return new Chain<>(requestBuilder.build(), EntryComment.class);
     }
 
+    public Chain<EntryComment> deleteEntryComment(int commentId){
+        return new Chain<>(new io.github.benzwreck.wykop4j.WykopRequest.Builder()
+                .url(WYKOP_URL + "/Entries/CommentDelete/entry_comment_id/")
+                .apiParam("entry_comment_id", String.valueOf(commentId))
+                .build(), EntryComment.class);
+    }
+
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;
