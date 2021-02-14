@@ -5,7 +5,7 @@ import io.github.benzwreck.wykop4j.profiles.SimpleProfile;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-public class Comment {
+public class EntryComment {
     private final Integer id;
     private final SimpleProfile author;
     private final LocalDateTime date;
@@ -21,7 +21,7 @@ public class Comment {
     private final String original;
     private final Integer entryId;
 
-    public Comment(Integer id, SimpleProfile author, LocalDateTime date, String body, Boolean blocked, Boolean favorite, Integer voteCount, Embed embed, String status, UserVote userVote, String app, String violationUrl, String original, Integer entryId) {
+    public EntryComment(Integer id, SimpleProfile author, LocalDateTime date, String body, Boolean blocked, Boolean favorite, Integer voteCount, Embed embed, String status, UserVote userVote, String app, String violationUrl, String original, Integer entryId) {
         this.id = id;
         this.author = author;
         this.date = date;

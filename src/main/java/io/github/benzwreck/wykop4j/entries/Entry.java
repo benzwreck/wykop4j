@@ -15,7 +15,7 @@ public class Entry {
     private final Boolean favorite;
     private final Integer voteCount;
     private final Integer commentsCount;
-    private final List<Comment> comments;
+    private final List<EntryComment> comments;
     private final String status;
     private final Survey survey;
     private final Boolean canComment;
@@ -27,7 +27,7 @@ public class Entry {
     private final String url;
 
 
-    public Entry(Integer id, LocalDateTime date, String body, SimpleProfile author, Boolean blocked, Boolean favorite, Integer voteCount, Integer commentsCount, List<Comment> comments, String status, Survey survey, Boolean canComment, Embed embed, UserVote userVote, String app, String violationUrl, String original, String url) {
+    public Entry(Integer id, LocalDateTime date, String body, SimpleProfile author, Boolean blocked, Boolean favorite, Integer voteCount, Integer commentsCount, List<EntryComment> comments, String status, Survey survey, Boolean canComment, Embed embed, UserVote userVote, String app, String violationUrl, String original, String url) {
         this.id = id;
         this.date = date;
         this.body = body;
@@ -103,7 +103,7 @@ public class Entry {
      *
      * @return possible list of comments.
      */
-    public Optional<List<Comment>> comments() {
+    public Optional<List<EntryComment>> comments() {
         return Optional.ofNullable(comments);
     }
 

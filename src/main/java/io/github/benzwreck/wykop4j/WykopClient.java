@@ -1,8 +1,9 @@
 package io.github.benzwreck.wykop4j;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import io.github.benzwreck.wykop4j.entries.Comment;
+import io.github.benzwreck.wykop4j.entries.EntryComment;
 import io.github.benzwreck.wykop4j.entries.Entry;
+import io.github.benzwreck.wykop4j.entries.NewComment;
 import io.github.benzwreck.wykop4j.entries.NewEntry;
 import io.github.benzwreck.wykop4j.entries.Page;
 import io.github.benzwreck.wykop4j.entries.Period;
@@ -246,14 +247,38 @@ public class WykopClient {
 
     /**
      * @param commentId comment's id.
-     * @return possible {@link Comment}
+     * @return possible {@link EntryComment}
      */
-    public Chain<Optional<Comment>> entryComment(int commentId) {
+    public Chain<Optional<EntryComment>> entryComment(int commentId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/Comment/comment_id/")
                 .apiParam("comment_id", String.valueOf(commentId))
-                .build(), new TypeReference<Optional<Comment>>() {
+                .build(), new TypeReference<Optional<EntryComment>>() {
         });
+    }
+
+    /**
+     * @param entryId entry's id
+     * @param newComment new comment to be added.
+     * @return Added comment.
+     * @throws ArchivalContentException when non-existing id is provided.
+     */
+    public Chain<EntryComment> addEntryComment(int entryId, NewComment newComment){
+        WykopRequest.Builder requestBuilder = new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Entries/CommentAdd/entry_id/")
+                .apiParam("entry_id", String.valueOf(entryId));
+        newComment.body().ifPresent(body -> requestBuilder.postParam("body", body));
+        newComment.urlEmbed().ifPresent(url -> requestBuilder.postParam("embed", url));
+        Optional<File> fileEmbed = newComment.fileEmbed();
+        if (fileEmbed.isPresent()) {
+            Optional<String> shownFileName = newComment.shownFileName();
+            if (shownFileName.isPresent()) {
+                requestBuilder.file(fileEmbed.get(), shownFileName.get());
+            } else {
+                requestBuilder.file(fileEmbed.get());
+            }
+        }
+        return new Chain<>(requestBuilder.build(), EntryComment.class);
     }
 
     public static final class Builder {

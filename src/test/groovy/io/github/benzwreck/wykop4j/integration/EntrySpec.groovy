@@ -2,6 +2,7 @@ package io.github.benzwreck.wykop4j.integration
 
 import io.github.benzwreck.wykop4j.IntegrationWykopClient
 import io.github.benzwreck.wykop4j.WykopClient
+import io.github.benzwreck.wykop4j.entries.NewComment
 import io.github.benzwreck.wykop4j.entries.NewEntry
 import io.github.benzwreck.wykop4j.entries.Page
 import io.github.benzwreck.wykop4j.entries.Period
@@ -17,6 +18,15 @@ import java.time.temporal.ChronoUnit
 
 class EntrySpec extends Specification {
     WykopClient wykop = IntegrationWykopClient.getInstance()
+    private final int nonexistingId = -111111
+    private final def newEntryWithBodyAndUrlMedia = new NewEntry.Builder()
+            .withBody("obraz")
+            .withMedia("https://www.wykop.pl/cdn/c3201142/comment_1613001626Mwe2NcUAMJ1yLKZJumQQjC.jpg")
+            .build()
+    private final def newCommentWithBodyAndUrlMedia = new NewComment.Builder()
+            .withBody("obraz")
+            .withMedia("https://www.wykop.pl/cdn/c3201142/comment_1613001626Mwe2NcUAMJ1yLKZJumQQjC.jpg")
+            .build()
 
     def "should return first and second page of entries' stream"() {
         when:
@@ -279,4 +289,26 @@ class EntrySpec extends Specification {
         then:
         !comment.isPresent()
     }
+
+    def "should add comment to entry"() {
+        when:
+        def addEntryId = wykop.addEntry(newEntryWithBodyAndUrlMedia).execute().id()
+        def comment = wykop.addEntryComment(addEntryId, newCommentWithBodyAndUrlMedia).execute()
+        then:
+        wykop.entry(addEntryId).execute()
+                .flatMap(e -> e.comments())
+                .flatMap(list -> list.stream().filter(c -> c.id() == comment.id()).findFirst())
+                .isPresent()
+        cleanup:
+        wykop.deleteEntry(addEntryId).execute()
+    }
+
+    def "should throw an exception when new comment is added to non-existing entry"() {
+        when:
+        wykop.addEntryComment(nonexistingId, newCommentWithBodyAndUrlMedia).execute()
+        then:
+        thrown ArchivalContentException
+    }
+
+
 }
