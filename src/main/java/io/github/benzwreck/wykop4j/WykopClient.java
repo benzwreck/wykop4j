@@ -1,8 +1,8 @@
 package io.github.benzwreck.wykop4j;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import io.github.benzwreck.wykop4j.entries.EntryComment;
 import io.github.benzwreck.wykop4j.entries.Entry;
+import io.github.benzwreck.wykop4j.entries.EntryComment;
 import io.github.benzwreck.wykop4j.entries.NewComment;
 import io.github.benzwreck.wykop4j.entries.NewEntry;
 import io.github.benzwreck.wykop4j.entries.Page;
@@ -258,12 +258,12 @@ public class WykopClient {
     }
 
     /**
-     * @param entryId entry's id.
+     * @param entryId    entry's id.
      * @param newComment new comment to be added.
      * @return Added comment.
      * @throws ArchivalContentException when non-existing id is provided.
      */
-    public Chain<EntryComment> addEntryComment(int entryId, NewComment newComment){
+    public Chain<EntryComment> addEntryComment(int entryId, NewComment newComment) {
         WykopRequest.Builder requestBuilder = new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/CommentAdd/entry_id/")
                 .apiParam("entry_id", String.valueOf(entryId));
@@ -282,13 +282,13 @@ public class WykopClient {
     }
 
     /**
-     * @param commentId entry's id.
+     * @param commentId  entry's id.
      * @param newComment new comment to be changed.
      * @return Changed comment.
      * @throws UnableToModifyEntryException when provided commentId does not belong to user's comment.
-     * @throws ArchivalContentException when provided commentId does not exist.
+     * @throws ArchivalContentException     when provided commentId does not exist.
      */
-    public Chain<EntryComment> editEntryComment(int commentId, NewComment newComment){
+    public Chain<EntryComment> editEntryComment(int commentId, NewComment newComment) {
         WykopRequest.Builder requestBuilder = new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/CommentEdit/comment_id/")
                 .apiParam("comment_id", String.valueOf(commentId));
@@ -306,7 +306,11 @@ public class WykopClient {
         return new Chain<>(requestBuilder.build(), EntryComment.class);
     }
 
-    public Chain<EntryComment> deleteEntryComment(int commentId){
+    /**
+     * @param commentId new comment to be deleted.
+     * @return Deleted comment.
+     */
+    public Chain<EntryComment> deleteEntryComment(int commentId) {
         return new Chain<>(new io.github.benzwreck.wykop4j.WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/CommentDelete/entry_comment_id/")
                 .apiParam("entry_comment_id", String.valueOf(commentId))
