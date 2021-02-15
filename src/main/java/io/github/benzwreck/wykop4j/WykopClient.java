@@ -7,8 +7,10 @@ import io.github.benzwreck.wykop4j.entries.NewComment;
 import io.github.benzwreck.wykop4j.entries.NewEntry;
 import io.github.benzwreck.wykop4j.entries.Page;
 import io.github.benzwreck.wykop4j.entries.Period;
+import io.github.benzwreck.wykop4j.entries.Survey;
 import io.github.benzwreck.wykop4j.entries.Vote;
 import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException;
+import io.github.benzwreck.wykop4j.exceptions.NiceTryException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException;
 
 import java.io.File;
@@ -367,6 +369,21 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Entries/Favorite/entry/")
                 .apiParam("entry", String.valueOf(entryId))
                 .build(), Boolean.class);
+    }
+
+    /**
+     * @param entryId id of entry with survey.
+     * @param answerId answer's id.
+     * @return Survey with answered question.
+     * @throws ArchivalContentException when non-existent entryId is provided.
+     * @throws NiceTryException when non-existent answerId is provided.
+     */
+    public Chain<Survey> answerSurvey(int entryId, int answerId) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Entries/SurveyVote/entry/answer/")
+                .apiParam("entry", String.valueOf(entryId))
+                .apiParam("answer", String.valueOf(answerId))
+                .build(), Survey.class);
     }
 
     public static final class Builder {

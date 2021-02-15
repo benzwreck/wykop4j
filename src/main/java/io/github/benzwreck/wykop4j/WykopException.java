@@ -16,6 +16,7 @@ public class WykopException extends RuntimeException {
     public String messagePl() {
         return messagePl;
     }
+    
     public WykopException(int code, String messageEn, String messagePl) {
         super(messageEn);
         this.code = code;

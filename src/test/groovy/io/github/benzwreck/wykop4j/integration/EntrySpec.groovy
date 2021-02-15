@@ -2,12 +2,15 @@ package io.github.benzwreck.wykop4j.integration
 
 import io.github.benzwreck.wykop4j.IntegrationWykopClient
 import io.github.benzwreck.wykop4j.WykopClient
+import io.github.benzwreck.wykop4j.entries.Entry
 import io.github.benzwreck.wykop4j.entries.NewComment
 import io.github.benzwreck.wykop4j.entries.NewEntry
 import io.github.benzwreck.wykop4j.entries.Page
 import io.github.benzwreck.wykop4j.entries.Period
 import io.github.benzwreck.wykop4j.entries.UserVote
+import io.github.benzwreck.wykop4j.exceptions.ActionForbiddenException
 import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException
+import io.github.benzwreck.wykop4j.exceptions.NiceTryException
 import io.github.benzwreck.wykop4j.exceptions.UnableToDeleteCommentException
 import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException
 import spock.lang.Specification
@@ -401,5 +404,39 @@ class EntrySpec extends Specification {
         toggle != favorite
         cleanup:
         wykop.toggleEntryFavorite(randomId).execute()
+    }
+
+    def "should vote on survey"() {
+        when:
+        Optional<Entry> entryWithSurvey = Optional.empty()
+        for (i in 0..<1000) {
+            def activeEntries = wykop.activeEntries(Page.of(i)).execute()
+            entryWithSurvey = activeEntries.stream().filter(e -> e.survey().isPresent()).findFirst()
+            if (entryWithSurvey.isPresent()) break
+        }
+        def id = entryWithSurvey.get().id()
+        wykop.answerSurvey(id, 1).execute()
+        then:
+        wykop.entry(id).execute().get().survey().get().userAnswer().get() == 1
+    }
+
+    def "should throw an exception when try to answer non-existent survey"() {
+        when:
+        wykop.answerSurvey(nonexistentId, 1).execute()
+        then:
+        thrown ArchivalContentException
+    }
+    def "should throw an exception when try to pass non-existent answer"() {
+        when:
+        Optional<Entry> entryWithSurvey = Optional.empty()
+        for (i in 0..<1000) {
+            def activeEntries = wykop.activeEntries(Page.of(i)).execute()
+            entryWithSurvey = activeEntries.stream().filter(e -> e.survey().isPresent()).findFirst()
+            if (entryWithSurvey.isPresent()) break
+        }
+        def id = entryWithSurvey.get().id()
+        wykop.answerSurvey(id, 111111).execute()
+        then:
+        thrown NiceTryException
     }
 }
