@@ -19,7 +19,7 @@ import java.time.temporal.ChronoUnit
 
 class EntrySpec extends Specification {
     WykopClient wykop = IntegrationWykopClient.getInstance()
-    private final int nonexistingId = -111111
+    private final int nonexistentId = -111111
     private final def newEntryWithBodyAndUrlMedia = new NewEntry.Builder()
             .withBody("obraz")
             .withMedia("https://www.wykop.pl/cdn/c3201142/comment_1613001626Mwe2NcUAMJ1yLKZJumQQjC.jpg")
@@ -59,7 +59,7 @@ class EntrySpec extends Specification {
 
     def "should return an empty Optional - entry id doesn't exist"() {
         when:
-        def entry = wykop.entry(nonexistingId).execute()
+        def entry = wykop.entry(nonexistentId).execute()
         then:
         entry == Optional.empty()
     }
@@ -245,7 +245,7 @@ class EntrySpec extends Specification {
 
     def "should throw an exception when try to upvote non-existing entry"() {
         when:
-        wykop.voteUp(nonexistingId).execute()
+        wykop.voteUp(nonexistentId).execute()
 
         then:
         thrown ArchivalContentException
@@ -253,7 +253,7 @@ class EntrySpec extends Specification {
 
     def "should throw an exception when try to remove vote from non-existing entry"() {
         when:
-        wykop.removeVote(nonexistingId).execute()
+        wykop.removeVote(nonexistentId).execute()
 
         then:
         thrown ArchivalContentException
@@ -281,7 +281,7 @@ class EntrySpec extends Specification {
 
     def "should return empty Optional when given non-existent entry's id"() {
         when:
-        def comment = wykop.entryComment(nonexistingId).execute()
+        def comment = wykop.entryComment(nonexistentId).execute()
         then:
         !comment.isPresent()
     }
@@ -301,7 +301,7 @@ class EntrySpec extends Specification {
 
     def "should throw an exception when new comment is added to non-existing entry"() {
         when:
-        wykop.addEntryComment(nonexistingId, newCommentWithBodyAndUrlMedia).execute()
+        wykop.addEntryComment(nonexistentId, newCommentWithBodyAndUrlMedia).execute()
         then:
         thrown ArchivalContentException
     }
@@ -334,7 +334,7 @@ class EntrySpec extends Specification {
 
     def "should throw an exception when given commentId does not exist"() {
         when:
-        wykop.editEntryComment(nonexistingId, newCommentWithBodyAndUrlMedia).execute()
+        wykop.editEntryComment(nonexistentId, newCommentWithBodyAndUrlMedia).execute()
         then:
         thrown ArchivalContentException
     }
@@ -352,7 +352,7 @@ class EntrySpec extends Specification {
 
     def "should throw an exception when try to delete unreachable comment"() {
         when:
-        wykop.deleteEntryComment(nonexistingId).execute()
+        wykop.deleteEntryComment(nonexistentId).execute()
         then:
         thrown ArchivalContentException
     }
