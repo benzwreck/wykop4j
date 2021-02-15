@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -70,6 +71,9 @@ class WykopObjectMapper {
                 return node.get("data");
         }
         if (node.hasNonNull("data")) {
+            if (node.get("data").hasNonNull("user_favorite")){
+                return BooleanNode.valueOf(node.get("data").get("user_favorite").booleanValue());
+            }
             return node.get("data");
         }
         JsonNode error = node.get("error");

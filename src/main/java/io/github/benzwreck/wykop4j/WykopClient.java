@@ -358,6 +358,17 @@ public class WykopClient {
         });
     }
 
+    /**
+     * @param entryId entry's id.
+     * @return true - entry favorite toggled on; false - entry favorite toggled off.
+     */
+    public Chain<Boolean> toggleEntryFavorite(int entryId) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Entries/Favorite/entry/")
+                .apiParam("entry", String.valueOf(entryId))
+                .build(), Boolean.class);
+    }
+
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;

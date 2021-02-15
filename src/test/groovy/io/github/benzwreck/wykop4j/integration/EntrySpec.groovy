@@ -390,4 +390,16 @@ class EntrySpec extends Specification {
         then: "depending on the user's profile - either nothing or all favorites"
         observedComments.isEmpty() || observedComments.stream().allMatch(entryComment -> entryComment.favorite())
     }
+
+    def "should toggle on and off entry favorite"() {
+        def activeEntry = wykop.activeEntries().execute().get(0)
+        def randomId = activeEntry.id()
+        def favorite = activeEntry.favorite()
+        when:
+        def toggle = wykop.toggleEntryFavorite(randomId).execute()
+        then:
+        toggle != favorite
+        cleanup:
+        wykop.toggleEntryFavorite(randomId).execute()
+    }
 }
