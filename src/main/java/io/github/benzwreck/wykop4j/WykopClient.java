@@ -348,7 +348,7 @@ public class WykopClient {
 
     /**
      * @param page page number.
-     * @return Given page of observed comments.
+     * @return Given page of observed comments. When the list is over, returns empty one.
      */
     public Chain<List<EntryComment>> observedComments(Page page) {
         return new Chain<>(new WykopRequest.Builder()
