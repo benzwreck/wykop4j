@@ -366,4 +366,22 @@ class EntrySpec extends Specification {
         thrown UnableToDeleteCommentException
     }
 
+    def "should vote up entry's comment and remove vote right after"() {
+        def conditions = new PollingConditions(timeout: 5, initialDelay: 1)
+        when:
+        def activeEntryId = wykop.activeEntries().execute().get(0).id()
+        def entryCommentId = wykop.entry(activeEntryId).execute().get().comments().get().get(0).id()
+        wykop.entryCommentVoteUp(entryCommentId).execute()
+        then:
+        conditions.eventually {
+            assert wykop.entryComment(entryCommentId).execute().get().userVote() == UserVote.VOTED
+        }
+        when:
+        wykop.entryCommentVoteRemove(entryCommentId).execute()
+        then:
+        conditions.eventually {
+            assert wykop.entryComment(entryCommentId).execute().get().userVote() == UserVote.NOT_VOTED
+        }
+    }
+
 }

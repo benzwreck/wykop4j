@@ -282,7 +282,7 @@ public class WykopClient {
     }
 
     /**
-     * @param commentId  entry's id.
+     * @param commentId  comment's id.
      * @param newComment new comment to be changed.
      * @return Changed comment.
      * @throws UnableToModifyEntryException when provided commentId does not belong to user's comment.
@@ -307,7 +307,7 @@ public class WykopClient {
     }
 
     /**
-     * @param commentId new comment to be deleted.
+     * @param commentId comment's id.
      * @return Deleted comment.
      */
     public Chain<EntryComment> deleteEntryComment(int commentId) {
@@ -316,6 +316,29 @@ public class WykopClient {
                 .apiParam("entry_comment_id", String.valueOf(commentId))
                 .build(), EntryComment.class);
     }
+
+    /**
+     * @param commentId comment's id.
+     * @return nothing.
+     */
+    public Chain<Void> entryCommentVoteUp(int commentId) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Entries/CommentVoteUp/id/")
+                .apiParam("id", String.valueOf(commentId))
+                .build(), Void.class);
+    }
+
+    /**
+     * @param commentId comment's id.
+     * @return nothing.
+     */
+    public Chain<Void> entryCommentVoteRemove(int commentId) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Entries/CommentVoteRemove/id/")
+                .apiParam("id", String.valueOf(commentId))
+                .build(), Void.class);
+    }
+
 
     public static final class Builder {
         private UserCredentials userCredentials;
