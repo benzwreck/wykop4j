@@ -14,6 +14,7 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
+import io.github.benzwreck.wykop4j.exceptions.ActionForbiddenException;
 import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException;
 import io.github.benzwreck.wykop4j.exceptions.LimitExceededException;
 import io.github.benzwreck.wykop4j.exceptions.NiceTryException;
@@ -83,6 +84,7 @@ class WykopObjectMapper {
         String messagePl = error.get("message_pl").asText();
         switch (errorCode) {
             case 552:
+                throw new ActionForbiddenException(errorCode,messageEn,messagePl);
             case 24:
                 throw new ArchivalContentException(errorCode, messageEn, messagePl);
             case 35:

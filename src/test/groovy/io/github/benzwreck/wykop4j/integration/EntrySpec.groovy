@@ -125,7 +125,7 @@ class EntrySpec extends Specification {
         wykop.deleteEntry(randomId).execute()
 
         then:
-        thrown ArchivalContentException
+        thrown ActionForbiddenException
     }
 
     def "should add new entry with jpg file"() {
