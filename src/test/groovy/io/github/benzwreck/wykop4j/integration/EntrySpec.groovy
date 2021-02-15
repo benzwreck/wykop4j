@@ -384,4 +384,10 @@ class EntrySpec extends Specification {
         }
     }
 
+    def "should return observed comments"() {
+        when:
+        def observedComments = wykop.observedComments().execute()
+        then: "depending on the user's profile - either nothing or all favorites"
+        observedComments.isEmpty() || observedComments.stream().allMatch(entryComment -> entryComment.favorite())
+    }
 }

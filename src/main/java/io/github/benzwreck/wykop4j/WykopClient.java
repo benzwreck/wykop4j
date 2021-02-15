@@ -339,6 +339,24 @@ public class WykopClient {
                 .build(), Void.class);
     }
 
+    /**
+     * @return First page of observed comments.
+     */
+    public Chain<List<EntryComment>> observedComments() {
+        return observedComments(Page.of(1));
+    }
+
+    /**
+     * @param page page number.
+     * @return Given page of observed comments.
+     */
+    public Chain<List<EntryComment>> observedComments(Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Entries/ObservedComments/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .build(), new TypeReference<List<EntryComment>>() {
+        });
+    }
 
     public static final class Builder {
         private UserCredentials userCredentials;
