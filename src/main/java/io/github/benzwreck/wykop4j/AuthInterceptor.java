@@ -1,5 +1,6 @@
 package io.github.benzwreck.wykop4j;
 
+import io.github.benzwreck.wykop4j.exceptions.WykopException;
 import okhttp3.*;
 import okio.BufferedSource;
 import org.jetbrains.annotations.NotNull;

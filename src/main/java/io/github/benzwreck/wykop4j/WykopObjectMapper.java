@@ -20,6 +20,7 @@ import io.github.benzwreck.wykop4j.exceptions.LimitExceededException;
 import io.github.benzwreck.wykop4j.exceptions.NiceTryException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToDeleteCommentException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException;
+import io.github.benzwreck.wykop4j.exceptions.WykopException;
 
 import java.io.IOException;
 import java.time.LocalDateTime;

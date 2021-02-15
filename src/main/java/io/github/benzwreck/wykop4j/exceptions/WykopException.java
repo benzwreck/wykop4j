@@ -1,4 +1,4 @@
-package io.github.benzwreck.wykop4j;
+package io.github.benzwreck.wykop4j.exceptions;
 
 public class WykopException extends RuntimeException {
     protected final int code;
@@ -18,7 +18,7 @@ public class WykopException extends RuntimeException {
     }
     
     public WykopException(int code, String messageEn, String messagePl) {
-        super(messageEn);
+        super("code: " + code + "\nmessage en: " + messageEn + "\nmessage pl: " + messagePl);
         this.code = code;
         this.messageEn = messageEn;
         this.messagePl = messagePl;
