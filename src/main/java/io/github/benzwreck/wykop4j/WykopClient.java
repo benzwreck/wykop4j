@@ -373,11 +373,11 @@ public class WykopClient {
     }
 
     /**
-     * @param entryId id of entry with survey.
+     * @param entryId  id of entry with survey.
      * @param answerId answer's id.
      * @return Survey with answered question.
      * @throws ArchivalContentException when non-existent entryId is provided.
-     * @throws NiceTryException when non-existent answerId is provided.
+     * @throws NiceTryException         when non-existent answerId is provided.
      */
     public Chain<Survey> answerSurvey(int entryId, int answerId) {
         return new Chain<>(new WykopRequest.Builder()
@@ -392,12 +392,13 @@ public class WykopClient {
      * @return true - comment favorite toggled on; false - comment favorite toggled off.
      * @throws CommentDoesNotExistException when such comment does not exist.
      */
-    public Chain<Boolean> toggleEntryCommentFavorite(int entryCommentId){
+    public Chain<Boolean> toggleEntryCommentFavorite(int entryCommentId) {
         return new Chain<>(new WykopRequest.Builder()
-        .url(WYKOP_URL + "/Entries/CommentFavorite/comment/")
-        .apiParam("comment", String.valueOf(entryCommentId))
-        .build(), Boolean.class);
+                .url(WYKOP_URL + "/Entries/CommentFavorite/comment/")
+                .apiParam("comment", String.valueOf(entryCommentId))
+                .build(), Boolean.class);
     }
+
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;

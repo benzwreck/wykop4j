@@ -59,7 +59,6 @@ class WykopObjectMapper {
 
     public <T> T map(String payload, TypeReference<T> typeReference) {
         try {
-            //todo: proper response handling -> data, error
             JsonNode jsonNode = objectMapper.readTree(payload);
             JsonNode node = handleResponse(jsonNode);
             return objectMapper.readValue(objectMapper.treeAsTokens(node), typeReference);
