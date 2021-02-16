@@ -10,6 +10,7 @@ import io.github.benzwreck.wykop4j.entries.Period;
 import io.github.benzwreck.wykop4j.entries.Survey;
 import io.github.benzwreck.wykop4j.entries.Vote;
 import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException;
+import io.github.benzwreck.wykop4j.exceptions.CommentDoesNotExistException;
 import io.github.benzwreck.wykop4j.exceptions.NiceTryException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException;
 
@@ -386,6 +387,17 @@ public class WykopClient {
                 .build(), Survey.class);
     }
 
+    /**
+     * @param entryCommentId id of entry's comment.
+     * @return true - comment favorite toggled on; false - comment favorite toggled off.
+     * @throws CommentDoesNotExistException when such comment does not exist.
+     */
+    public Chain<Boolean> toggleEntryCommentFavorite(int entryCommentId){
+        return new Chain<>(new WykopRequest.Builder()
+        .url(WYKOP_URL + "/Entries/CommentFavorite/comment/")
+        .apiParam("comment", String.valueOf(entryCommentId))
+        .build(), Boolean.class);
+    }
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;

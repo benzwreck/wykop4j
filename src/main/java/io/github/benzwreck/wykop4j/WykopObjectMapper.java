@@ -16,6 +16,7 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import io.github.benzwreck.wykop4j.exceptions.ActionForbiddenException;
 import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException;
+import io.github.benzwreck.wykop4j.exceptions.CommentDoesNotExistException;
 import io.github.benzwreck.wykop4j.exceptions.LimitExceededException;
 import io.github.benzwreck.wykop4j.exceptions.NiceTryException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToDeleteCommentException;
@@ -92,6 +93,8 @@ class WykopObjectMapper {
                 throw new UnableToModifyEntryException(errorCode, messageEn, messagePl);
             case 37:
                 throw new UnableToDeleteCommentException(errorCode, messageEn, messagePl);
+            case 81:
+                throw new CommentDoesNotExistException(errorCode, messageEn, messagePl);
             case 506:
                 throw new LimitExceededException(errorCode, messageEn, messagePl);
             case 999:

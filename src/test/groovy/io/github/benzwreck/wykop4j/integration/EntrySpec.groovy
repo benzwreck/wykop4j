@@ -10,6 +10,7 @@ import io.github.benzwreck.wykop4j.entries.Period
 import io.github.benzwreck.wykop4j.entries.UserVote
 import io.github.benzwreck.wykop4j.exceptions.ActionForbiddenException
 import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException
+import io.github.benzwreck.wykop4j.exceptions.CommentDoesNotExistException
 import io.github.benzwreck.wykop4j.exceptions.NiceTryException
 import io.github.benzwreck.wykop4j.exceptions.UnableToDeleteCommentException
 import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException
@@ -426,6 +427,7 @@ class EntrySpec extends Specification {
         then:
         thrown ArchivalContentException
     }
+
     def "should throw an exception when try to pass non-existent answer"() {
         when:
         Optional<Entry> entryWithSurvey = Optional.empty()
@@ -438,5 +440,25 @@ class EntrySpec extends Specification {
         wykop.answerSurvey(id, 111111).execute()
         then:
         thrown NiceTryException
+    }
+
+    def "should toggle on and off entry's comment favorite"() {
+        def activeEntry = wykop.activeEntries().execute().get(0)
+        def fullEntry = wykop.entry(activeEntry.id()).execute()
+        def activeEntryComment = fullEntry.get().comments().get().get(0)
+        def favorite = activeEntryComment.favorite()
+        when:
+        def toggle = wykop.toggleEntryCommentFavorite(activeEntryComment.id()).execute()
+        then:
+        toggle != favorite
+        cleanup:
+        wykop.toggleEntryCommentFavorite(activeEntryComment.id()).execute()
+    }
+
+    def "should throw an exception when such comment does not exist"() {
+        when:
+        wykop.toggleEntryCommentFavorite(nonexistentId).execute()
+        then:
+        thrown CommentDoesNotExistException
     }
 }
