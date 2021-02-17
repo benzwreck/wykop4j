@@ -13,8 +13,13 @@ import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException;
 import io.github.benzwreck.wykop4j.exceptions.CommentDoesNotExistException;
 import io.github.benzwreck.wykop4j.exceptions.NiceTryException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException;
+import io.github.benzwreck.wykop4j.links.HitsOption;
+import io.github.benzwreck.wykop4j.links.Link;
 
 import java.io.File;
+import java.time.DateTimeException;
+import java.time.Month;
+import java.time.Year;
 import java.util.List;
 import java.util.Optional;
 
@@ -373,11 +378,11 @@ public class WykopClient {
     }
 
     /**
-     * @param entryId id of entry with survey.
+     * @param entryId  id of entry with survey.
      * @param answerId answer's id.
      * @return Survey with answered question.
      * @throws ArchivalContentException when non-existent entryId is provided.
-     * @throws NiceTryException when non-existent answerId is provided.
+     * @throws NiceTryException         when non-existent answerId is provided.
      */
     public Chain<Survey> answerSurvey(int entryId, int answerId) {
         return new Chain<>(new WykopRequest.Builder()
@@ -392,12 +397,65 @@ public class WykopClient {
      * @return true - comment favorite toggled on; false - comment favorite toggled off.
      * @throws CommentDoesNotExistException when such comment does not exist.
      */
-    public Chain<Boolean> toggleEntryCommentFavorite(int entryCommentId){
+    public Chain<Boolean> toggleEntryCommentFavorite(int entryCommentId) {
         return new Chain<>(new WykopRequest.Builder()
-        .url(WYKOP_URL + "/Entries/CommentFavorite/comment/")
-        .apiParam("comment", String.valueOf(entryCommentId))
-        .build(), Boolean.class);
+                .url(WYKOP_URL + "/Entries/CommentFavorite/comment/")
+                .apiParam("comment", String.valueOf(entryCommentId))
+                .build(), Boolean.class);
     }
+
+    /**
+     * @param option type of links to retrieve.
+     * @return list of chosen links.
+     */
+    public Chain<List<Link>> linkHits(HitsOption option) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Hits/" + option.value() + "/")
+                .build(), new TypeReference<List<Link>>() {
+        });
+    }
+
+    /**
+     * @param month month of link's date.
+     * @return list of chosen links.
+     * @throws DateTimeException when illegal {@link Month} value is passed.
+     */
+    public Chain<List<Link>> linkHits(Month month) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Hits/Month/year/month")
+                .apiParam("year", Year.now().toString())
+                .apiParam("month", String.valueOf(month.getValue()))
+                .build(), new TypeReference<List<Link>>() {
+        });
+    }
+
+    /**
+     * @param year year of link's date.
+     * @return list of chosen links.
+     */
+    public Chain<List<Link>> linkHits(Year year) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Hits/Year/year")
+                .apiParam("year", year.toString())
+                .build(), new TypeReference<List<Link>>() {
+        });
+    }
+
+    /**
+     * @param month month of link's date.
+     * @param year year of link's date.
+     * @return list of chosen links.
+     * @throws DateTimeException when illegal {@link Month} value is passed.
+     */
+    public Chain<List<Link>> linkHits(Month month, Year year) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Hits/Month/year/month/")
+                .apiParam("year", year.toString())
+                .apiParam("month", String.valueOf(month.getValue()))
+                .build(), new TypeReference<List<Link>>() {
+        });
+    }
+
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;
@@ -448,5 +506,4 @@ public class WykopClient {
         }
 
     }
-
 }
