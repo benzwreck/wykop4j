@@ -13,6 +13,8 @@ import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException;
 import io.github.benzwreck.wykop4j.exceptions.CommentDoesNotExistException;
 import io.github.benzwreck.wykop4j.exceptions.NiceTryException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException;
+import io.github.benzwreck.wykop4j.links.HitsOption;
+import io.github.benzwreck.wykop4j.links.Link;
 
 import java.io.File;
 import java.util.List;
@@ -397,6 +399,17 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Entries/CommentFavorite/comment/")
                 .apiParam("comment", String.valueOf(entryCommentId))
                 .build(), Boolean.class);
+    }
+
+    /**
+     * @param option type of links to retrieve.
+     * @return list of chosen links.
+     */
+    public Chain<List<Link>> linkHits(HitsOption option) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Hits/" + option.value() + "/")
+                .build(), new TypeReference<List<Link>>() {
+        });
     }
 
     public static final class Builder {
