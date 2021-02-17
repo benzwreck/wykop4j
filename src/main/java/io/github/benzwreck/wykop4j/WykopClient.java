@@ -17,6 +17,9 @@ import io.github.benzwreck.wykop4j.links.HitsOption;
 import io.github.benzwreck.wykop4j.links.Link;
 
 import java.io.File;
+import java.time.DateTimeException;
+import java.time.Month;
+import java.time.Year;
 import java.util.List;
 import java.util.Optional;
 
@@ -412,6 +415,47 @@ public class WykopClient {
         });
     }
 
+    /**
+     * @param month month of link's date.
+     * @return list of chosen links.
+     * @throws DateTimeException when illegal {@link Month} value is passed.
+     */
+    public Chain<List<Link>> linkHits(Month month) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Hits/Month/year/month")
+                .apiParam("year", Year.now().toString())
+                .apiParam("month", String.valueOf(month.getValue()))
+                .build(), new TypeReference<List<Link>>() {
+        });
+    }
+
+    /**
+     * @param year year of link's date.
+     * @return list of chosen links.
+     */
+    public Chain<List<Link>> linkHits(Year year) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Hits/Year/year")
+                .apiParam("year", year.toString())
+                .build(), new TypeReference<List<Link>>() {
+        });
+    }
+
+    /**
+     * @param month month of link's date.
+     * @param year year of link's date.
+     * @return list of chosen links.
+     * @throws DateTimeException when illegal {@link Month} value is passed.
+     */
+    public Chain<List<Link>> linkHits(Month month, Year year) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Hits/Month/year/month/")
+                .apiParam("year", year.toString())
+                .apiParam("month", String.valueOf(month.getValue()))
+                .build(), new TypeReference<List<Link>>() {
+        });
+    }
+
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;
@@ -462,5 +506,4 @@ public class WykopClient {
         }
 
     }
-
 }
