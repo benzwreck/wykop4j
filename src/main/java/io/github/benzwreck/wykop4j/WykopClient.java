@@ -550,6 +550,15 @@ public class WykopClient {
                 .build(), Integer.class);
     }
 
+    /**
+     * @return nothing but reads all user's notifications.
+     */
+    public Chain<Void> readAllNotifications() {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Notifications/ReadAllNotifications/")
+                .build(), Void.class);
+    }
+
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;
