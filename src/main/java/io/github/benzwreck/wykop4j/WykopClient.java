@@ -539,6 +539,11 @@ public class WykopClient {
         });
     }
 
+    /**
+     * Combines direct notifications and tags notifications count.
+     *
+     * @return total notification count.
+     */
     public Chain<Integer> allNotificationCount() {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Notifications/TotalCount/")
