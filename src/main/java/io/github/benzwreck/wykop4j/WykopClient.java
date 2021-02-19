@@ -515,6 +515,30 @@ public class WykopClient {
                 .build(), Integer.class);
     }
 
+    /**
+     * Combines direct notifications and tags notifications.
+     *
+     * @return First page of all user's notifications.
+     */
+    public Chain<List<Notification>> allNotifications() {
+        return allNotifications(Page.of(1));
+    }
+
+    /**
+     * Combines direct notifications and tags notifications.
+     *
+     * @param page page you want to fetch.
+     * @return Given page of all user's notifications.
+     */
+    public Chain<List<Notification>> allNotifications(Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Notifications/Total/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .fullData(false)
+                .build(), new TypeReference<List<Notification>>() {
+        });
+    }
+
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;
