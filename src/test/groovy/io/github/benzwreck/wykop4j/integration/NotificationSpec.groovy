@@ -39,4 +39,14 @@ class NotificationSpec extends Specification {
             assert wykop.directedNotificationCount().execute() == 0
         }
     }
+
+    def "should read all tags notifications"() {
+        PollingConditions conditions = new PollingConditions(timeout: 5, initialDelay: 1)
+        when:
+        wykop.readAllTagsNotifications().execute()
+        then:
+        conditions.eventually {
+            assert wykop.tagsNotificationCount().execute() == 0
+        }
+    }
 }

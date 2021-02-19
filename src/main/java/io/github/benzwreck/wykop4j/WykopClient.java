@@ -568,6 +568,15 @@ public class WykopClient {
                 .build(), Void.class);
     }
 
+    /**
+     * @return nothing but reads all user's tags notifications.
+     */
+    public Chain<Void> readAllTagsNotifications() {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Notifications/ReadHashTagsNotifications/")
+                .build(), Void.class);
+    }
+
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;
