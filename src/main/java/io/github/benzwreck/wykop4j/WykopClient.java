@@ -577,6 +577,17 @@ public class WykopClient {
                 .build(), Void.class);
     }
 
+    /**
+     * @param notificationId notification' id you'd like to mark as read.
+     * @return nothing, but marks a notification as read.
+     */
+    public Chain<Void> markNotificationAsRead(long notificationId) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Notifications/MarkAsRead/notification/")
+                .apiParam("notification", String.valueOf(notificationId))
+                .build(), Void.class);
+    }
+
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;
