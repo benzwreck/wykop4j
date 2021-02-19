@@ -40,7 +40,7 @@ class WykopRequest {
         }
         // named params:
         for (Map.Entry<String, String> entry : namedParams.entrySet()) {
-            tempUrl = tempUrl.replaceFirst(entry.getKey() + "(\\w*)", entry.getKey() + "/" + entry.getValue() + "/");
+            tempUrl = tempUrl.replaceFirst(entry.getKey() + "\\/(\\w*)\\/", entry.getKey() + "/" + entry.getValue() + "/");
         }
         if(clearOutput) tempUrl += "output/clear/";
         if(fullData) tempUrl += "data/full/";
