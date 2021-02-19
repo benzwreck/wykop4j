@@ -458,7 +458,7 @@ public class WykopClient {
     }
 
     /**
-     * @return Given page of user's directed notifications.
+     * @return First page of user's directed notifications.
      */
     public Chain<List<Notification>> directNotifications() {
         return directNotifications(Page.of(1));
