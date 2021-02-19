@@ -12,6 +12,7 @@ class NotificationSpec extends Specification {
         wykop.directNotifications().execute()
         wykop.directNotificationCount().execute()
         wykop.tagsNotifications().execute()
+        wykop.tagsNotificationCount().execute()
         then:
         noExceptionThrown()
     }

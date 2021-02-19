@@ -506,6 +506,15 @@ public class WykopClient {
         });
     }
 
+    /**
+     * @return user's tags notifications count.
+     */
+    public Chain<Integer> tagsNotificationCount() {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Notifications/HashTagsCount/")
+                .build(), Integer.class);
+    }
+
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;
