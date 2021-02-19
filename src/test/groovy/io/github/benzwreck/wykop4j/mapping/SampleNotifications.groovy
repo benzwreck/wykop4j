@@ -86,4 +86,5 @@ class SampleNotifications {
             "  }\n" +
             "}"
     static String zeroNotificationCount = "{\"data\":{\"count\":0}}"
+    static String totalNotificationCount = "{\"data\":{\"count\":1,\"hastagcount\":4}}"
 }

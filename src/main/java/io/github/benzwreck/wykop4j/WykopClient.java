@@ -539,6 +539,12 @@ public class WykopClient {
         });
     }
 
+    public Chain<Integer> allNotificationCount() {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Notifications/TotalCount/")
+                .build(), Integer.class);
+    }
+
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;

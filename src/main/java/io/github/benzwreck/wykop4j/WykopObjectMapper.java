@@ -107,7 +107,12 @@ class WykopObjectMapper {
 
     private JsonNode handleNotificationCount(JsonNode data) {
         if (data.hasNonNull("count")) {
-            data = IntNode.valueOf(data.get("count").asInt());
+            int value = 0;
+            if (data.hasNonNull("hastagcount")) {
+                value += data.get("hastagcount").intValue();
+            }
+            value += data.get("count").intValue();
+            data = IntNode.valueOf(value);
         }
         return data;
     }
@@ -118,9 +123,9 @@ class WykopObjectMapper {
 
     private void handleNotificationIndex(JsonNode data) {
         Iterator<JsonNode> iterator = data.elements();
-        while(iterator.hasNext()){
+        while (iterator.hasNext()) {
             JsonNode next = iterator.next();
-            if(!next.hasNonNull("new")) break;
+            if (!next.hasNonNull("new")) break;
             ((ObjectNode) next).replace("isNew", BooleanNode.valueOf(next.get("new").asBoolean()));
             ((ObjectNode) next).remove("new");
         }
@@ -128,7 +133,7 @@ class WykopObjectMapper {
 
     private JsonNode handleUserFavorite(JsonNode data) {
         if (data.hasNonNull("user_favorite")) {
-            data =  BooleanNode.valueOf(data.get("user_favorite").booleanValue());
+            data = BooleanNode.valueOf(data.get("user_favorite").booleanValue());
         }
         return data;
     }

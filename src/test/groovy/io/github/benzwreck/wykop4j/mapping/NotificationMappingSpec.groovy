@@ -70,4 +70,11 @@ class NotificationMappingSpec extends Specification {
         then:
         notificationCount == 0
     }
+
+    def "should return five notification count"(){
+        when:
+        def total = mapper.map(SampleNotifications.totalNotificationCount, Integer.class)
+        then:
+        total == 5
+    }
 }
