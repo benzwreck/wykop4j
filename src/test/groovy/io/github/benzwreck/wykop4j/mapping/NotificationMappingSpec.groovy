@@ -54,4 +54,11 @@ class NotificationMappingSpec extends Specification {
         then:
         notifications.isEmpty()
     }
+
+    def "should return zero notification count"(){
+        when:
+        def notificationCount = mapper.map(SampleNotifications.zeroNotificationCount, Integer.class)
+        then:
+        notificationCount == 0
+    }
 }

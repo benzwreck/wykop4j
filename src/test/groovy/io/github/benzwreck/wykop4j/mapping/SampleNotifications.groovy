@@ -46,4 +46,5 @@ class SampleNotifications {
             "    \"next\": \"https://a2.wykop.pl/powiadomienia/Index/page/2/output/clear/appkey/app/userkey/user/\"\n" +
             "  }\n" +
             "}"
+    static String zeroNotificationCount = "{\"data\":{\"count\":0}}"
 }

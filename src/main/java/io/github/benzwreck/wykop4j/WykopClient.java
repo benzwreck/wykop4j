@@ -477,6 +477,15 @@ public class WykopClient {
         });
     }
 
+    /**
+     * @return user's notifications count.
+     */
+    public Chain<Integer> userNotificationsCount(){
+        return new Chain<>(new WykopRequest.Builder()
+        .url(WYKOP_URL + "/Notifications/Count/")
+        .build(), Integer.class);
+    }
+
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;
