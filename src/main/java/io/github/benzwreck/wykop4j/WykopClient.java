@@ -478,9 +478,9 @@ public class WykopClient {
     }
 
     /**
-     * @return user's notifications count.
+     * @return user's direct notifications count.
      */
-    public Chain<Integer> notificationsCount() {
+    public Chain<Integer> directNotificationCount() {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Notifications/Count/")
                 .build(), Integer.class);
