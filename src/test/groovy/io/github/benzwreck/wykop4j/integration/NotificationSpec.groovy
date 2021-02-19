@@ -29,4 +29,14 @@ class NotificationSpec extends Specification {
             assert wykop.allNotificationCount().execute() == 0
         }
     }
+
+    def "should read all directed notifications"() {
+        PollingConditions conditions = new PollingConditions(timeout: 5, initialDelay: 1)
+        when:
+        wykop.readAllDirectedNotifications().execute()
+        then:
+        conditions.eventually {
+            assert wykop.directedNotificationCount().execute() == 0
+        }
+    }
 }

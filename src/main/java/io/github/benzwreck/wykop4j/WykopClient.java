@@ -559,6 +559,15 @@ public class WykopClient {
                 .build(), Void.class);
     }
 
+    /**
+     * @return nothing but reads all user's directed notifications.
+     */
+    public Chain<Void> readAllDirectedNotifications() {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Notifications/ReadDirectedNotifications/")
+                .build(), Void.class);
+    }
+
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;
