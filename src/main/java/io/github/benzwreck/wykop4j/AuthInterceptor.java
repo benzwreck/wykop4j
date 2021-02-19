@@ -1,12 +1,14 @@
 package io.github.benzwreck.wykop4j;
 
 import io.github.benzwreck.wykop4j.exceptions.WykopException;
-import okhttp3.*;
+import okhttp3.FormBody;
+import okhttp3.Interceptor;
+import okhttp3.Request;
+import okhttp3.Response;
 import okio.BufferedSource;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.security.MessageDigest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,7 +32,7 @@ class AuthInterceptor implements Interceptor {
         String mainRequestUrl = mainRequest.url().toString();
         Request.Builder authRequestBuilder = chain.request()
                 .newBuilder()
-                .url(mainRequestUrl +"appkey/" + applicationCredentials.appKey() + "/userkey/" + userKey + "/");
+                .url(mainRequestUrl + "appkey/" + applicationCredentials.appKey() + "/userkey/" + userKey + "/");
         String apiSign = apiSignCalculator.calculate(authRequestBuilder.build());
         authRequestBuilder.addHeader("apisign", apiSign);
         Request request = authRequestBuilder.build();
@@ -104,20 +106,5 @@ class AuthInterceptor implements Interceptor {
         if (matcher.find()) {
             return matcher.group(1);
         } else throw new WykopException(0, "Could not extract userkey.", "Nie można pobrać klucza użytkownika.");
-    }
-
-    private String md5(String data) {
-        StringBuilder sb = new StringBuilder();
-        try {
-            MessageDigest messageDigest = MessageDigest.getInstance("MD5");
-            messageDigest.update(data.getBytes());
-            byte[] digest = messageDigest.digest();
-            for (byte b : digest) {
-                sb.append(String.format("%02x", b));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return sb.toString();
     }
 }
