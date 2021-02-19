@@ -15,6 +15,7 @@ import io.github.benzwreck.wykop4j.exceptions.NiceTryException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException;
 import io.github.benzwreck.wykop4j.links.HitsOption;
 import io.github.benzwreck.wykop4j.links.Link;
+import io.github.benzwreck.wykop4j.notifications.Notification;
 
 import java.io.File;
 import java.time.DateTimeException;
@@ -443,7 +444,7 @@ public class WykopClient {
 
     /**
      * @param month month of link's date.
-     * @param year year of link's date.
+     * @param year  year of link's date.
      * @return list of chosen links.
      * @throws DateTimeException when illegal {@link Month} value is passed.
      */
@@ -454,6 +455,137 @@ public class WykopClient {
                 .apiParam("month", String.valueOf(month.getValue()))
                 .build(), new TypeReference<List<Link>>() {
         });
+    }
+
+    /**
+     * @return First page of user's directed notifications.
+     */
+    public Chain<List<Notification>> directedNotifications() {
+        return directedNotifications(Page.of(1));
+    }
+
+    /**
+     * @param page page you want to fetch.
+     * @return Given page of user's directed notifications.
+     */
+    public Chain<List<Notification>> directedNotifications(Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Notifications/Index/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .fullData(false)        //wykop api crashes otherwise - returns error html page
+                .build(), new TypeReference<List<Notification>>() {
+        });
+    }
+
+    /**
+     * @return user's directed notifications count.
+     */
+    public Chain<Integer> directedNotificationCount() {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Notifications/Count/")
+                .build(), Integer.class);
+    }
+
+    /**
+     * @return First page of user's tags notifications.
+     */
+    public Chain<List<Notification>> tagsNotifications() {
+        return tagsNotifications(Page.of(1));
+    }
+
+    /**
+     * @param page page you want to fetch.
+     * @return Given page of user's tags notifications.
+     */
+    public Chain<List<Notification>> tagsNotifications(Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Notifications/HashTags/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .fullData(false)
+                .build(), new TypeReference<List<Notification>>() {
+        });
+    }
+
+    /**
+     * @return user's tags notifications count.
+     */
+    public Chain<Integer> tagsNotificationCount() {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Notifications/HashTagsCount/")
+                .build(), Integer.class);
+    }
+
+    /**
+     * Combines direct notifications and tags notifications.
+     *
+     * @return First page of all user's notifications.
+     */
+    public Chain<List<Notification>> allNotifications() {
+        return allNotifications(Page.of(1));
+    }
+
+    /**
+     * Combines direct notifications and tags notifications.
+     *
+     * @param page page you want to fetch.
+     * @return Given page of all user's notifications.
+     */
+    public Chain<List<Notification>> allNotifications(Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Notifications/Total/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .fullData(false)
+                .build(), new TypeReference<List<Notification>>() {
+        });
+    }
+
+    /**
+     * Combines direct notifications and tags notifications count.
+     *
+     * @return total notification count.
+     */
+    public Chain<Integer> allNotificationCount() {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Notifications/TotalCount/")
+                .build(), Integer.class);
+    }
+
+    /**
+     * @return nothing but reads all user's notifications.
+     */
+    public Chain<Void> readAllNotifications() {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Notifications/ReadAllNotifications/")
+                .build(), Void.class);
+    }
+
+    /**
+     * @return nothing but reads all user's directed notifications.
+     */
+    public Chain<Void> readAllDirectedNotifications() {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Notifications/ReadDirectedNotifications/")
+                .build(), Void.class);
+    }
+
+    /**
+     * @return nothing but reads all user's tags notifications.
+     */
+    public Chain<Void> readAllTagsNotifications() {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Notifications/ReadHashTagsNotifications/")
+                .build(), Void.class);
+    }
+
+    /**
+     * @param notificationId notification' id you'd like to mark as read.
+     * @return nothing, but marks a notification as read.
+     */
+    public Chain<Void> markNotificationAsRead(long notificationId) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Notifications/MarkAsRead/notification/")
+                .apiParam("notification", String.valueOf(notificationId))
+                .build(), Void.class);
     }
 
     public static final class Builder {
@@ -504,6 +636,5 @@ public class WykopClient {
             }
 
         }
-
     }
 }

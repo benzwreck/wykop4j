@@ -24,9 +24,6 @@ class EntryMappingSpec extends Specification {
         author.color() == Color.ORANGE
         author.sex() == Optional.empty()
         author.avatar() == "https://www.wykop.pl/cdn/c3397992/avatar_def,q150.png"
-        author.signupAt() == LocalDateTime.of(2018, 05, 21, 10, 04, 29)
-        author.background() == Optional.empty()
-        author.violationUrl() == "https://a2.wykop.pl/naruszenia/form/ot/profile/od/1502911/ud/5xOL/hs/6f8032abfc29cc66d25ce46e12488af58eb88708/rn/ZhasKJWMCf/"
         entry.blocked() == false
         entry.favorite() == false
         entry.voteCount() == 6

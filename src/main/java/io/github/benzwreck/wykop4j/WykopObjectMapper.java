@@ -10,6 +10,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.BooleanNode;
+import com.fasterxml.jackson.databind.node.IntNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -26,6 +28,7 @@ import io.github.benzwreck.wykop4j.exceptions.WykopException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Iterator;
 
 class WykopObjectMapper {
     private final ObjectMapper objectMapper;
@@ -68,16 +71,16 @@ class WykopObjectMapper {
     }
 
     private JsonNode handleResponse(JsonNode node) {
-        int entryDoesNotExistCode = 61;
         if (node.hasNonNull("error")) {
-            if (node.get("error").get("code").intValue() == entryDoesNotExistCode)
+            if (emptyEntryResponse(node))
                 return node.get("data");
         }
         if (node.hasNonNull("data")) {
-            if (node.get("data").hasNonNull("user_favorite")){
-                return BooleanNode.valueOf(node.get("data").get("user_favorite").booleanValue());
-            }
-            return node.get("data");
+            JsonNode data = node.get("data");
+            data = handleUserFavorite(data);
+            data = handleNotificationCount(data);
+            handleNotificationIndex(data);
+            return data;
         }
         JsonNode error = node.get("error");
         int errorCode = error.get("code").intValue();
@@ -85,20 +88,53 @@ class WykopObjectMapper {
         String messagePl = error.get("message_pl").asText();
         switch (errorCode) {
             case 552:
-                throw new ActionForbiddenException(errorCode,messageEn,messagePl);
+                throw new ActionForbiddenException();
             case 24:
-                throw new ArchivalContentException(errorCode, messageEn, messagePl);
+                throw new ArchivalContentException();
             case 35:
-                throw new UnableToModifyEntryException(errorCode, messageEn, messagePl);
+                throw new UnableToModifyEntryException();
             case 37:
-                throw new UnableToDeleteCommentException(errorCode, messageEn, messagePl);
+                throw new UnableToDeleteCommentException();
             case 81:
-                throw new CommentDoesNotExistException(errorCode, messageEn, messagePl);
+                throw new CommentDoesNotExistException();
             case 506:
                 throw new LimitExceededException(errorCode, messageEn, messagePl);
             case 999:
-                throw new NiceTryException(errorCode, messageEn, messagePl);
+                throw new NiceTryException();
         }
         throw new WykopException(errorCode, messageEn, messagePl);
+    }
+
+    private JsonNode handleNotificationCount(JsonNode data) {
+        if (data.hasNonNull("count")) {
+            int value = 0;
+            if (data.hasNonNull("hastagcount")) {
+                value += data.get("hastagcount").intValue();
+            }
+            value += data.get("count").intValue();
+            data = IntNode.valueOf(value);
+        }
+        return data;
+    }
+
+    private boolean emptyEntryResponse(JsonNode node) {
+        return node.get("error").get("code").intValue() == 61;
+    }
+
+    private void handleNotificationIndex(JsonNode data) {
+        Iterator<JsonNode> iterator = data.elements();
+        while (iterator.hasNext()) {
+            JsonNode next = iterator.next();
+            if (!next.hasNonNull("new")) break;
+            ((ObjectNode) next).replace("isNew", BooleanNode.valueOf(next.get("new").asBoolean()));
+            ((ObjectNode) next).remove("new");
+        }
+    }
+
+    private JsonNode handleUserFavorite(JsonNode data) {
+        if (data.hasNonNull("user_favorite")) {
+            data = BooleanNode.valueOf(data.get("user_favorite").booleanValue());
+        }
+        return data;
     }
 }
