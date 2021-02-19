@@ -10,7 +10,8 @@ class NotificationSpec extends Specification {
     def "should not thrown an exception - that means it fetched, parsed and returned a proper object"() {
         when:
         wykop.directNotifications().execute()
-        wykop.userNotificationsCount().execute()
+        wykop.notificationsCount().execute()
+        wykop.tagsNotifications().execute()
         then:
         noExceptionThrown()
     }

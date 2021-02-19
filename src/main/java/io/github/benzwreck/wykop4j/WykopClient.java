@@ -480,10 +480,30 @@ public class WykopClient {
     /**
      * @return user's notifications count.
      */
-    public Chain<Integer> userNotificationsCount(){
+    public Chain<Integer> notificationsCount() {
         return new Chain<>(new WykopRequest.Builder()
-        .url(WYKOP_URL + "/Notifications/Count/")
-        .build(), Integer.class);
+                .url(WYKOP_URL + "/Notifications/Count/")
+                .build(), Integer.class);
+    }
+
+    /**
+     * @return First page of user's tags notifications.
+     */
+    public Chain<List<Notification>> tagsNotifications() {
+        return tagsNotifications(Page.of(1));
+    }
+
+    /**
+     * @param page page you want to fetch.
+     * @return Given page of user's tags notifications.
+     */
+    public Chain<List<Notification>> tagsNotifications(Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Notifications/HashTags/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .fullData(false)
+                .build(), new TypeReference<List<Notification>>() {
+        });
     }
 
     public static final class Builder {

@@ -48,9 +48,18 @@ class NotificationMappingSpec extends Specification {
         second.isNew() == false
     }
 
+    def "should map json of array with two tags notifications"(){
+        when:
+        def notifications = mapper.map(SampleNotifications.tagsNotificationsJson, new TypeReference<List<Notification>>() {
+        })
+        then:
+        notifications.get(0).type() == "entry_directed"
+        notifications.get(1).type() == "entry_directed"
+    }
+
     def "should map json of empty array to empty list"(){
         when:
-        def notifications = mapper.map(SampleNotifications.emptyDirectNotificationsJson, new TypeReference<List<Notification>>() {})
+        def notifications = mapper.map(SampleNotifications.emptyNotificationsJson, new TypeReference<List<Notification>>() {})
         then:
         notifications.isEmpty()
     }
