@@ -15,6 +15,7 @@ import io.github.benzwreck.wykop4j.exceptions.NiceTryException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException;
 import io.github.benzwreck.wykop4j.links.HitsOption;
 import io.github.benzwreck.wykop4j.links.Link;
+import io.github.benzwreck.wykop4j.notifications.Notification;
 
 import java.io.File;
 import java.time.DateTimeException;
@@ -443,7 +444,7 @@ public class WykopClient {
 
     /**
      * @param month month of link's date.
-     * @param year year of link's date.
+     * @param year  year of link's date.
      * @return list of chosen links.
      * @throws DateTimeException when illegal {@link Month} value is passed.
      */
@@ -453,6 +454,26 @@ public class WykopClient {
                 .apiParam("year", year.toString())
                 .apiParam("month", String.valueOf(month.getValue()))
                 .build(), new TypeReference<List<Link>>() {
+        });
+    }
+
+    /**
+     * @return Given page of user's directed notifications.
+     */
+    public Chain<List<Notification>> directNotifications() {
+        return directNotifications(Page.of(1));
+    }
+
+    /**
+     * @param page page you want to fetch.
+     * @return Given page of user's directed notifications.
+     */
+    public Chain<List<Notification>> directNotifications(Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Notifications/Index/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .fullData(false)        //wykop api crashes otherwise - returns error html page
+                .build(), new TypeReference<List<Notification>>() {
         });
     }
 
@@ -504,6 +525,5 @@ public class WykopClient {
             }
 
         }
-
     }
 }
