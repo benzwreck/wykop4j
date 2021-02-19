@@ -460,15 +460,15 @@ public class WykopClient {
     /**
      * @return First page of user's directed notifications.
      */
-    public Chain<List<Notification>> directNotifications() {
-        return directNotifications(Page.of(1));
+    public Chain<List<Notification>> directedNotifications() {
+        return directedNotifications(Page.of(1));
     }
 
     /**
      * @param page page you want to fetch.
      * @return Given page of user's directed notifications.
      */
-    public Chain<List<Notification>> directNotifications(Page page) {
+    public Chain<List<Notification>> directedNotifications(Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Notifications/Index/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
@@ -478,9 +478,9 @@ public class WykopClient {
     }
 
     /**
-     * @return user's direct notifications count.
+     * @return user's directed notifications count.
      */
-    public Chain<Integer> directNotificationCount() {
+    public Chain<Integer> directedNotificationCount() {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Notifications/Count/")
                 .build(), Integer.class);
