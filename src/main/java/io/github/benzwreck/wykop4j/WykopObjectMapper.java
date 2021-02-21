@@ -71,9 +71,7 @@ class WykopObjectMapper {
     }
 
     private JsonNode handleResponse(String payload) throws JsonProcessingException {
-        if(payload.startsWith("<!DOCTYPE HTML>")){
-            payload = "{\"data\": []}";
-        }
+        payload = handleServerErrorHtmlResponse(payload);
         JsonNode node = objectMapper.readTree(payload);
         if (node.hasNonNull("error")) {
             if (emptyEntryResponse(node))
@@ -107,6 +105,13 @@ class WykopObjectMapper {
                 throw new NiceTryException();
         }
         throw new WykopException(errorCode, messageEn, messagePl);
+    }
+
+    private String handleServerErrorHtmlResponse(String payload) {
+        if(payload.startsWith("<!DOCTYPE HTML>")){
+            payload = "{\"data\": []}";
+        }
+        return payload;
     }
 
     private JsonNode handleNotificationCount(JsonNode data) {
