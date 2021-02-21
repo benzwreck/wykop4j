@@ -23,4 +23,20 @@ class SampleConversations {
             "      },\n" +
             "      \"status\": \"read\"\n" +
             "    }]}"
+    static String conversation = "{\n" +
+            "  \"data\": [\n" +
+            "    {\n" +
+            "      \"id\": 111111111,\n" +
+            "      \"date\": \"2021-01-01 11:11:11\",\n" +
+            "      \"body\": \"Dzień dobry!\",\n" +
+            "      \"status\": \"read\",\n" +
+            "      \"direction\": \"received\"\n" +
+            "    },\n" +
+            "    {\n" +
+            "      \"id\": 222222222,\n" +
+            "      \"date\": \"2020-01-01 21:13:22\",\n" +
+            "      \"body\": \"Do widzenia!\",\n" +
+            "      \"status\": \"read\",\n" +
+            "      \"direction\": \"sended\"\n" +
+            "    }]}"
 }

@@ -2,6 +2,7 @@ package io.github.benzwreck.wykop4j;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.github.benzwreck.wykop4j.conversations.ConversationInfo;
+import io.github.benzwreck.wykop4j.conversations.Message;
 import io.github.benzwreck.wykop4j.entries.Entry;
 import io.github.benzwreck.wykop4j.entries.EntryComment;
 import io.github.benzwreck.wykop4j.entries.NewComment;
@@ -22,6 +23,7 @@ import java.io.File;
 import java.time.DateTimeException;
 import java.time.Month;
 import java.time.Year;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -600,6 +602,17 @@ public class WykopClient {
         });
     }
 
+    /**
+     * @param login user's login.
+     * @return list of messages.
+     */
+    public Chain<List<Message>> conversation(String login){
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Pm/Conversation/receiver/")
+                .apiParam("receiver", login)
+                .build(), new TypeReference<List<Message>>() {
+        });
+    }
 
     public static final class Builder {
         private UserCredentials userCredentials;
