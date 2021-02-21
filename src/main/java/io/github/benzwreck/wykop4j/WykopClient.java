@@ -1,6 +1,7 @@
 package io.github.benzwreck.wykop4j;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import io.github.benzwreck.wykop4j.conversations.ConversationInfo;
 import io.github.benzwreck.wykop4j.entries.Entry;
 import io.github.benzwreck.wykop4j.entries.EntryComment;
 import io.github.benzwreck.wykop4j.entries.NewComment;
@@ -587,6 +588,18 @@ public class WykopClient {
                 .apiParam("notification", String.valueOf(notificationId))
                 .build(), Void.class);
     }
+
+    /**
+     * @return list of conversation's basic information.
+     */
+    public Chain<List<ConversationInfo>> conversationsList() {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Pm/ConversationsList/")
+                .fullData(false)
+                .build(), new TypeReference<List<ConversationInfo>>() {
+        });
+    }
+
 
     public static final class Builder {
         private UserCredentials userCredentials;
