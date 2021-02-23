@@ -20,6 +20,7 @@ import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import io.github.benzwreck.wykop4j.exceptions.ActionForbiddenException;
 import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException;
 import io.github.benzwreck.wykop4j.exceptions.CommentDoesNotExistException;
+import io.github.benzwreck.wykop4j.exceptions.DailyRequestLimitExceededException;
 import io.github.benzwreck.wykop4j.exceptions.LimitExceededException;
 import io.github.benzwreck.wykop4j.exceptions.NiceTryException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToDeleteCommentException;
@@ -91,6 +92,8 @@ class WykopObjectMapper {
         switch (errorCode) {
             case 552:
                 throw new ActionForbiddenException();
+            case 5:
+                throw new DailyRequestLimitExceededException();
             case 24:
                 throw new ArchivalContentException();
             case 35:
