@@ -9,12 +9,33 @@ version '1.0-SNAPSHOT'
 repositories {
     mavenCentral()
 }
+
 tasks.withType(JavaCompile) {
     options.compilerArgs += ['-parameters']
 }
 
 test {
     useJUnitPlatform()
+}
+
+task unitTest(type: Test) {
+    useJUnitPlatform()
+    filter {
+        includeTestsMatching "io.github.benzwreck.wykop4j.mapping.*"
+    }
+}
+task singleAccountIntegrationTest(type: Test){
+    useJUnitPlatform()
+    filter {
+        includeTestsMatching "io.github.benzwreck.wykop4j.integration.*"
+    }
+    systemProperty 'spock.configuration', 'SingleAccountSpockConfig.groovy'
+}
+task integrationTest(type: Test) {
+    useJUnitPlatform()
+    filter {
+        includeTestsMatching "io.github.benzwreck.wykop4j.integration.*"
+    }
 }
 dependencies {
     implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.7.2'
@@ -24,5 +45,4 @@ dependencies {
     implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jdk8', version: '2.12.1'
     testImplementation group: 'org.codehaus.groovy', name: 'groovy-all', version: '3.0.4', ext: 'pom'
     testImplementation group: 'org.spockframework', name: 'spock-core', version: '2.0-M3-groovy-3.0'
-    testImplementation group: 'junit', name: 'junit', version: '4.12'
 }
