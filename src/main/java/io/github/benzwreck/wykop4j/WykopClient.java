@@ -37,6 +37,8 @@ public class WykopClient {
         this.wykopObjectMapper = wykopObjectMapper;
     }
 
+    //Entries
+
     /**
      * @return First page of the latest Microblog's Entries.
      */
@@ -408,6 +410,8 @@ public class WykopClient {
                 .build(), Boolean.class);
     }
 
+    //Link hits
+
     /**
      * @param option type of links to retrieve.
      * @return list of chosen links.
@@ -459,6 +463,8 @@ public class WykopClient {
                 .build(), new TypeReference<List<Link>>() {
         });
     }
+
+    //Notifications
 
     /**
      * @return First page of user's directed notifications.
@@ -591,6 +597,8 @@ public class WykopClient {
                 .build(), Void.class);
     }
 
+    //Pm
+
     /**
      * @return list of conversation's basic information.
      */
@@ -615,7 +623,7 @@ public class WykopClient {
     }
 
     /**
-     * @param login user's login.
+     * @param login      user's login.
      * @param newMessage message you'd like to send.
      * @return sent message.
      */
@@ -642,7 +650,7 @@ public class WykopClient {
      * @param login user's login.
      * @return true - deleted.
      */
-    public Chain<Boolean> deleteConversation(String login){
+    public Chain<Boolean> deleteConversation(String login) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Pm/DeleteConversation/receiver_name/")
                 .apiParam("receiver_name", login)
