@@ -25,6 +25,7 @@ import io.github.benzwreck.wykop4j.exceptions.LimitExceededException;
 import io.github.benzwreck.wykop4j.exceptions.NiceTryException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToDeleteCommentException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException;
+import io.github.benzwreck.wykop4j.exceptions.UserNotFoundException;
 import io.github.benzwreck.wykop4j.exceptions.WykopException;
 
 import java.io.IOException;
@@ -74,6 +75,9 @@ class WykopObjectMapper {
     private JsonNode handleResponse(String payload) throws JsonProcessingException {
         payload = handleServerErrorHtmlResponse(payload);
         JsonNode node = objectMapper.readTree(payload);
+        if (conversationDeleted(payload)) {
+            return BooleanNode.valueOf(true);
+        }
         if (node.hasNonNull("error")) {
             if (emptyEntryResponse(node))
                 return node.get("data");
@@ -94,6 +98,8 @@ class WykopObjectMapper {
                 throw new ActionForbiddenException();
             case 5:
                 throw new DailyRequestLimitExceededException();
+            case 13:
+                throw new UserNotFoundException();
             case 24:
                 throw new ArchivalContentException();
             case 35:
@@ -110,8 +116,12 @@ class WykopObjectMapper {
         throw new WykopException(errorCode, messageEn, messagePl);
     }
 
+    private boolean conversationDeleted(String payload) {
+        return payload.equals("{\"data\":[true]}");
+    }
+
     private String handleServerErrorHtmlResponse(String payload) {
-        if(payload.startsWith("<!DOCTYPE HTML>")){
+        if (payload.startsWith("<!DOCTYPE HTML>")) {
             payload = "{\"data\": []}";
         }
         return payload;

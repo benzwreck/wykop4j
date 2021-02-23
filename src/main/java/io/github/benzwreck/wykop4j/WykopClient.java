@@ -3,6 +3,7 @@ package io.github.benzwreck.wykop4j;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.github.benzwreck.wykop4j.conversations.ConversationInfo;
 import io.github.benzwreck.wykop4j.conversations.Message;
+import io.github.benzwreck.wykop4j.conversations.NewMessage;
 import io.github.benzwreck.wykop4j.entries.Entry;
 import io.github.benzwreck.wykop4j.entries.EntryComment;
 import io.github.benzwreck.wykop4j.entries.NewComment;
@@ -23,7 +24,6 @@ import java.io.File;
 import java.time.DateTimeException;
 import java.time.Month;
 import java.time.Year;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -606,12 +606,47 @@ public class WykopClient {
      * @param login user's login.
      * @return list of messages.
      */
-    public Chain<List<Message>> conversation(String login){
+    public Chain<List<Message>> conversation(String login) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Pm/Conversation/receiver/")
                 .apiParam("receiver", login)
                 .build(), new TypeReference<List<Message>>() {
         });
+    }
+
+    /**
+     * @param login user's login.
+     * @param newMessage message you'd like to send.
+     * @return sent message.
+     */
+    public Chain<Message> sendMessage(String login, NewMessage newMessage) {
+        WykopRequest.Builder builder = new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Pm/SendMessage/receiver/")
+                .postParam("adultmedia", String.valueOf(newMessage.adultOnly()))
+                .apiParam("receiver", login);
+        newMessage.body().ifPresent(body -> builder.postParam("body", body));
+        newMessage.urlEmbed().ifPresent(urlEmbed -> builder.postParam("embed", urlEmbed));
+        Optional<File> fileEmbed = newMessage.fileEmbed();
+        if (fileEmbed.isPresent()) {
+            Optional<String> shownFileName = newMessage.shownFileName();
+            if (shownFileName.isPresent()) {
+                builder.file(fileEmbed.get(), shownFileName.get());
+            } else {
+                builder.file(fileEmbed.get());
+            }
+        }
+        return new Chain<>(builder.build(), Message.class);
+    }
+
+    /**
+     * @param login user's login.
+     * @return true - deleted.
+     */
+    public Chain<Boolean> deleteConversation(String login){
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Pm/DeleteConversation/receiver_name/")
+                .apiParam("receiver_name", login)
+                .build(), Boolean.class);
     }
 
     public static final class Builder {

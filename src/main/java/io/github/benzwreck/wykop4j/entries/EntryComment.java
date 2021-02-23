@@ -1,5 +1,6 @@
 package io.github.benzwreck.wykop4j.entries;
 
+import io.github.benzwreck.wykop4j.media.Embed;
 import io.github.benzwreck.wykop4j.profiles.SimpleProfile;
 
 import java.time.LocalDateTime;
