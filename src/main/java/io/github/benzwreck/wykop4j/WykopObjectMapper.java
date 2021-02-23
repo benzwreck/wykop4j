@@ -100,7 +100,7 @@ class WykopObjectMapper {
             case 81:
                 throw new CommentDoesNotExistException();
             case 506:
-                throw new LimitExceededException(errorCode, messageEn, messagePl);
+                throw new LimitExceededException();
             case 999:
                 throw new NiceTryException();
         }
