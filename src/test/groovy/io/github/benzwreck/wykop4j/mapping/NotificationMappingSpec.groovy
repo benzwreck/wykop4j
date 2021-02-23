@@ -27,8 +27,8 @@ class NotificationMappingSpec extends Specification {
         first.date() == LocalDateTime.of(2021, 2, 18, 21, 16, 32)
         first.body() == "nobodycares napisała do Ciebie w komentarzu do \"/Jestem tu\"."
         first.type() == "entry_comment_directed"
-        first.itemId() == 88888888
-        first.subitemId() == 123123123
+        first.itemId() == "88888888"
+        first.subitemId() == "123123123"
         first.url() == "https://www.wykop.pl/wpis/88888888/jestem-tu-/#comment-123123123"
         first.isNew() == true
 
@@ -42,8 +42,8 @@ class NotificationMappingSpec extends Specification {
         second.date() == LocalDateTime.of(2021, 2, 18, 9, 42, 36)
         second.body() == "ziomeczek napisał do Ciebie w komentarzu do \"Jestem tam\"."
         second.type() == "entry_comment_directed"
-        second.itemId() == 55555555
-        second.subitemId() == 321321321
+        second.itemId() == "55555555"
+        second.subitemId() == "321321321"
         second.url() == "https://www.wykop.pl/wpis/55555555/notifications-index-gt-jestem-tam-/#comment-321321321"
         second.isNew() == false
     }

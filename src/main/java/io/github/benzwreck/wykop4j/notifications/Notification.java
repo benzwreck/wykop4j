@@ -10,12 +10,12 @@ public class Notification {
     private final LocalDateTime date;
     private final String body;
     private final String type;
-    private final Integer itemId;
-    private final Integer subitemId;
+    private final String itemId;
+    private final String subitemId;
     private final String url;
     private final Boolean isNew;
 
-    public Notification(Long id, SimpleProfile author, LocalDateTime date, String body, String type, Integer itemId, Integer subitemId, String url, Boolean isNew) {
+    public Notification(Long id, SimpleProfile author, LocalDateTime date, String body, String type, String itemId, String subitemId, String url, Boolean isNew) {
         this.id = id;
         this.author = author;
         this.date = date;
@@ -47,11 +47,11 @@ public class Notification {
         return type;
     }
 
-    public Integer itemId() {
+    public String itemId() {
         return itemId;
     }
 
-    public Integer subitemId() {
+    public String subitemId() {
         return subitemId;
     }
 

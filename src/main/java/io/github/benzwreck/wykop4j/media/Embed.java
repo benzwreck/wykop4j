@@ -1,4 +1,4 @@
-package io.github.benzwreck.wykop4j.entries;
+package io.github.benzwreck.wykop4j.media;
 
 public class Embed {
     private final String type;

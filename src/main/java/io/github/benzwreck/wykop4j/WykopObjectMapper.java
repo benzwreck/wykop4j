@@ -3,6 +3,7 @@ package io.github.benzwreck.wykop4j;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -19,10 +20,12 @@ import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import io.github.benzwreck.wykop4j.exceptions.ActionForbiddenException;
 import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException;
 import io.github.benzwreck.wykop4j.exceptions.CommentDoesNotExistException;
+import io.github.benzwreck.wykop4j.exceptions.DailyRequestLimitExceededException;
 import io.github.benzwreck.wykop4j.exceptions.LimitExceededException;
 import io.github.benzwreck.wykop4j.exceptions.NiceTryException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToDeleteCommentException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException;
+import io.github.benzwreck.wykop4j.exceptions.UserNotFoundException;
 import io.github.benzwreck.wykop4j.exceptions.WykopException;
 
 import java.io.IOException;
@@ -47,13 +50,13 @@ class WykopObjectMapper {
                 .registerModule(new Jdk8Module())
                 .registerModule(javaTimeModule)
                 .registerModule(new EntryMappingModule())
-                .registerModule(new ProfileMappingModule());
+                .registerModule(new ProfileMappingModule())
+                .registerModule(new ConversationMessageModule());
     }
 
     public <T> T map(String payload, Class<T> clazz) {
         try {
-            JsonNode jsonNode = objectMapper.readTree(payload);
-            JsonNode data = handleResponse(jsonNode);
+            JsonNode data = handleResponse(payload);
             return objectMapper.readValue(objectMapper.treeAsTokens(data), clazz);
         } catch (IOException e) {
             throw new WykopException(0, e.getMessage(), e.getMessage()); //todo magic numbers
@@ -62,15 +65,19 @@ class WykopObjectMapper {
 
     public <T> T map(String payload, TypeReference<T> typeReference) {
         try {
-            JsonNode jsonNode = objectMapper.readTree(payload);
-            JsonNode node = handleResponse(jsonNode);
+            JsonNode node = handleResponse(payload);
             return objectMapper.readValue(objectMapper.treeAsTokens(node), typeReference);
         } catch (IOException e) {
             throw new WykopException(0, e.getMessage(), e.getMessage()); //todo magic numbers
         }
     }
 
-    private JsonNode handleResponse(JsonNode node) {
+    private JsonNode handleResponse(String payload) throws JsonProcessingException {
+        payload = handleServerErrorHtmlResponse(payload);
+        JsonNode node = objectMapper.readTree(payload);
+        if (conversationDeleted(payload)) {
+            return BooleanNode.valueOf(true);
+        }
         if (node.hasNonNull("error")) {
             if (emptyEntryResponse(node))
                 return node.get("data");
@@ -89,6 +96,10 @@ class WykopObjectMapper {
         switch (errorCode) {
             case 552:
                 throw new ActionForbiddenException();
+            case 5:
+                throw new DailyRequestLimitExceededException();
+            case 13:
+                throw new UserNotFoundException();
             case 24:
                 throw new ArchivalContentException();
             case 35:
@@ -98,11 +109,22 @@ class WykopObjectMapper {
             case 81:
                 throw new CommentDoesNotExistException();
             case 506:
-                throw new LimitExceededException(errorCode, messageEn, messagePl);
+                throw new LimitExceededException();
             case 999:
                 throw new NiceTryException();
         }
         throw new WykopException(errorCode, messageEn, messagePl);
+    }
+
+    private boolean conversationDeleted(String payload) {
+        return payload.equals("{\"data\":[true]}");
+    }
+
+    private String handleServerErrorHtmlResponse(String payload) {
+        if (payload.startsWith("<!DOCTYPE HTML>")) {
+            payload = "{\"data\": []}";
+        }
+        return payload;
     }
 
     private JsonNode handleNotificationCount(JsonNode data) {
