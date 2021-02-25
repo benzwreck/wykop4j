@@ -9,6 +9,7 @@ import javax.activation.MimetypesFileTypeMap;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 class WykopRequest {
     private final String url;
@@ -72,7 +73,7 @@ class WykopRequest {
     public static final class Builder {
         private Map<String, String> apiParams = new HashMap<>();
         private Map<String, String> namedParams = new HashMap<>();
-        private Map<String, String> postParams = new HashMap<>();
+        private Map<String, String> postParams = new TreeMap<>();
         private String url;
         private File file;
         private String shownFileName;
