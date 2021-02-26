@@ -79,8 +79,7 @@ class AuthInterceptor implements Interceptor {
     }
 
     private boolean isUserKeyNotUpToDate(String proceed) {
-        return proceed.contains("error");
-
+        return proceed.contains("\"data\":null,\"error\":");
     }
 
     private Request updateRequest(Request mainRequest) {
