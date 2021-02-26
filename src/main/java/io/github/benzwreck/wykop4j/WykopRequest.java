@@ -41,10 +41,10 @@ class WykopRequest {
         }
         // named params:
         for (Map.Entry<String, String> entry : namedParams.entrySet()) {
-            tempUrl = tempUrl.replaceFirst(entry.getKey() + "\\/(\\w*)\\/", entry.getKey() + "/" + entry.getValue() + "/");
+            tempUrl = tempUrl.replaceFirst(entry.getKey() + "/(\\w*)/", entry.getKey() + "/" + entry.getValue() + "/");
         }
-        if(clearOutput) tempUrl += "output/clear/";
-        if(fullData) tempUrl += "data/full/";
+        if (clearOutput) tempUrl += "output/clear/";
+        if (fullData) tempUrl += "data/full/";
         requestBuilder.url(tempUrl);
 
         if (postParams.isEmpty() && file == null) {
@@ -53,10 +53,8 @@ class WykopRequest {
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM);
         // post params:
-        if (!postParams.isEmpty()) {
-            for (Map.Entry<String, String> entry : postParams.entrySet()) {
-                builder.addFormDataPart(entry.getKey(), entry.getValue());
-            }
+        for (Map.Entry<String, String> entry : postParams.entrySet()) {
+            builder.addFormDataPart(entry.getKey(), entry.getValue());
         }
         if (file != null) {
             String contentType = MimetypesFileTypeMap.getDefaultFileTypeMap().getContentType(file);
@@ -114,11 +112,13 @@ class WykopRequest {
             this.shownFileName = shownFileName;
             return this;
         }
-        public Builder fullData(boolean option){
+
+        public Builder fullData(boolean option) {
             this.fullData = option;
             return this;
         }
-        public Builder clearOutput(boolean option){
+
+        public Builder clearOutput(boolean option) {
             this.clearOutput = option;
             return this;
         }
