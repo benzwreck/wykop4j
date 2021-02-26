@@ -15,14 +15,12 @@ import java.util.regex.Pattern;
 class AuthInterceptor implements Interceptor {
     private final UserCredentials userCredentials;
     private final ApplicationCredentials applicationCredentials;
-    private final ApiSignCalculator apiSignCalculator;
 
     private String userKey;
 
     public AuthInterceptor(UserCredentials userCredentials, ApplicationCredentials applicationCredentials) {
         this.userCredentials = userCredentials;
         this.applicationCredentials = applicationCredentials;
-        this.apiSignCalculator = new ApiSignCalculator(applicationCredentials);
     }
 
     @NotNull
@@ -33,8 +31,6 @@ class AuthInterceptor implements Interceptor {
         Request.Builder authRequestBuilder = chain.request()
                 .newBuilder()
                 .url(mainRequestUrl + "appkey/" + applicationCredentials.appKey() + "/userkey/" + userKey + "/");
-        String apiSign = apiSignCalculator.calculate(authRequestBuilder.build());
-        authRequestBuilder.addHeader("apisign", apiSign);
         Request request = authRequestBuilder.build();
         Response proceed = chain.proceed(request);
         /*
@@ -42,6 +38,18 @@ class AuthInterceptor implements Interceptor {
         Response once consumed (proceed.body.string()) cannot be consumed twice.
          */
         // -----------------------
+        /*
+        dodaj appkey do url
+        jesli usercredentials != empty to
+            jesli userkey != null to
+                dodaj userkey do url
+                    jesli odpowiedz jest bledem to
+                        odswiez userkey, zamien i ponownie wykonaj żądanie i je zwróć
+            jesli userkey == null
+                pobierz userkey, ustaw i ponownie wykonaj żądanie i je zwróć
+        jesli usercredentials == empty to
+            wykonaj żądanie i je zwróć -> przemauje na obiekt albo na autorization exception
+         */
         BufferedSource source = proceed.body().source();
         source.request(Long.MAX_VALUE);
         String body = source.getBuffer().snapshot().utf8();
@@ -61,20 +69,16 @@ class AuthInterceptor implements Interceptor {
     private Request prepareAuthRequest() {
         FormBody authFormBody = prepareAuthBody();
         String url = "https://a2.wykop.pl/Login/Index/appkey/" + applicationCredentials.appKey();
-        Request request = new Request.Builder()
+        return new Request.Builder()
                 .url(url)
                 .post(authFormBody)
-                .build();
-        String apiSign = apiSignCalculator.calculate(request);
-        return request.newBuilder()
-                .addHeader("apisign", apiSign)
                 .build();
     }
 
     private FormBody prepareAuthBody() {
         return new FormBody.Builder()
+                .add("accountkey", userCredentials.accountKey())
                 .add("login", userCredentials.login())
-                .add("password", userCredentials.password())
                 .build();
     }
 
@@ -85,18 +89,16 @@ class AuthInterceptor implements Interceptor {
     private Request updateRequest(Request mainRequest) {
         String mainRequestUrl = mainRequest.url().toString();
         String updatedUrl = updateUrl(mainRequestUrl);
-        String updatedApiSign = apiSignCalculator.calculate(mainRequest);
         return mainRequest.newBuilder()
                 .url(updatedUrl)
-                .addHeader("apisign", updatedApiSign)
                 .build();
     }
 
     private String updateUrl(String mainRequestUrl) {
         if (mainRequestUrl.contains("userkey")) {
-            return mainRequestUrl.replaceFirst("userkey\\/(.*)", "userkey/" + userKey);
+            return mainRequestUrl.replaceFirst("userkey/(.*)", "userkey/" + userKey + "/");
         }
-        return mainRequestUrl + "appkey/" + applicationCredentials.appKey() + "/userkey/" + userKey;
+        return mainRequestUrl + "appkey/" + applicationCredentials.appKey() + "/userkey/" + userKey + "/";
     }
 
     private String extractUserKey(String authResponseString) {

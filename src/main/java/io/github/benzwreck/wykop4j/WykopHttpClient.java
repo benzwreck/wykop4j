@@ -13,6 +13,7 @@ class WykopHttpClient {
     WykopHttpClient(UserCredentials userCredentials, ApplicationCredentials applicationCredentials) {
         httpClient = new OkHttpClient.Builder()
                 .addInterceptor(new AuthInterceptor(userCredentials, applicationCredentials))
+                .addInterceptor(new ApiSignInterceptor(applicationCredentials))
                 .build();
     }
 
