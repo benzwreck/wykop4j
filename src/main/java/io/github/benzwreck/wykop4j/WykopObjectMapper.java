@@ -17,6 +17,7 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
+import io.github.benzwreck.wykop4j.exceptions.AuthorizationException;
 import io.github.benzwreck.wykop4j.exceptions.ActionForbiddenException;
 import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException;
 import io.github.benzwreck.wykop4j.exceptions.CommentDoesNotExistException;
@@ -98,6 +99,8 @@ class WykopObjectMapper {
                 throw new ActionForbiddenException();
             case 5:
                 throw new DailyRequestLimitExceededException();
+            case 7:
+                throw new AuthorizationException();
             case 13:
                 throw new UserNotFoundException();
             case 24:
