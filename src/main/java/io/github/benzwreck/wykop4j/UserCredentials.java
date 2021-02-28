@@ -12,7 +12,12 @@ public class UserCredentials {
     public String login() {
         return login;
     }
-    public String accountKey(){
+
+    public String accountKey() {
         return accountKey;
+    }
+
+    public boolean isEmpty() {
+        return login == null || accountKey == null || login.isEmpty() || accountKey.isEmpty();
     }
 }
