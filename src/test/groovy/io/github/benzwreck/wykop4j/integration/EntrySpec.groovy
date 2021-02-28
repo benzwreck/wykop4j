@@ -100,7 +100,7 @@ class EntrySpec extends Specification {
         when:
         def entries = wykop.observedEntries().execute()
         then:
-        entries.each { it.favorite() }
+        entries.forEach { it.favorite() }
     }
 
     def "should return empty list of observed entries from non-existent page"() {
