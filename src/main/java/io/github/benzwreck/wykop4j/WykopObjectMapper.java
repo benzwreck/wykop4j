@@ -23,6 +23,7 @@ import io.github.benzwreck.wykop4j.exceptions.AuthorizationException;
 import io.github.benzwreck.wykop4j.exceptions.CommentDoesNotExistException;
 import io.github.benzwreck.wykop4j.exceptions.DailyRequestLimitExceededException;
 import io.github.benzwreck.wykop4j.exceptions.InvalidAPIKeyException;
+import io.github.benzwreck.wykop4j.exceptions.InvalidUserCredentialsException;
 import io.github.benzwreck.wykop4j.exceptions.LimitExceededException;
 import io.github.benzwreck.wykop4j.exceptions.NiceTryException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToDeleteCommentException;
@@ -96,8 +97,6 @@ class WykopObjectMapper {
         String messageEn = error.get("message_en").asText();
         String messagePl = error.get("message_pl").asText();
         switch (errorCode) {
-            case 552:
-                throw new ActionForbiddenException();
             case 1:
                 throw new InvalidAPIKeyException();
             case 5:
@@ -106,6 +105,8 @@ class WykopObjectMapper {
                 throw new AuthorizationException();
             case 13:
                 throw new UserNotFoundException();
+            case 14:
+                throw new InvalidUserCredentialsException();
             case 24:
                 throw new ArchivalContentException();
             case 35:
@@ -116,6 +117,8 @@ class WykopObjectMapper {
                 throw new CommentDoesNotExistException();
             case 506:
                 throw new LimitExceededException();
+            case 552:
+                throw new ActionForbiddenException();
             case 999:
                 throw new NiceTryException();
         }
