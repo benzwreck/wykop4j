@@ -17,11 +17,12 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
-import io.github.benzwreck.wykop4j.exceptions.AuthorizationException;
 import io.github.benzwreck.wykop4j.exceptions.ActionForbiddenException;
 import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException;
+import io.github.benzwreck.wykop4j.exceptions.AuthorizationException;
 import io.github.benzwreck.wykop4j.exceptions.CommentDoesNotExistException;
 import io.github.benzwreck.wykop4j.exceptions.DailyRequestLimitExceededException;
+import io.github.benzwreck.wykop4j.exceptions.InvalidAPIKeyException;
 import io.github.benzwreck.wykop4j.exceptions.LimitExceededException;
 import io.github.benzwreck.wykop4j.exceptions.NiceTryException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToDeleteCommentException;
@@ -97,6 +98,8 @@ class WykopObjectMapper {
         switch (errorCode) {
             case 552:
                 throw new ActionForbiddenException();
+            case 1:
+                throw new InvalidAPIKeyException();
             case 5:
                 throw new DailyRequestLimitExceededException();
             case 7:
