@@ -23,12 +23,12 @@ import java.time.temporal.ChronoUnit
 
 class EntrySpec extends Specification {
     WykopClient wykop = IntegrationWykopClient.getInstance()
-    private final int nonexistentId = -111111
-    private final def newEntryWithBodyAndUrlMedia = new NewEntry.Builder()
+    private int nonexistentId = -111111
+    private def newEntryWithBodyAndUrlMedia = new NewEntry.Builder()
             .withBody("obraz")
             .withMedia("https://www.wykop.pl/cdn/c3201142/comment_1613001626Mwe2NcUAMJ1yLKZJumQQjC.jpg")
             .build()
-    private final def newCommentWithBodyAndUrlMedia = new NewComment.Builder()
+    private def newCommentWithBodyAndUrlMedia = new NewComment.Builder()
             .withBody("obraz")
             .withMedia("https://www.wykop.pl/cdn/c3201142/comment_1613001626Mwe2NcUAMJ1yLKZJumQQjC.jpg")
             .build()
