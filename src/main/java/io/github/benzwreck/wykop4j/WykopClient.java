@@ -19,6 +19,7 @@ import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException;
 import io.github.benzwreck.wykop4j.links.HitsOption;
 import io.github.benzwreck.wykop4j.links.Link;
 import io.github.benzwreck.wykop4j.notifications.Notification;
+import io.github.benzwreck.wykop4j.profiles.FullProfile;
 
 import java.io.File;
 import java.time.DateTimeException;
@@ -655,6 +656,20 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Pm/DeleteConversation/receiver_name/")
                 .apiParam("receiver_name", login)
                 .build(), Boolean.class);
+    }
+
+    //Profile
+
+    /**
+     * @param login user's login.
+     * @return user's profile.
+     */
+    public Chain<Optional<FullProfile>> profile(String login) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Profiles/Index/login/")
+                .apiParam("login", login)
+                .build(), new TypeReference<Optional<FullProfile>>() {
+        });
     }
 
     public static final class Builder {
