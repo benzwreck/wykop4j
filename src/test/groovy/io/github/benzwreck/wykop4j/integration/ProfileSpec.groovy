@@ -8,18 +8,27 @@ import spock.lang.Specification
 class ProfileSpec extends Specification {
     WykopClient wykop = IntegrationWykopClient.getInstance()
     String nonexistentLogin = UUID.randomUUID().toString()
+    String adminLogin = "m__b"
 
-    def "should return bialkov's profile"(){
+    def "should return existing user profile"() {
         when:
-        def profile = wykop.profile("m__b").execute().get()
+        def profile = wykop.profile(adminLogin).execute().get()
         then:
-        profile.login() == "m__b"
+        profile.login() == adminLogin
         profile.color() == Color.ADMIN
     }
+
     def "should return empty Optional"() {
         when:
         def profile = wykop.profile(nonexistentLogin).execute()
         then:
         profile == Optional.empty()
+    }
+
+    def "should fetch, parse and map to object"() {
+        when:
+        wykop.profileActions(adminLogin).execute()
+        then:
+        noExceptionThrown()
     }
 }

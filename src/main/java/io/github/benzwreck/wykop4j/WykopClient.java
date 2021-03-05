@@ -19,6 +19,7 @@ import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException;
 import io.github.benzwreck.wykop4j.links.HitsOption;
 import io.github.benzwreck.wykop4j.links.Link;
 import io.github.benzwreck.wykop4j.notifications.Notification;
+import io.github.benzwreck.wykop4j.profiles.Actions;
 import io.github.benzwreck.wykop4j.profiles.FullProfile;
 
 import java.io.File;
@@ -670,6 +671,17 @@ public class WykopClient {
                 .apiParam("login", login)
                 .build(), new TypeReference<Optional<FullProfile>>() {
         });
+    }
+
+    /**
+     * @param login user's login.
+     * @return user's actions.
+     */
+    public Chain<Actions> profileActions(String login) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Profiles/Actions/login/")
+                .apiParam("login", login)
+                .build(), Actions.class);
     }
 
     public static final class Builder {

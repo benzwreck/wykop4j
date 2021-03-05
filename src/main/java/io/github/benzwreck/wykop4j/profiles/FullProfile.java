@@ -12,7 +12,7 @@ public class FullProfile {
     private final Boolean isVerified;
     private final Boolean isObserved;
     private final Boolean isBlocked;
-    private final String email;
+    private final String publicEmail;
     private final String about;
     private final String name;
     private final String www;
@@ -34,7 +34,7 @@ public class FullProfile {
     private final Integer buries;
     private final String violationUrl;
 
-    public FullProfile(String login, Color color, Sex sex, String avatar, LocalDateTime signupAt, String background, Boolean isVerified, Boolean isObserved, Boolean isBlocked, String email, String about, String name, String www, String jabber, String gg, String city, String facebook, String twitter, String instagram, Integer linksAddedCount, Integer linksPublishedCount, Integer commentsCount, Integer rank, Integer followers, Integer following, Integer entries, Integer entriesComments, Integer diggs, Integer buries, String violationUrl) {
+    public FullProfile(String login, Color color, Sex sex, String avatar, LocalDateTime signupAt, String background, Boolean isVerified, Boolean isObserved, Boolean isBlocked, String publicEmail, String about, String name, String www, String jabber, String gg, String city, String facebook, String twitter, String instagram, Integer linksAddedCount, Integer linksPublishedCount, Integer commentsCount, Integer rank, Integer followers, Integer following, Integer entries, Integer entriesComments, Integer diggs, Integer buries, String violationUrl) {
         this.login = login;
         this.color = color;
         this.sex = sex;
@@ -44,7 +44,7 @@ public class FullProfile {
         this.isVerified = isVerified;
         this.isObserved = isObserved;
         this.isBlocked = isBlocked;
-        this.email = email;
+        this.publicEmail = publicEmail;
         this.about = about;
         this.name = name;
         this.www = www;
@@ -116,7 +116,7 @@ public class FullProfile {
     }
 
     public String email() {
-        return email;
+        return publicEmail;
     }
 
     public String about() {
@@ -199,7 +199,7 @@ public class FullProfile {
                 ", isVerified=" + isVerified +
                 ", isObserved=" + isObserved +
                 ", isBlocked=" + isBlocked +
-                ", email='" + email + '\'' +
+                ", email='" + publicEmail + '\'' +
                 ", about='" + about + '\'' +
                 ", name='" + name + '\'' +
                 ", www='" + www + '\'' +

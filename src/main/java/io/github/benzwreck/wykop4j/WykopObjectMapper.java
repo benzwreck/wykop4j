@@ -58,7 +58,8 @@ class WykopObjectMapper {
                 .registerModule(javaTimeModule)
                 .registerModule(new EntryMappingModule())
                 .registerModule(new ProfileMappingModule())
-                .registerModule(new ConversationMessageModule());
+                .registerModule(new ConversationMessageModule())
+                .registerModule(new ProfileActionsModule());
     }
 
     public <T> T map(String payload, Class<T> clazz) {
