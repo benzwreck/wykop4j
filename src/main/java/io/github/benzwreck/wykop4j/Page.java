@@ -1,4 +1,4 @@
-package io.github.benzwreck.wykop4j.entries;
+package io.github.benzwreck.wykop4j;
 
 public class Page {
     private final int number;
