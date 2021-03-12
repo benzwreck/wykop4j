@@ -59,6 +59,7 @@ class WykopObjectMapper {
                 .registerModule(new EntryMappingModule())
                 .registerModule(new ProfileMappingModule())
                 .registerModule(new ConversationMessageModule())
+                .registerModule(new LinkInfoColorModule())
                 .registerModule(new ProfileActionsModule());
     }
 
