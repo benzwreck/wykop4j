@@ -182,7 +182,7 @@ class WykopObjectMapper {
     }
 
     private JsonNode handleUserFavorite(JsonNode data) {
-        if (data.hasNonNull("user_favorite")) {
+        if (data.hasNonNull("user_favorite") && data.size() == 1) {
             data = BooleanNode.valueOf(data.get("user_favorite").booleanValue());
         }
         return data;
