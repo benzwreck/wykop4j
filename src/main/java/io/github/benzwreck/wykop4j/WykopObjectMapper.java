@@ -30,17 +30,13 @@ import io.github.benzwreck.wykop4j.exceptions.UnableToDeleteCommentException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException;
 import io.github.benzwreck.wykop4j.exceptions.UserNotFoundException;
 import io.github.benzwreck.wykop4j.exceptions.WykopException;
-import io.github.benzwreck.wykop4j.profiles.FullProfile;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
-import java.util.Optional;
 
 class WykopObjectMapper {
-    private final static Type FULL_PROFILE_OPTIONAL_TYPE = new TypeReference<Optional<FullProfile>>(){}.getType();
     private final ObjectMapper objectMapper;
 
     public WykopObjectMapper() {
@@ -74,28 +70,22 @@ class WykopObjectMapper {
 
     public <T> T map(String payload, TypeReference<T> typeReference) {
         try {
-            JsonNode node = handleResponse(payload, typeReference);
+            JsonNode node = handleResponse(payload);
             return objectMapper.readValue(objectMapper.treeAsTokens(node), typeReference);
         } catch (IOException e) {
             throw new WykopException(0, e.getMessage(), e.getMessage()); //todo magic numbers
         }
     }
 
-    private <T> JsonNode handleResponse(String payload, TypeReference<T> typeReference) throws JsonProcessingException {
-        payload = handleGetProfileEmptyOptional(payload, typeReference);
-        return handleResponse(payload);
-    }
-
-    private <T> String handleGetProfileEmptyOptional(String payload, TypeReference<T> typeReference) {
-        if (FULL_PROFILE_OPTIONAL_TYPE.equals(typeReference.getType())
-                && payload.startsWith("{\"data\":null")) {
-            payload = "{\"data\":[]}";
-        }
-        return payload;
+    private <T> String handleUserNotFoundAsEmptyResponse(String payload) {
+        return payload.startsWith("{\"data\":null,\"error\":{\"code\":13")
+                ? "{\"data\":[]}"
+                : payload;
     }
 
     private JsonNode handleResponse(String payload) throws JsonProcessingException {
         payload = handleServerErrorHtmlResponse(payload);
+        payload = handleUserNotFoundAsEmptyResponse(payload);
         JsonNode node = objectMapper.readTree(payload);
         if (conversationDeleted(payload)) {
             return BooleanNode.valueOf(true);
