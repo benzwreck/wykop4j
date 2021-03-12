@@ -683,6 +683,28 @@ public class WykopClient {
                 .build(), Actions.class);
     }
 
+    /**
+     * @param login user's login.
+     * @return first page of links added by user.
+     */
+    public Chain<List<Link>> profileAddedLinks(String login){
+        return profileAddedLinks(login, Page.of(1));
+    }
+
+    /**
+     * @param login user's login.
+     * @param page page.
+     * @return given page of links added by user.
+     */
+    public Chain<List<Link>> profileAddedLinks(String login, Page page){
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Profiles/Added/login/page/int/")
+                .apiParam("login", login)
+                .namedParam("page", String.valueOf(page.value()))
+                .build(), new TypeReference<List<Link>>() {
+        });
+    }
+
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;

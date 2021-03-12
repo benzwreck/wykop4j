@@ -31,4 +31,18 @@ class ProfileSpec extends Specification {
         then:
         noExceptionThrown()
     }
+
+    def "should return user's added links"() {
+        when:
+        def links = wykop.profileAddedLinks(adminLogin).execute()
+        then:
+        links.stream().allMatch(link -> link.author().login() == adminLogin)
+    }
+
+    def "should return an empty list"() {
+        when:
+        def links = wykop.profileAddedLinks(nonexistentLogin).execute()
+        then:
+        links.isEmpty()
+    }
 }
