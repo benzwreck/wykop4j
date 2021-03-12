@@ -5,7 +5,7 @@ import io.github.benzwreck.wykop4j.WykopClient
 import io.github.benzwreck.wykop4j.entries.Entry
 import io.github.benzwreck.wykop4j.entries.NewComment
 import io.github.benzwreck.wykop4j.entries.NewEntry
-import io.github.benzwreck.wykop4j.entries.Page
+import io.github.benzwreck.wykop4j.Page
 import io.github.benzwreck.wykop4j.entries.Period
 import io.github.benzwreck.wykop4j.entries.UserVote
 import io.github.benzwreck.wykop4j.exceptions.ActionForbiddenException
