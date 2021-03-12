@@ -4,10 +4,11 @@ import io.github.benzwreck.wykop4j.IntegrationWykopClient
 import io.github.benzwreck.wykop4j.WykopClient
 import io.github.benzwreck.wykop4j.profiles.Color
 import spock.lang.Specification
+import spock.lang.Unroll
 
 class ProfileSpec extends Specification {
-    WykopClient wykop = IntegrationWykopClient.getInstance()
-    String nonexistentLogin = UUID.randomUUID().toString()
+    static WykopClient wykop = IntegrationWykopClient.getInstance()
+    static String nonexistentLogin = UUID.randomUUID().toString()
     String adminLogin = "m__b"
 
     def "should return existing user profile"() {
@@ -28,6 +29,7 @@ class ProfileSpec extends Specification {
     def "should fetch, parse and map to object"() {
         when:
         wykop.profileActions(adminLogin).execute()
+        wykop.profileCommentedLinks(adminLogin).execute()
         then:
         noExceptionThrown()
     }
@@ -39,10 +41,13 @@ class ProfileSpec extends Specification {
         links.stream().allMatch(link -> link.author().login() == adminLogin)
     }
 
+    @Unroll
     def "should return an empty list"() {
-        when:
-        def links = wykop.profileAddedLinks(nonexistentLogin).execute()
-        then:
+        expect:
         links.isEmpty()
+        where:
+        links                                                   | _
+        wykop.profileAddedLinks(nonexistentLogin).execute()     | _
+        wykop.profileCommentedLinks(nonexistentLogin).execute() | _
     }
 }

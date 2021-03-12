@@ -705,6 +705,28 @@ public class WykopClient {
         });
     }
 
+    /**
+     * @param login user's login.
+     * @return first page of links commented by user.
+     */
+    public Chain<List<Link>> profileCommentedLinks(String login) {
+        return profileCommentedLinks(login, Page.of(1));
+    }
+
+    /**
+     * @param login user's login.
+     * @param page page.
+     * @return given page of links commented by user.
+     */
+    public Chain<List<Link>> profileCommentedLinks(String login, Page page){
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Profiles/Commented/login/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .apiParam("login", login)
+                .build(), new TypeReference<List<Link>>() {
+        });
+    }
+
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;
