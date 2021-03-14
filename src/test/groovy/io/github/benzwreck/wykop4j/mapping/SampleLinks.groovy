@@ -140,4 +140,69 @@ class SampleLinks {
     }
   ]
 }'''
+
+    String singleLinkComment = '''
+{
+  "data":
+    {
+      "id": 83090897,
+      "date": "2020-10-19 18:00:11",
+      "author": {
+        "login": "m__b",
+        "color": 5,
+        "sex": "male",
+        "avatar": "https://www.wykop.pl/cdn/c3397992/avatar_def,q150.png",
+        "signup_at": "2008-04-02 21:42:26",
+        "background": "https://www.wykop.pl/cdn/c3397992/profile_background-m__b_vr7aMhBtjw,w500.jpg",
+        "violation_url": "https://a2.wykop.pl/naruszenia/form/ot/profile/od/33639/ud/5xOL/hs/8b8e9c0893414f814f7895606055d3c6226a7031/rn/61pQWzqvr9/"
+      },
+      "vote_count": -12,
+      "vote_count_plus": 8,
+      "body": "@beconase: bardzo dziekuje :). Na szczescie, Najwazniejsi pamietaja :)",
+      "parent_id": 83090327,
+      "can_vote": true,
+      "user_vote": 0,
+      "blocked": false,
+      "favorite": false,
+      "link_id": "5750693",
+      "link": {
+        "id": 5750693,
+        "title": "Zasady działań moderacyjnych - standardy moderacji",
+        "description": "Wykopowicze, zdajemy sobie sprawę, że podejmowane przez nas działania moderacyjne nie zawsze spotykają się z Waszą aprobatą.  Wiemy też, że zdarza się, iż nie rozumiecie dlaczego zgłoszona przez Was treść została lub nie została przez nas...",
+        "tags": "#wykop #moderacja #zasady #polska",
+        "source_url": "http://www.wykop.pl/artykul/5750693/zasady-dzialan-moderacyjnych-standardy-moderacji/",
+        "vote_count": 1164,
+        "bury_count": 0,
+        "comments_count": 945,
+        "related_count": 5,
+        "date": "2020-10-19 16:23:02",
+        "author": {
+          "login": "wykop",
+          "color": 5,
+          "avatar": "https://www.wykop.pl/cdn/c3397992/wykop_U5laqyXEOf,q150.jpg",
+          "signup_at": "2005-12-28 12:00:00",
+          "background": "https://www.wykop.pl/cdn/c3397992/profile_background-wykop_wdRyDiuXyR,w500.jpg",
+          "is_verified": true,
+          "violation_url": "https://a2.wykop.pl/naruszenia/form/ot/profile/od/4611/ud/5xOL/hs/f5fd95c811cb60fd72bf55b22264a72b5161f02e/rn/XW1DcAjMGO/"
+        },
+        "preview": "https://www.wykop.pl/cdn/c3397993/link_1603117815m5OxIJrwkSgutxxYYW5P4t,w104h74.jpg",
+        "plus18": false,
+        "status": "promoted",
+        "can_vote": true,
+        "is_hot": true,
+        "user_favorite": false,
+        "user_observe": false,
+        "info": {
+          "color": "yellow",
+          "body": "Wykopowicze, dziękujemy za Wasze zaangażowanie, liczne komentarze, sugestie i opinie w temacie! \\r\\nW konsultacji z Wami przygotowaliśmy zbiór zasad oraz wytycznych, w których określiliśmy jakie treści, działania i aktywności w serwisie nie są akceptowane na Wykopie. Standardy moderacji dostępne będą publicznie pod adresem: https://www.wykop.pl/pomoc/standardy-moderacji/"
+        },
+        "has_own_content": true,
+        "url": "https://www.wykop.pl/link/5750693/zasady-dzialan-moderacyjnych-standardy-moderacji/",
+        "violation_url": "https://a2.wykop.pl/naruszenia/form/ot/link/od/5750693/ud/5xOL/hs/df5e78196a33ccffe400cd2fa9c05e815b4371a2/rn/79U7l1LE1b/"
+      },
+      "violation_url": "https://a2.wykop.pl/naruszenia/form/ot/comment/od/83090897/ud/5xOL/hs/fadd4e43958a10f0ea4cec36afbf3f5074d44a0c/rn/FyAEGlP498/",
+      "vote_count_minus": -20,
+      "original": "@beconase: bardzo dziekuje :). Na szczescie, Najwazniejsi pamietaja :)"
+    }
+}'''
 }

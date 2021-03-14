@@ -17,6 +17,7 @@ import io.github.benzwreck.wykop4j.exceptions.NiceTryException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException;
 import io.github.benzwreck.wykop4j.links.HitsOption;
 import io.github.benzwreck.wykop4j.links.Link;
+import io.github.benzwreck.wykop4j.links.LinkComment;
 import io.github.benzwreck.wykop4j.notifications.Notification;
 import io.github.benzwreck.wykop4j.profiles.Actions;
 import io.github.benzwreck.wykop4j.profiles.FullProfile;
@@ -687,16 +688,16 @@ public class WykopClient {
      * @param login user's login.
      * @return first page of links added by user.
      */
-    public Chain<List<Link>> profileAddedLinks(String login){
+    public Chain<List<Link>> profileAddedLinks(String login) {
         return profileAddedLinks(login, Page.of(1));
     }
 
     /**
      * @param login user's login.
-     * @param page page.
+     * @param page  page.
      * @return given page of links added by user.
      */
-    public Chain<List<Link>> profileAddedLinks(String login, Page page){
+    public Chain<List<Link>> profileAddedLinks(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/Added/login/page/int/")
                 .apiParam("login", login)
@@ -715,15 +716,37 @@ public class WykopClient {
 
     /**
      * @param login user's login.
-     * @param page page.
+     * @param page  page.
      * @return given page of links commented by user.
      */
-    public Chain<List<Link>> profileCommentedLinks(String login, Page page){
+    public Chain<List<Link>> profileCommentedLinks(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/Commented/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
                 .apiParam("login", login)
                 .build(), new TypeReference<List<Link>>() {
+        });
+    }
+
+    /**
+     * @param login user's login.
+     * @return first page of links' comments added by user.
+     */
+    public Chain<List<LinkComment>> profileLinksComments(String login) {
+        return profileLinksComments(login, Page.of(1));
+    }
+
+    /**
+     * @param login user's login.
+     * @param page  page.
+     * @return given page of links' comments added by user.
+     */
+    public Chain<List<LinkComment>> profileLinksComments(String login, Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Profiles/Comments/login/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .apiParam("login", login)
+                .build(), new TypeReference<List<LinkComment>>() {
         });
     }
 
