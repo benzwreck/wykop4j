@@ -882,6 +882,28 @@ public class WykopClient {
         });
     }
 
+    /**
+     * @param login user's login.
+     * @return first page of users being followed by particular user.
+     */
+    public Chain<List<FullProfile>> profileFollowed(String login) {
+        return profileFollowed(login, Page.of(1));
+    }
+
+    /**
+     * @param login user's login.
+     * @param page  page.
+     * @return given page of users being followed by particular user.
+     */
+    public Chain<List<FullProfile>> profileFollowed(String login, Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Profiles/Followed/login/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .apiParam("login", login)
+                .build(), new TypeReference<List<FullProfile>>() {
+        });
+    }
+
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;
