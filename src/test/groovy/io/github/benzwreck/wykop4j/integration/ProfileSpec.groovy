@@ -36,6 +36,7 @@ class ProfileSpec extends Specification {
         wykop.profileEntriesCommented(adminLogin).execute()
         wykop.profileEntriesComments(adminLogin).execute()
         wykop.profileRelatedLinks(adminLogin).execute()
+        wykop.profileFollowers(adminLogin).execute()
         then:
         noExceptionThrown()
     }
@@ -61,5 +62,6 @@ class ProfileSpec extends Specification {
         wykop.profileEntriesCommented(nonexistentLogin).execute() | _
         wykop.profileEntriesComments(nonexistentLogin).execute()  | _
         wykop.profileRelatedLinks(nonexistentLogin).execute()     | _
+        wykop.profileFollowers(nonexistentLogin).execute()        | _
     }
 }
