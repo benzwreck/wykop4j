@@ -20,19 +20,23 @@ class ProfileMappingSpec extends Specification {
         with fullProfile, {
             login() == "m__b"
             color() == Color.ADMIN
-            sex() == Sex.MALE
+            sex().get() == Sex.MALE
             avatar() == "https://www.wykop.pl/cdn/c3397992/avatar_def,q150.png"
             signupAt() == LocalDateTime.of(2008, 4, 2, 21, 42, 26)
+            background().get() == "https://www.wykop.pl/cdn/c3397992/profile_background-m__b_vr7aMhBtjw,w500.jpg"
+            isVerified() == false
             isObserved() == false
             isBlocked() == false
-            email() == "biuro@wykop.pl"
-            name() == "Michał Białek"
-            www() == "http://www.wykop.pl"
-            city() == "internet"
-            facebook() == "https://www.facebook.com/bialek.michal"
-            twitter() == "https://twitter.com/mihau81"
-            instagram() == "https://www.instagram.com/mihau/"
-            about() == "wykopuje, zakopuje, przekopuje..."
+            email().get() == "biuro@wykop.pl"
+            about().get() == "wykopuje, zakopuje, przekopuje..."
+            name().get() == "Michał Białek"
+            www().get() == "http://www.wykop.pl"
+            !jabber().isPresent()
+            !gg().isPresent()
+            city().get() == "internet"
+            facebook().get() == "https://www.facebook.com/bialek.michal"
+            twitter().get() == "https://twitter.com/mihau81"
+            instagram().get() == "https://www.instagram.com/mihau/"
             linksAddedCount() == 33
             linksPublishedCount() == 7
             commentsCount() == 75
@@ -42,6 +46,7 @@ class ProfileMappingSpec extends Specification {
             entries() == 443
             entriesComments() == 2456
             diggs() == 28172
+            buries() == 0
             violationUrl() == "https://a2.wykop.pl/naruszenia/form/ot/profile/od/33639/ud/5xOL/hs/bc2d92529ce3367938eeda280d806f0c8d637c57/rn/iiwjKoXzwp/"
         }
     }

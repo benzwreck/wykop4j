@@ -1,6 +1,7 @@
 package io.github.benzwreck.wykop4j.profiles;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 public class FullProfile {
     private final String login;
@@ -9,9 +10,9 @@ public class FullProfile {
     private final String avatar;
     private final LocalDateTime signupAt;
     private final String background;
-    private final Boolean isVerified;
-    private final Boolean isObserved;
-    private final Boolean isBlocked;
+    private final boolean isVerified;
+    private final boolean isObserved;
+    private final boolean isBlocked;
     private final String publicEmail;
     private final String about;
     private final String name;
@@ -22,19 +23,19 @@ public class FullProfile {
     private final String facebook;
     private final String twitter;
     private final String instagram;
-    private final Integer linksAddedCount;
-    private final Integer linksPublishedCount;
-    private final Integer commentsCount;
-    private final Integer rank;
-    private final Integer followers;
-    private final Integer following;
-    private final Integer entries;
-    private final Integer entriesComments;
-    private final Integer diggs;
-    private final Integer buries;
+    private final int linksAddedCount;
+    private final int linksPublishedCount;
+    private final int commentsCount;
+    private final int rank;
+    private final int followers;
+    private final int following;
+    private final int entries;
+    private final int entriesComments;
+    private final int diggs;
+    private final int buries;
     private final String violationUrl;
 
-    public FullProfile(String login, Color color, Sex sex, String avatar, LocalDateTime signupAt, String background, Boolean isVerified, Boolean isObserved, Boolean isBlocked, String publicEmail, String about, String name, String www, String jabber, String gg, String city, String facebook, String twitter, String instagram, Integer linksAddedCount, Integer linksPublishedCount, Integer commentsCount, Integer rank, Integer followers, Integer following, Integer entries, Integer entriesComments, Integer diggs, Integer buries, String violationUrl) {
+    public FullProfile(String login, Color color, Sex sex, String avatar, LocalDateTime signupAt, String background, boolean isVerified, boolean isObserved, boolean isBlocked, String publicEmail, String about, String name, String www, String jabber, String gg, String city, String facebook, String twitter, String instagram, int linksAddedCount, int linksPublishedCount, int commentsCount, int rank, int followers, int following, int entries, int entriesComments, int diggs, int buries, String violationUrl) {
         this.login = login;
         this.color = color;
         this.sex = sex;
@@ -75,8 +76,8 @@ public class FullProfile {
         return color;
     }
 
-    public Sex sex() {
-        return sex;
+    public Optional<Sex> sex() {
+        return Optional.ofNullable(sex);
     }
 
     public String avatar() {
@@ -87,99 +88,99 @@ public class FullProfile {
         return followers;
     }
 
-    public String name() {
-        return name;
+    public Optional<String> name() {
+        return Optional.ofNullable(name);
     }
 
-    public String city() {
-        return city;
+    public Optional<String> city() {
+        return Optional.ofNullable(city);
     }
 
     public LocalDateTime signupAt() {
         return signupAt;
     }
 
-    public String background() {
-        return background;
+    public Optional<String> background() {
+        return Optional.ofNullable(background);
     }
 
-    public Boolean isVerified() {
+    public boolean isVerified() {
         return isVerified;
     }
 
-    public Boolean isObserved() {
+    public boolean isObserved() {
         return isObserved;
     }
 
-    public Boolean isBlocked() {
+    public boolean isBlocked() {
         return isBlocked;
     }
 
-    public String email() {
-        return publicEmail;
+    public Optional<String> email() {
+        return Optional.ofNullable(publicEmail);
     }
 
-    public String about() {
-        return about;
+    public Optional<String> about() {
+        return Optional.ofNullable(about);
     }
 
-    public String www() {
-        return www;
+    public Optional<String> www() {
+        return Optional.ofNullable(www);
     }
 
-    public String jabber() {
-        return jabber;
+    public Optional<String> jabber() {
+        return Optional.ofNullable(jabber);
     }
 
-    public String gg() {
-        return gg;
+    public Optional<String> gg() {
+        return Optional.ofNullable(gg);
     }
 
-    public String facebook() {
-        return facebook;
+    public Optional<String> facebook() {
+        return Optional.ofNullable(facebook);
     }
 
-    public String twitter() {
-        return twitter;
+    public Optional<String> twitter() {
+        return Optional.ofNullable(twitter);
     }
 
-    public String instagram() {
-        return instagram;
+    public Optional<String> instagram() {
+        return Optional.ofNullable(instagram);
     }
 
-    public Integer linksAddedCount() {
+    public int linksAddedCount() {
         return linksAddedCount;
     }
 
-    public Integer linksPublishedCount() {
+    public int linksPublishedCount() {
         return linksPublishedCount;
     }
 
-    public Integer commentsCount() {
+    public int commentsCount() {
         return commentsCount;
     }
 
-    public Integer rank() {
+    public int rank() {
         return rank;
     }
 
-    public Integer following() {
+    public int following() {
         return following;
     }
 
-    public Integer entries() {
+    public int entries() {
         return entries;
     }
 
-    public Integer entriesComments() {
+    public int entriesComments() {
         return entriesComments;
     }
 
-    public Integer diggs() {
+    public int diggs() {
         return diggs;
     }
 
-    public Integer buries() {
+    public int buries() {
         return buries;
     }
 
