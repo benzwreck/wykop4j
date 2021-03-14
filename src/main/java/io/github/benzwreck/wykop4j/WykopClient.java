@@ -750,6 +750,28 @@ public class WykopClient {
         });
     }
 
+    /**
+     * @param login user's login.
+     * @return first page of links published by user.
+     */
+    public Chain<List<Link>> profileLinksPublished(String login) {
+        return profileLinksPublished(login, Page.of(1));
+    }
+
+    /**
+     * @param login user's login.
+     * @param page  page.
+     * @return given page of links published by user.
+     */
+    public Chain<List<Link>> profileLinksPublished(String login, Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Profiles/Published/login/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .apiParam("login", login)
+                .build(), new TypeReference<List<Link>>() {
+        });
+    }
+
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;
