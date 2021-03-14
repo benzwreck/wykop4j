@@ -114,11 +114,9 @@ class SampleProfiles {
     }
   ]
 }'''
-
     String emptyActions = '''{
   "data": []
 }'''
-
     String adminProfile = '''{
   "data": {
     "login": "m__b",
@@ -149,7 +147,6 @@ class SampleProfiles {
     "violation_url": "https://a2.wykop.pl/naruszenia/form/ot/profile/od/33639/ud/5xOL/hs/bc2d92529ce3367938eeda280d806f0c8d637c57/rn/iiwjKoXzwp/"
   }
 }'''
-
     String listOfFourBadges = '''
 {
   "data": [
@@ -183,7 +180,6 @@ class SampleProfiles {
     }
   ]
 }'''
-
     String singleBadge = '''
 {
   "data": {

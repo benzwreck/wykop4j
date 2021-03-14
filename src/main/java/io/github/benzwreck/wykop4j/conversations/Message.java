@@ -66,6 +66,6 @@ public class Message {
     }
 
     public enum Direction {
-        RECEIVED, SENDED
+        RECEIVED, SENT
     }
 }

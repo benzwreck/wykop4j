@@ -38,7 +38,6 @@ class SampleLinks {
     "violation_url": "https://a2.wykop.pl/naruszenia/form/ot/link/od/5347365/ud/5xOL/hs/2d807ee2f8ffc4779742d1666769578c7f20e6c2/rn/K6HXl67FuS/"
   }
 }'''
-
     String listOfThreeLinks = '''{
   "data": [
     {
@@ -140,7 +139,6 @@ class SampleLinks {
     }
   ]
 }'''
-
     String singleLinkComment = '''
 {
   "data":

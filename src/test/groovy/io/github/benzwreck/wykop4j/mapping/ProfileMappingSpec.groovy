@@ -54,41 +54,37 @@ class ProfileMappingSpec extends Specification {
     }
 
     def "should map json to empty profile's actions"() {
-        given:
-        String json = sampleProfile.emptyActions
-        when:
-        def actions = mapper.map(json, Actions)
-        then:
-        actions.entries().isEmpty()
-        actions.links().isEmpty()
+        expect:
+        with mapper.map(sampleProfile.emptyActions, Actions),
+                {
+                    entries().isEmpty()
+                    links().isEmpty()
+                }
     }
 
     def "should map json to profile's actions"() {
-        given:
-        String json = sampleProfile.actionsWithEntryAndLink
-        when:
-        def actions = mapper.map(json, Actions)
-        then:
-        actions.entries().size() == 2
-        actions.links().size() == 1
+        expect:
+        with mapper.map(sampleProfile.actionsWithEntryAndLink, Actions),
+                {
+                    entries().size() == 2
+                    links().size() == 1
+                }
     }
 
     def "should map json to single badge"() {
-        given:
-        def badge = mapper.map(sampleProfile.singleBadge, Badge)
         expect:
-        with badge, {
-            name() == "Rocznica"
-            level() == 12
-            date() == LocalDateTime.of(2020, 4, 2, 21, 42, 26)
-            icon() == "https://www.wykop.pl/static/wykoppl7/img/badges/50px_anniversary_12.png"
-            description() == "za liczbę lat spędzonych na Wykopie"
-        }
+        with mapper.map(sampleProfile.singleBadge, Badge),
+                {
+                    name() == "Rocznica"
+                    level() == 12
+                    date() == LocalDateTime.of(2020, 4, 2, 21, 42, 26)
+                    icon() == "https://www.wykop.pl/static/wykoppl7/img/badges/50px_anniversary_12.png"
+                    description() == "za liczbę lat spędzonych na Wykopie"
+                }
     }
-    def "should map json to list of badges"(){
-        given:
-        def badges = mapper.map(sampleProfile.listOfFourBadges, new TypeReference<List<Badge>>() {})
+
+    def "should map json to list of four badges"() {
         expect:
-        badges.size() == 4
+        mapper.map(sampleProfile.listOfFourBadges, new TypeReference<List<Badge>>() {}).size() == 4
     }
 }

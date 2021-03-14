@@ -17,11 +17,11 @@ class ConversationMessageModule extends SimpleModule {
     }
     private class ConversationMessageDeserializer extends JsonDeserializer<Message.Direction> {
         @Override
-        public Message.Direction deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+        public Message.Direction deserialize(JsonParser p, DeserializationContext ctxt) throws IOException{
             JsonNode node = p.getCodec().readTree(p);
             return node.textValue().equals("received")
                     ? Message.Direction.RECEIVED
-                    : Message.Direction.SENDED;
+                    : Message.Direction.SENT;
         }
     }
 }
