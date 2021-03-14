@@ -28,22 +28,25 @@ class ProfileSpec extends Specification {
 
     @Unroll
     def "should fetch, parse and map to object"() {
-        expect:
-        !(result in Throwable)
+        when:
+        result.execute()
+        then:
+        noExceptionThrown()
         where:
-        result                                              | _
-        wykop.profileActions(adminLogin).execute()          | _
-        wykop.profileCommentedLinks(adminLogin).execute()   | _
-        wykop.profileLinksComments(adminLogin).execute()    | _
-        wykop.profileLinksPublished(adminLogin).execute()   | _
-        wykop.profileLinksPublished(adminLogin).execute()   | _
-        wykop.profileEntriesCommented(adminLogin).execute() | _
-        wykop.profileEntriesComments(adminLogin).execute()  | _
-        wykop.profileRelatedLinks(adminLogin).execute()     | _
-        wykop.profileFollowers(adminLogin).execute()        | _
-        wykop.profileFollowed(adminLogin).execute()         | _
-        wykop.profileBadges(adminLogin).execute()           | _
-        wykop.profileDiggedLinks(adminLogin).execute()      | _
+        result                                    | _
+        wykop.profileActions(adminLogin)          | _
+        wykop.profileCommentedLinks(adminLogin)   | _
+        wykop.profileLinksComments(adminLogin)    | _
+        wykop.profileLinksPublished(adminLogin)   | _
+        wykop.profileLinksPublished(adminLogin)   | _
+        wykop.profileEntriesCommented(adminLogin) | _
+        wykop.profileEntriesComments(adminLogin)  | _
+        wykop.profileRelatedLinks(adminLogin)     | _
+        wykop.profileFollowers(adminLogin)        | _
+        wykop.profileFollowed(adminLogin)         | _
+        wykop.profileBadges(adminLogin)           | _
+        wykop.profileDiggedLinks(adminLogin)      | _
+        wykop.profileBuriedLinks(adminLogin)      | _
     }
 
     def "should return user's added links"() {
@@ -56,20 +59,21 @@ class ProfileSpec extends Specification {
     @Unroll
     def "should return an empty list"() {
         expect:
-        links.isEmpty()
+        links.execute().isEmpty()
         where:
-        links                                                     | _
-        wykop.profileAddedLinks(nonexistentLogin).execute()       | _
-        wykop.profileCommentedLinks(nonexistentLogin).execute()   | _
-        wykop.profileLinksComments(nonexistentLogin).execute()    | _
-        wykop.profileLinksPublished(nonexistentLogin).execute()   | _
-        wykop.profileLinksPublished(nonexistentLogin).execute()   | _
-        wykop.profileEntriesCommented(nonexistentLogin).execute() | _
-        wykop.profileEntriesComments(nonexistentLogin).execute()  | _
-        wykop.profileRelatedLinks(nonexistentLogin).execute()     | _
-        wykop.profileFollowers(nonexistentLogin).execute()        | _
-        wykop.profileFollowed(nonexistentLogin).execute()         | _
-        wykop.profileBadges(nonexistentLogin).execute()           | _
-        wykop.profileDiggedLinks(nonexistentLogin).execute()      | _
+        links                                           | _
+        wykop.profileAddedLinks(nonexistentLogin)       | _
+        wykop.profileCommentedLinks(nonexistentLogin)   | _
+        wykop.profileLinksComments(nonexistentLogin)    | _
+        wykop.profileLinksPublished(nonexistentLogin)   | _
+        wykop.profileLinksPublished(nonexistentLogin)   | _
+        wykop.profileEntriesCommented(nonexistentLogin) | _
+        wykop.profileEntriesComments(nonexistentLogin)  | _
+        wykop.profileRelatedLinks(nonexistentLogin)     | _
+        wykop.profileFollowers(nonexistentLogin)        | _
+        wykop.profileFollowed(nonexistentLogin)         | _
+        wykop.profileBadges(nonexistentLogin)           | _
+        wykop.profileDiggedLinks(nonexistentLogin)      | _
+        wykop.profileBuriedLinks(nonexistentLogin)      | _
     }
 }
