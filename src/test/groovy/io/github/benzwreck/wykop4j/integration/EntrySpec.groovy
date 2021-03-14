@@ -7,7 +7,7 @@ import io.github.benzwreck.wykop4j.entries.NewComment
 import io.github.benzwreck.wykop4j.entries.NewEntry
 import io.github.benzwreck.wykop4j.Page
 import io.github.benzwreck.wykop4j.entries.Period
-import io.github.benzwreck.wykop4j.entries.UserVote
+import io.github.benzwreck.wykop4j.shared.UserVote
 import io.github.benzwreck.wykop4j.exceptions.ActionForbiddenException
 import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException
 import io.github.benzwreck.wykop4j.exceptions.CommentDoesNotExistException

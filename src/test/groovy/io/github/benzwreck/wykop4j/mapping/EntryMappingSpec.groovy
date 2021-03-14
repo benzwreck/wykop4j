@@ -2,7 +2,7 @@ package io.github.benzwreck.wykop4j.mapping
 
 import io.github.benzwreck.wykop4j.WykopMappingTestObject
 import io.github.benzwreck.wykop4j.entries.Entry
-import io.github.benzwreck.wykop4j.entries.UserVote
+import io.github.benzwreck.wykop4j.shared.UserVote
 import io.github.benzwreck.wykop4j.profiles.Color
 import spock.lang.Specification
 

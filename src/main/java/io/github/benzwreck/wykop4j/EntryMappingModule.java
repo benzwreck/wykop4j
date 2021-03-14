@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import io.github.benzwreck.wykop4j.entries.UserVote;
+import io.github.benzwreck.wykop4j.shared.UserVote;
 
 import java.io.IOException;
 
@@ -18,7 +18,7 @@ class EntryMappingModule extends SimpleModule {
     private class UserVoteDeserializer extends JsonDeserializer<UserVote>{
 
         @Override
-        public UserVote deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+        public UserVote deserialize(JsonParser p, DeserializationContext ctxt) throws IOException{
             JsonNode node = p.getCodec().readTree(p);
             return node.intValue() == 0
                     ? UserVote.NOT_VOTED
