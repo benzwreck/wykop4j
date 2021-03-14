@@ -38,6 +38,7 @@ class ProfileSpec extends Specification {
         wykop.profileRelatedLinks(adminLogin).execute()
         wykop.profileFollowers(adminLogin).execute()
         wykop.profileFollowed(adminLogin).execute()
+        wykop.profileBadges(adminLogin).execute()
         then:
         noExceptionThrown()
     }
@@ -65,5 +66,6 @@ class ProfileSpec extends Specification {
         wykop.profileRelatedLinks(nonexistentLogin).execute()     | _
         wykop.profileFollowers(nonexistentLogin).execute()        | _
         wykop.profileFollowed(nonexistentLogin).execute()         | _
+        wykop.profileBadges(nonexistentLogin).execute()           | _
     }
 }

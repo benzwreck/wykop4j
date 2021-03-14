@@ -20,6 +20,7 @@ import io.github.benzwreck.wykop4j.links.Link;
 import io.github.benzwreck.wykop4j.links.LinkComment;
 import io.github.benzwreck.wykop4j.notifications.Notification;
 import io.github.benzwreck.wykop4j.profiles.Actions;
+import io.github.benzwreck.wykop4j.profiles.Badge;
 import io.github.benzwreck.wykop4j.profiles.FullProfile;
 
 import java.io.File;
@@ -901,6 +902,28 @@ public class WykopClient {
                 .namedParam("page", String.valueOf(page.value()))
                 .apiParam("login", login)
                 .build(), new TypeReference<List<FullProfile>>() {
+        });
+    }
+
+    /**
+     * @param login user's login.
+     * @return first page of user's badges.
+     */
+    public Chain<List<Badge>> profileBadges(String login) {
+        return profileBadges(login, Page.of(1));
+    }
+
+    /**
+     * @param login user's login.
+     * @param page  page.
+     * @return given page of user's badges.
+     */
+    public Chain<List<Badge>> profileBadges(String login, Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Profiles/Badges/login/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .apiParam("login", login)
+                .build(), new TypeReference<List<Badge>>() {
         });
     }
 

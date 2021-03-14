@@ -1,7 +1,9 @@
 package io.github.benzwreck.wykop4j.mapping
 
+import com.fasterxml.jackson.core.type.TypeReference
 import io.github.benzwreck.wykop4j.WykopMappingTestObject
 import io.github.benzwreck.wykop4j.profiles.Actions
+import io.github.benzwreck.wykop4j.profiles.Badge
 import io.github.benzwreck.wykop4j.profiles.Color
 import io.github.benzwreck.wykop4j.profiles.FullProfile
 import io.github.benzwreck.wykop4j.profiles.Sex
@@ -71,4 +73,22 @@ class ProfileMappingSpec extends Specification {
         actions.links().size() == 1
     }
 
+    def "should map json to single badge"() {
+        given:
+        def badge = mapper.map(sampleProfile.singleBadge, Badge)
+        expect:
+        with badge, {
+            name() == "Rocznica"
+            level() == 12
+            date() == LocalDateTime.of(2020, 4, 2, 21, 42, 26)
+            icon() == "https://www.wykop.pl/static/wykoppl7/img/badges/50px_anniversary_12.png"
+            description() == "za liczbę lat spędzonych na Wykopie"
+        }
+    }
+    def "should map json to list of badges"(){
+        given:
+        def badges = mapper.map(sampleProfile.listOfFourBadges, new TypeReference<List<Badge>>() {})
+        expect:
+        badges.size() == 4
+    }
 }

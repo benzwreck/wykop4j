@@ -150,4 +150,48 @@ class SampleProfiles {
   }
 }'''
 
+    String listOfFourBadges = '''
+{
+  "data": [
+    {
+      "name": "Rocznica",
+      "level": "12",
+      "date": "2020-04-02 21:42:26",
+      "icon": "https://www.wykop.pl/static/wykoppl7/img/badges/50px_anniversary_12.png",
+      "description": "za liczbę lat spędzonych na Wykopie"
+    },
+    {
+      "name": "Pozytywnie Zakręcony",
+      "level": "1",
+      "date": "2018-09-17 23:27:27",
+      "icon": "https://www.wykop.pl/static/wykoppl7/img/badges/50px_twisted_1.png",
+      "description": "dla osób, które swoją aktywnością przyczyniają się do pomocy innym"
+    },
+    {
+      "name": "Komentator",
+      "level": "3",
+      "date": "2017-02-13 00:45:30",
+      "icon": "https://www.wykop.pl/static/wykoppl7/img/badges/50px_comments_3.png",
+      "description": "za liczbę napisanych komentarzy w znaleziskach"
+    },
+    {
+      "name": "Wykopowicz",
+      "level": "2",
+      "date": "2014-04-12 00:12:42",
+      "icon": "https://www.wykop.pl/static/wykoppl7/img/badges/50px_links_2.png",
+      "description": "za liczbę znalezisk na stronie głównej"
+    }
+  ]
+}'''
+
+    String singleBadge = '''
+{
+  "data": {
+    "name": "Rocznica",
+    "level": "12",
+    "date": "2020-04-02 21:42:26",
+    "icon": "https://www.wykop.pl/static/wykoppl7/img/badges/50px_anniversary_12.png",
+    "description": "za liczbę lat spędzonych na Wykopie"
+  }
+}'''
 }
