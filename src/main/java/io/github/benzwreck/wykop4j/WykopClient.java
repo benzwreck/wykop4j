@@ -926,6 +926,7 @@ public class WykopClient {
                 .build(), new TypeReference<List<Badge>>() {
         });
     }
+
     /**
      * @param login user's login.
      * @return first page of user's digged links.
@@ -947,6 +948,7 @@ public class WykopClient {
                 .build(), new TypeReference<List<Link>>() {
         });
     }
+
     /**
      * @param login user's login.
      * @return first page of user's buried links.
@@ -969,6 +971,24 @@ public class WykopClient {
         });
     }
 
+    /**
+     * @return first page of profiles from user rank.
+     */
+    public Chain<List<FullProfile>> profileRanking() {
+        return profileRanking(Page.of(1));
+    }
+
+    /**
+     * @param page  page.
+     * @return given page of profiles from user rank.
+     */
+    public Chain<List<FullProfile>> profileRanking(Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Profiles/Rank/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .build(), new TypeReference<List<FullProfile>>() {
+        });
+    }
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;

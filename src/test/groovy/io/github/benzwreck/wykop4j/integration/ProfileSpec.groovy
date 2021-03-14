@@ -47,6 +47,7 @@ class ProfileSpec extends Specification {
         wykop.profileBadges(adminLogin)           | _
         wykop.profileDiggedLinks(adminLogin)      | _
         wykop.profileBuriedLinks(adminLogin)      | _
+        wykop.profileRanking() | _
     }
 
     def "should return user's added links"() {
