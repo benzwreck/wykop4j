@@ -6,23 +6,29 @@ import io.github.benzwreck.wykop4j.TwoAccounts
 import io.github.benzwreck.wykop4j.WykopClient
 import io.github.benzwreck.wykop4j.conversations.NewMessage
 import io.github.benzwreck.wykop4j.exceptions.UserNotFoundException
+import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
 
 class ConversationSpec extends Specification {
-    WykopClient wykop = IntegrationWykopClient.getInstance()
-    private String nonexistentLogin = UUID.randomUUID().toString()
-    def newMessage = new NewMessage.Builder()
+    static WykopClient wykop = IntegrationWykopClient.getInstance()
+    static String nonexistentLogin = UUID.randomUUID().toString()
+    @Shared
+    NewMessage newMessage = new NewMessage.Builder()
             .withBody("tresc")
             .withMedia(new File("src/test/resources/white.jpg"))
             .build()
 
+    @Unroll
     def "should not thrown an exception"() {
         when:
-        wykop.conversationsList().execute()
-        wykop.conversation(IntegrationData.secondAccountLogin).execute()
+        result.execute()
         then:
         noExceptionThrown()
+        where:
+        result                                                 | _
+        wykop.conversationsList()                              | _
+        wykop.conversation(IntegrationData.secondAccountLogin) | _
     }
 
     def "should return empty list"() {
@@ -66,9 +72,12 @@ class ConversationSpec extends Specification {
     @Unroll
     def "should throw an exception when user does not exist"() {
         when:
-        wykop.deleteConversation(nonexistentLogin).execute()
-        wykop.sendMessage(nonexistentLogin, newMessage).execute()
+        result.execute()
         then:
-        thrown UserNotFoundException
+        thrown(UserNotFoundException)
+        where:
+        result                                          | _
+        wykop.deleteConversation(nonexistentLogin)      | _
+        wykop.sendMessage(nonexistentLogin, newMessage) | _
     }
 }
