@@ -926,6 +926,28 @@ public class WykopClient {
                 .build(), new TypeReference<List<Badge>>() {
         });
     }
+    /**
+     * @param login user's login.
+     * @return first page of user's digged links.
+     */
+    public Chain<List<Link>> profileDiggedLinks(String login) {
+        return profileDiggedLinks(login, Page.of(1));
+    }
+
+    /**
+     * @param login user's login.
+     * @param page  page.
+     * @return given page of user's digged links.
+     */
+    public Chain<List<Link>> profileDiggedLinks(String login, Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Profiles/Digged/login/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .apiParam("login", login)
+                .build(), new TypeReference<List<Link>>() {
+        });
+    }
+
 
     public static final class Builder {
         private UserCredentials userCredentials;

@@ -9,7 +9,7 @@ import spock.lang.Unroll
 class ProfileSpec extends Specification {
     static WykopClient wykop = IntegrationWykopClient.getInstance()
     static String nonexistentLogin = UUID.randomUUID().toString()
-    String adminLogin = "m__b"
+    static String adminLogin = "m__b"
 
     def "should return existing user profile"() {
         when:
@@ -26,21 +26,24 @@ class ProfileSpec extends Specification {
         profile == Optional.empty()
     }
 
+    @Unroll
     def "should fetch, parse and map to object"() {
-        when:
-        wykop.profileActions(adminLogin).execute()
-        wykop.profileCommentedLinks(adminLogin).execute()
-        wykop.profileLinksComments(adminLogin).execute()
-        wykop.profileLinksPublished(adminLogin).execute()
-        wykop.profileLinksPublished(adminLogin).execute()
-        wykop.profileEntriesCommented(adminLogin).execute()
-        wykop.profileEntriesComments(adminLogin).execute()
-        wykop.profileRelatedLinks(adminLogin).execute()
-        wykop.profileFollowers(adminLogin).execute()
-        wykop.profileFollowed(adminLogin).execute()
-        wykop.profileBadges(adminLogin).execute()
-        then:
-        noExceptionThrown()
+        expect:
+        !(result in Throwable)
+        where:
+        result                                              | _
+        wykop.profileActions(adminLogin).execute()          | _
+        wykop.profileCommentedLinks(adminLogin).execute()   | _
+        wykop.profileLinksComments(adminLogin).execute()    | _
+        wykop.profileLinksPublished(adminLogin).execute()   | _
+        wykop.profileLinksPublished(adminLogin).execute()   | _
+        wykop.profileEntriesCommented(adminLogin).execute() | _
+        wykop.profileEntriesComments(adminLogin).execute()  | _
+        wykop.profileRelatedLinks(adminLogin).execute()     | _
+        wykop.profileFollowers(adminLogin).execute()        | _
+        wykop.profileFollowed(adminLogin).execute()         | _
+        wykop.profileBadges(adminLogin).execute()           | _
+        wykop.profileDiggedLinks(adminLogin).execute()      | _
     }
 
     def "should return user's added links"() {
@@ -67,5 +70,6 @@ class ProfileSpec extends Specification {
         wykop.profileFollowers(nonexistentLogin).execute()        | _
         wykop.profileFollowed(nonexistentLogin).execute()         | _
         wykop.profileBadges(nonexistentLogin).execute()           | _
+        wykop.profileDiggedLinks(nonexistentLogin).execute()      | _
     }
 }
