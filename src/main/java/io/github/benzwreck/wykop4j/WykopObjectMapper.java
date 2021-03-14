@@ -70,6 +70,7 @@ class WykopObjectMapper {
 
     public <T> T map(String payload, TypeReference<T> typeReference) {
         try {
+            payload = handleUserNotFoundAsEmptyResponse(payload);
             JsonNode node = handleResponse(payload);
             return objectMapper.readValue(objectMapper.treeAsTokens(node), typeReference);
         } catch (IOException e) {
@@ -77,7 +78,7 @@ class WykopObjectMapper {
         }
     }
 
-    private <T> String handleUserNotFoundAsEmptyResponse(String payload) {
+    private String handleUserNotFoundAsEmptyResponse(String payload) {
         return payload.startsWith("{\"data\":null,\"error\":{\"code\":13")
                 ? "{\"data\":[]}"
                 : payload;
@@ -85,7 +86,6 @@ class WykopObjectMapper {
 
     private JsonNode handleResponse(String payload) throws JsonProcessingException {
         payload = handleServerErrorHtmlResponse(payload);
-        payload = handleUserNotFoundAsEmptyResponse(payload);
         JsonNode node = objectMapper.readTree(payload);
         if (conversationDeleted(payload)) {
             return BooleanNode.valueOf(true);
