@@ -33,6 +33,7 @@ class ProfileSpec extends Specification {
         wykop.profileLinksComments(adminLogin).execute()
         wykop.profileLinksPublished(adminLogin).execute()
         wykop.profileLinksPublished(adminLogin).execute()
+        wykop.profileEntriesCommented(adminLogin).execute()
         then:
         noExceptionThrown()
     }
@@ -49,11 +50,12 @@ class ProfileSpec extends Specification {
         expect:
         links.isEmpty()
         where:
-        links                                                   | _
-        wykop.profileAddedLinks(nonexistentLogin).execute()     | _
-        wykop.profileCommentedLinks(nonexistentLogin).execute() | _
-        wykop.profileLinksComments(nonexistentLogin).execute()  | _
-        wykop.profileLinksPublished(nonexistentLogin).execute() | _
-        wykop.profileLinksPublished(nonexistentLogin).execute() | _
+        links                                                       | _
+        wykop.profileAddedLinks(nonexistentLogin).execute()         | _
+        wykop.profileCommentedLinks(nonexistentLogin).execute()     | _
+        wykop.profileLinksComments(nonexistentLogin).execute()      | _
+        wykop.profileLinksPublished(nonexistentLogin).execute()     | _
+        wykop.profileLinksPublished(nonexistentLogin).execute()     | _
+        wykop.profileEntriesCommented(nonexistentLogin).execute()   | _
     }
 }

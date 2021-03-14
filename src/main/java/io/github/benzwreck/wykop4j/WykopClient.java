@@ -771,6 +771,7 @@ public class WykopClient {
                 .build(), new TypeReference<List<Link>>() {
         });
     }
+
     /**
      * @param login user's login.
      * @return first page of entries added by user.
@@ -792,6 +793,30 @@ public class WykopClient {
                 .build(), new TypeReference<List<Entry>>() {
         });
     }
+
+    /**
+     * @param login user's login.
+     * @return first page of entries commented by user.
+     */
+    public Chain<List<Entry>> profileEntriesCommented(String login) {
+        return profileEntriesCommented(login, Page.of(1));
+    }
+
+    /**
+     * @param login user's login.
+     * @param page  page.
+     * @return given page of entries commented by user.
+     */
+    public Chain<List<Entry>> profileEntriesCommented(String login, Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Profiles/CommentedEntries/login/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .apiParam("login", login)
+                .build(), new TypeReference<List<Entry>>() {
+        });
+    }
+
+
 
     public static final class Builder {
         private UserCredentials userCredentials;
