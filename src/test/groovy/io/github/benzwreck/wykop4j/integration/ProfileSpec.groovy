@@ -1,14 +1,18 @@
 package io.github.benzwreck.wykop4j.integration
 
+import io.github.benzwreck.wykop4j.IntegrationData
 import io.github.benzwreck.wykop4j.IntegrationWykopClient
+import io.github.benzwreck.wykop4j.TwoAccounts
 import io.github.benzwreck.wykop4j.WykopClient
 import io.github.benzwreck.wykop4j.profiles.Color
+import io.github.benzwreck.wykop4j.profiles.InteractionStatus
 import spock.lang.Specification
 import spock.lang.Unroll
 
 class ProfileSpec extends Specification {
     static WykopClient wykop = IntegrationWykopClient.getInstance()
     static String nonexistentLogin = UUID.randomUUID().toString()
+    static String secondAccountLogin = IntegrationData.secondAccountLogin
     static String adminLogin = "m__b"
 
     def "should return existing user profile"() {
@@ -47,7 +51,7 @@ class ProfileSpec extends Specification {
         wykop.profileBadges(adminLogin)           | _
         wykop.profileDiggedLinks(adminLogin)      | _
         wykop.profileBuriedLinks(adminLogin)      | _
-        wykop.profileRanking() | _
+        wykop.profileRanking()                    | _
     }
 
     def "should return user's added links"() {
@@ -55,6 +59,22 @@ class ProfileSpec extends Specification {
         def links = wykop.profileAddedLinks(adminLogin).execute()
         then:
         links.stream().allMatch(link -> link.author().login() == adminLogin)
+    }
+
+    @TwoAccounts
+    @Unroll
+    def "should #name user"() {
+        expect:
+        with action.execute(), {
+            reaction.isObserved() == isObserved()
+            reaction.isBlocked() == isBlocked()
+        }
+        where:
+        name        | action                              || reaction
+        "observe"   | wykop.observe(secondAccountLogin)   || new InteractionStatus(true, false)
+        "unobserve" | wykop.unobserve(secondAccountLogin) || new InteractionStatus(false, false)
+        "block"     | wykop.block(secondAccountLogin)     || new InteractionStatus(false, true)
+        "unblock"   | wykop.unblock(secondAccountLogin)   || new InteractionStatus(false, false)
     }
 
     @Unroll

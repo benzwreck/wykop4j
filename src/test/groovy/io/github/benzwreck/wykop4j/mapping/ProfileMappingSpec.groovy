@@ -6,6 +6,7 @@ import io.github.benzwreck.wykop4j.profiles.Actions
 import io.github.benzwreck.wykop4j.profiles.Badge
 import io.github.benzwreck.wykop4j.profiles.Color
 import io.github.benzwreck.wykop4j.profiles.FullProfile
+import io.github.benzwreck.wykop4j.profiles.InteractionStatus
 import io.github.benzwreck.wykop4j.profiles.Sex
 import spock.lang.Specification
 
@@ -86,5 +87,13 @@ class ProfileMappingSpec extends Specification {
     def "should map json to list of four badges"() {
         expect:
         mapper.map(sampleProfile.listOfFourBadges, new TypeReference<List<Badge>>() {}).size() == 4
+    }
+
+    def "should map json to interaction status"(){
+        with mapper.map(sampleProfile.interactionStatus, InteractionStatus),
+                {
+                    isObserved() == true
+                    isBlocked() == false
+                }
     }
 }

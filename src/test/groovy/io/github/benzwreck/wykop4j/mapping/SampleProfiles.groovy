@@ -190,4 +190,11 @@ class SampleProfiles {
     "description": "za liczbę lat spędzonych na Wykopie"
   }
 }'''
+    String interactionStatus = '''
+{
+  "data": {
+    "is_observed": true,
+    "is_blocked": false
+  }
+}'''
 }

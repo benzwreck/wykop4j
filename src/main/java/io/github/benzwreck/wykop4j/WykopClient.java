@@ -22,6 +22,7 @@ import io.github.benzwreck.wykop4j.notifications.Notification;
 import io.github.benzwreck.wykop4j.profiles.Actions;
 import io.github.benzwreck.wykop4j.profiles.Badge;
 import io.github.benzwreck.wykop4j.profiles.FullProfile;
+import io.github.benzwreck.wykop4j.profiles.InteractionStatus;
 
 import java.io.File;
 import java.time.DateTimeException;
@@ -979,7 +980,7 @@ public class WykopClient {
     }
 
     /**
-     * @param page  page.
+     * @param page page.
      * @return given page of profiles from user rank.
      */
     public Chain<List<FullProfile>> profileRanking(Page page) {
@@ -989,6 +990,47 @@ public class WykopClient {
                 .build(), new TypeReference<List<FullProfile>>() {
         });
     }
+
+    /**
+     * @return interaction status - being observed or blocked.
+     */
+    public Chain<InteractionStatus> observe(String login) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Profiles/Observe/login/")
+                .apiParam("login", login)
+                .build(), InteractionStatus.class);
+    }
+
+    /**
+     * @return interaction status - being observed or blocked.
+     */
+    public Chain<InteractionStatus> unobserve(String login) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Profiles/UnObserve/login/")
+                .apiParam("login", login)
+                .build(), InteractionStatus.class);
+    }
+
+    /**
+     * @return interaction status - being observed or blocked.
+     */
+    public Chain<InteractionStatus> block(String login) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Profiles/Block/login/")
+                .apiParam("login", login)
+                .build(), InteractionStatus.class);
+    }
+
+    /**
+     * @return interaction status - being observed or blocked.
+     */
+    public Chain<InteractionStatus> unblock(String login) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Profiles/UnBlock/login/")
+                .apiParam("login", login)
+                .build(), InteractionStatus.class);
+    }
+
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;
