@@ -19,8 +19,7 @@ class WykopHttpClient {
     }
 
     public String execute(WykopRequest wykopRequest) {
-        Request request = wykopRequest.toOkHttpRequest();
-        try (Response response = httpClient.newCall(request).execute()) {
+        try (Response response = httpClient.newCall(wykopRequest.toOkHttpRequest()).execute()) {
             return response.body().string();
         } catch (IOException e) {
             throw new WykopException(0, e.getMessage(), e.getMessage());

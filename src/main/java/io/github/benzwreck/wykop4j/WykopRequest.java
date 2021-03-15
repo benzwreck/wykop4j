@@ -5,8 +5,9 @@ import okhttp3.MultipartBody;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
-import javax.activation.MimetypesFileTypeMap;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -32,7 +33,7 @@ class WykopRequest {
         this.clearOutput = clearOutput;
     }
 
-    public Request toOkHttpRequest() {
+    public Request toOkHttpRequest() throws IOException {
         Request.Builder requestBuilder = new Request.Builder();
         String tempUrl = url;
         // api params:
@@ -57,7 +58,7 @@ class WykopRequest {
             builder.addFormDataPart(entry.getKey(), entry.getValue());
         }
         if (file != null) {
-            String contentType = MimetypesFileTypeMap.getDefaultFileTypeMap().getContentType(file);
+            String contentType = Files.probeContentType(file.toPath());
             builder
                     .addFormDataPart("embed", shownFileName,
                             RequestBody.create(file, MediaType.parse(contentType)));
