@@ -54,7 +54,9 @@ class WykopObjectMapper {
                 .registerModule(javaTimeModule)
                 .registerModule(new EntryMappingModule())
                 .registerModule(new ProfileMappingModule())
-                .registerModule(new ConversationMessageModule());
+                .registerModule(new ConversationMessageModule())
+                .registerModule(new LinkInfoColorModule())
+                .registerModule(new ProfileActionsModule());
     }
 
     public <T> T map(String payload, Class<T> clazz) {
@@ -68,11 +70,18 @@ class WykopObjectMapper {
 
     public <T> T map(String payload, TypeReference<T> typeReference) {
         try {
+            payload = handleUserNotFoundAsEmptyResponse(payload);
             JsonNode node = handleResponse(payload);
             return objectMapper.readValue(objectMapper.treeAsTokens(node), typeReference);
         } catch (IOException e) {
             throw new WykopException(0, e.getMessage(), e.getMessage()); //todo magic numbers
         }
+    }
+
+    private String handleUserNotFoundAsEmptyResponse(String payload) {
+        return payload.startsWith("{\"data\":null,\"error\":{\"code\":13")
+                ? "{\"data\":[]}"
+                : payload;
     }
 
     private JsonNode handleResponse(String payload) throws JsonProcessingException {
@@ -163,7 +172,7 @@ class WykopObjectMapper {
     }
 
     private JsonNode handleUserFavorite(JsonNode data) {
-        if (data.hasNonNull("user_favorite")) {
+        if (data.hasNonNull("user_favorite") && data.size() == 1) {
             data = BooleanNode.valueOf(data.get("user_favorite").booleanValue());
         }
         return data;

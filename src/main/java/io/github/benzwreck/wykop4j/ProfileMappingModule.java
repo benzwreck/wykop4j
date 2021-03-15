@@ -37,11 +37,16 @@ class ProfileMappingModule extends SimpleModule {
                 case 0:
                     return Color.GREEN;
                 case 1:
+                case 997:
                     return Color.ORANGE;
                 case 2:
                     return Color.CLARET;
                 case 5:
                     return Color.ADMIN;
+                case 998:
+                    return Color.PLAY;
+                case 999:
+                    return Color.GOLD;
                 case 1001:
                     return Color.BANNED;
                 case 1002:

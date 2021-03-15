@@ -3,6 +3,7 @@ package io.github.benzwreck.wykop4j.links;
 import io.github.benzwreck.wykop4j.profiles.SimpleProfile;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 public class Link {
     private final Integer id;
@@ -23,11 +24,14 @@ public class Link {
     private final Boolean isHot;
     private final Boolean userFavorite;
     private final Boolean userObserve;
+    private final Boolean isRecommended;
+    private final String app;
     private final Boolean hasOwnContent;
+    private final Info info;
     private final String url;
     private final String violationUrl;
 
-    public Link(Integer id, String title, String description, String tags, String sourceUrl, Integer voteCount, Integer buryCount, Integer commentsCount, Integer relatedCount, LocalDateTime date, SimpleProfile author, String preview, Boolean plus18, String status, Boolean canVote, Boolean isHot, Boolean userFavorite, Boolean userObserve, Boolean hasOwnContent, String url, String violationUrl) {
+    public Link(Integer id, String title, String description, String tags, String sourceUrl, Integer voteCount, Integer buryCount, Integer commentsCount, Integer relatedCount, LocalDateTime date, SimpleProfile author, String preview, Boolean plus18, String status, Boolean canVote, Boolean isHot, Boolean userFavorite, Boolean userObserve, Boolean isRecommended, String app, Boolean hasOwnContent, Info info, String url, String violationUrl) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -46,7 +50,10 @@ public class Link {
         this.isHot = isHot;
         this.userFavorite = userFavorite;
         this.userObserve = userObserve;
+        this.isRecommended = isRecommended;
+        this.app = app;
         this.hasOwnContent = hasOwnContent;
+        this.info = info;
         this.url = url;
         this.violationUrl = violationUrl;
     }
@@ -123,6 +130,14 @@ public class Link {
         return userObserve;
     }
 
+    public Boolean isRecommended() {
+        return isRecommended;
+    }
+
+    public String app() {
+        return app;
+    }
+
     public Boolean hasOwnContent() {
         return hasOwnContent;
     }
@@ -133,6 +148,10 @@ public class Link {
 
     public String violationUrl() {
         return violationUrl;
+    }
+
+    public Optional<Info> info() {
+        return Optional.ofNullable(info);
     }
 
     @Override
@@ -156,9 +175,42 @@ public class Link {
                 ", isHot=" + isHot +
                 ", userFavorite=" + userFavorite +
                 ", userObserve=" + userObserve +
+                ", isRecommended=" + isRecommended +
+                ", app='" + app + '\'' +
                 ", hasOwnContent=" + hasOwnContent +
+                ", info=" + info +
                 ", url='" + url + '\'' +
                 ", violationUrl='" + violationUrl + '\'' +
                 '}';
+    }
+
+    public static class Info {
+        private final String body;
+        private final Color color;
+
+        public Info(String body, Color color) {
+            this.body = body;
+            this.color = color;
+        }
+
+        public String body() {
+            return body;
+        }
+
+        public Color color() {
+            return color;
+        }
+
+        @Override
+        public String toString() {
+            return "Info{" +
+                    "body='" + body + '\'' +
+                    ", color=" + color +
+                    '}';
+        }
+
+        public enum Color {
+            RED, YELLOW, GREEN, UNDEFINED
+        }
     }
 }

@@ -2,51 +2,46 @@ package io.github.benzwreck.wykop4j.integration
 
 import io.github.benzwreck.wykop4j.IntegrationWykopClient
 import io.github.benzwreck.wykop4j.WykopClient
+import spock.lang.Shared
 import spock.lang.Specification
+import spock.lang.Unroll
 import spock.util.concurrent.PollingConditions
 
 class NotificationSpec extends Specification {
+    @Shared
     WykopClient wykop = IntegrationWykopClient.getInstance()
 
+    @Unroll
     def "should not thrown an exception - that means it fetched, parsed and returned a proper object"() {
         when:
-        wykop.directedNotifications().execute()
-        wykop.directedNotificationCount().execute()
-        wykop.tagsNotifications().execute()
-        wykop.tagsNotificationCount().execute()
-        wykop.allNotifications().execute()
-        wykop.allNotificationCount().execute()
+        result.execute()
         then:
         noExceptionThrown()
+        where:
+        result                            | _
+        wykop.directedNotificationCount() | _
+        wykop.directedNotifications()     | _
+        wykop.tagsNotifications()         | _
+        wykop.tagsNotificationCount()     | _
+        wykop.allNotifications()          | _
+        wykop.allNotificationCount()      | _
     }
 
-    def "should read all notifications"() {
+    @Unroll
+    def "should read #name notifications"() {
+        given:
         PollingConditions conditions = new PollingConditions(timeout: 5, initialDelay: 1)
         when:
-        wykop.readAllNotifications().execute()
+        before.execute()
         then:
         conditions.eventually {
-            assert wykop.allNotificationCount().execute() == 0
+            assert after.execute() == 0
         }
-    }
+        where:
+        before                               | after                             | name
+        wykop.readAllNotifications()         | wykop.allNotificationCount()      | "all"
+        wykop.readAllDirectedNotifications() | wykop.directedNotificationCount() | "all directed"
+        wykop.readAllTagsNotifications()     | wykop.tagsNotificationCount()     | "all tags"
 
-    def "should read all directed notifications"() {
-        PollingConditions conditions = new PollingConditions(timeout: 5, initialDelay: 1)
-        when:
-        wykop.readAllDirectedNotifications().execute()
-        then:
-        conditions.eventually {
-            assert wykop.directedNotificationCount().execute() == 0
-        }
-    }
-
-    def "should read all tags notifications"() {
-        PollingConditions conditions = new PollingConditions(timeout: 5, initialDelay: 1)
-        when:
-        wykop.readAllTagsNotifications().execute()
-        then:
-        conditions.eventually {
-            assert wykop.tagsNotificationCount().execute() == 0
-        }
     }
 }

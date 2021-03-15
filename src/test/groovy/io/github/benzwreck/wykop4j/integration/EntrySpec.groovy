@@ -5,9 +5,9 @@ import io.github.benzwreck.wykop4j.WykopClient
 import io.github.benzwreck.wykop4j.entries.Entry
 import io.github.benzwreck.wykop4j.entries.NewComment
 import io.github.benzwreck.wykop4j.entries.NewEntry
-import io.github.benzwreck.wykop4j.entries.Page
+import io.github.benzwreck.wykop4j.Page
 import io.github.benzwreck.wykop4j.entries.Period
-import io.github.benzwreck.wykop4j.entries.UserVote
+import io.github.benzwreck.wykop4j.shared.UserVote
 import io.github.benzwreck.wykop4j.exceptions.ActionForbiddenException
 import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException
 import io.github.benzwreck.wykop4j.exceptions.CommentDoesNotExistException
@@ -23,12 +23,12 @@ import java.time.temporal.ChronoUnit
 
 class EntrySpec extends Specification {
     WykopClient wykop = IntegrationWykopClient.getInstance()
-    private final int nonexistentId = -111111
-    private final def newEntryWithBodyAndUrlMedia = new NewEntry.Builder()
+    private int nonexistentId = -111111
+    private def newEntryWithBodyAndUrlMedia = new NewEntry.Builder()
             .withBody("obraz")
             .withMedia("https://www.wykop.pl/cdn/c3201142/comment_1613001626Mwe2NcUAMJ1yLKZJumQQjC.jpg")
             .build()
-    private final def newCommentWithBodyAndUrlMedia = new NewComment.Builder()
+    private def newCommentWithBodyAndUrlMedia = new NewComment.Builder()
             .withBody("obraz")
             .withMedia("https://www.wykop.pl/cdn/c3201142/comment_1613001626Mwe2NcUAMJ1yLKZJumQQjC.jpg")
             .build()
@@ -76,7 +76,6 @@ class EntrySpec extends Specification {
                 .map(entry -> entry.date())
                 .filter(date -> date.until(LocalDateTime.now(), ChronoUnit.HOURS) > period.value())
                 .count() == 0
-
         where:
         period << [Period.SIX_HOURS, Period.TWELVE_HOURS, Period.TWENTY_FOUR_HOURS]
 
@@ -114,7 +113,6 @@ class EntrySpec extends Specification {
         when:
         def addEntry = wykop.addEntry(newEntryWithBodyAndUrlMedia).execute()
         def deletedEntry = wykop.deleteEntry(addEntry.id()).execute()
-
         then:
         deletedEntry.status() == "deleted"
     }
@@ -124,7 +122,6 @@ class EntrySpec extends Specification {
         def randomId = wykop.entriesStream().execute().get(0).id()
         when:
         wykop.deleteEntry(randomId).execute()
-
         then:
         thrown ActionForbiddenException
     }
@@ -135,7 +132,6 @@ class EntrySpec extends Specification {
                 .withMedia(new File("src/test/resources/white.jpg"), "bialo")
                 .adultOnly()
                 .build()
-
         when:
         def addEntry = wykop.addEntry(newEntry).execute()
         then:
@@ -143,7 +139,6 @@ class EntrySpec extends Specification {
         def embed = addEntry.embed().get()
         embed.source() == "bialo"
         embed.plus18()
-
         cleanup:
         wykop.deleteEntry(addEntry.id()).execute()
     }
@@ -156,7 +151,6 @@ class EntrySpec extends Specification {
         def embed = addEntry.embed().get()
         embed.source() == "wykop.pl"
         !embed.plus18()
-
         cleanup:
         wykop.deleteEntry(addEntry.id()).execute()
     }
@@ -165,13 +159,11 @@ class EntrySpec extends Specification {
         def newEntry = new NewEntry.Builder()
                 .withMedia("https://www.wykop.pl/cdn/c3201142/comment_1613001626Mwe2NcUAMJ1yLKZJumQQjC.jpg")
                 .build()
-
         when:
         def entry = wykop.addEntry(newEntry).execute()
         then:
         entry.embed().isPresent()
         !entry.body().isPresent()
-
         cleanup:
         wykop.deleteEntry(entry.id()).execute()
     }
@@ -181,7 +173,6 @@ class EntrySpec extends Specification {
         new NewEntry.Builder()
                 .adultOnly()
                 .build()
-
         then:
         thrown IllegalArgumentException
     }
@@ -196,14 +187,11 @@ class EntrySpec extends Specification {
         def editedNewEntry = new NewEntry.Builder(newEntry)
                 .adultOnly()
                 .build()
-
         when:
         def editedEntry = wykop.editEntry(addEntry.id(), editedNewEntry).execute()
-
         then:
         addEntry.embed().filter(e -> !e.plus18()).isPresent()
         editedEntry.embed().filter(e -> e.plus18()).isPresent()
-
         cleanup:
         wykop.deleteEntry(addEntry.id()).execute()
         wykop.deleteEntry(editedEntry.id()).execute()
@@ -215,10 +203,8 @@ class EntrySpec extends Specification {
                 .withBody("obraz")
                 .withMedia("https://www.wykop.pl/cdn/c3201142/comment_1613001626Mwe2NcUAMJ1yLKZJumQQjC.jpg")
                 .build()
-
         when:
         wykop.editEntry(-100000, editedNewEntry).execute()
-
         then:
         thrown UnableToModifyEntryException
     }
@@ -235,7 +221,6 @@ class EntrySpec extends Specification {
                     .filter(userVote -> userVote == UserVote.VOTED)
                     .isPresent()
         }
-
         when:
         wykop.removeVote(randomId).execute()
         then:
@@ -250,7 +235,6 @@ class EntrySpec extends Specification {
     def "should throw an exception when try to upvote non-existing entry"() {
         when:
         wykop.voteUp(nonexistentId).execute()
-
         then:
         thrown ArchivalContentException
     }
@@ -258,7 +242,6 @@ class EntrySpec extends Specification {
     def "should throw an exception when try to remove vote from non-existing entry"() {
         when:
         wykop.removeVote(nonexistentId).execute()
-
         then:
         thrown ArchivalContentException
     }

@@ -8,7 +8,6 @@ import io.github.benzwreck.wykop4j.entries.Entry;
 import io.github.benzwreck.wykop4j.entries.EntryComment;
 import io.github.benzwreck.wykop4j.entries.NewComment;
 import io.github.benzwreck.wykop4j.entries.NewEntry;
-import io.github.benzwreck.wykop4j.entries.Page;
 import io.github.benzwreck.wykop4j.entries.Period;
 import io.github.benzwreck.wykop4j.entries.Survey;
 import io.github.benzwreck.wykop4j.entries.Vote;
@@ -18,7 +17,12 @@ import io.github.benzwreck.wykop4j.exceptions.NiceTryException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException;
 import io.github.benzwreck.wykop4j.links.HitsOption;
 import io.github.benzwreck.wykop4j.links.Link;
+import io.github.benzwreck.wykop4j.links.LinkComment;
 import io.github.benzwreck.wykop4j.notifications.Notification;
+import io.github.benzwreck.wykop4j.profiles.Actions;
+import io.github.benzwreck.wykop4j.profiles.Badge;
+import io.github.benzwreck.wykop4j.profiles.FullProfile;
+import io.github.benzwreck.wykop4j.profiles.InteractionStatus;
 
 import java.io.File;
 import java.time.DateTimeException;
@@ -655,6 +659,376 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Pm/DeleteConversation/receiver_name/")
                 .apiParam("receiver_name", login)
                 .build(), Boolean.class);
+    }
+
+    //Profile
+
+    /**
+     * @param login user's login.
+     * @return user's profile.
+     */
+    public Chain<Optional<FullProfile>> profile(String login) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Profiles/Index/login/")
+                .apiParam("login", login)
+                .build(), new TypeReference<Optional<FullProfile>>() {
+        });
+    }
+
+    /**
+     * @param login user's login.
+     * @return user's actions.
+     */
+    public Chain<Actions> profileActions(String login) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Profiles/Actions/login/")
+                .apiParam("login", login)
+                .build(), Actions.class);
+    }
+
+    /**
+     * @param login user's login.
+     * @return first page of links added by user.
+     */
+    public Chain<List<Link>> profileAddedLinks(String login) {
+        return profileAddedLinks(login, Page.of(1));
+    }
+
+    /**
+     * @param login user's login.
+     * @param page  page.
+     * @return given page of links added by user.
+     */
+    public Chain<List<Link>> profileAddedLinks(String login, Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Profiles/Added/login/page/int/")
+                .apiParam("login", login)
+                .namedParam("page", String.valueOf(page.value()))
+                .build(), new TypeReference<List<Link>>() {
+        });
+    }
+
+    /**
+     * @param login user's login.
+     * @return first page of links commented by user.
+     */
+    public Chain<List<Link>> profileCommentedLinks(String login) {
+        return profileCommentedLinks(login, Page.of(1));
+    }
+
+    /**
+     * @param login user's login.
+     * @param page  page.
+     * @return given page of links commented by user.
+     */
+    public Chain<List<Link>> profileCommentedLinks(String login, Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Profiles/Commented/login/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .apiParam("login", login)
+                .build(), new TypeReference<List<Link>>() {
+        });
+    }
+
+    /**
+     * @param login user's login.
+     * @return first page of links' comments added by user.
+     */
+    public Chain<List<LinkComment>> profileLinksComments(String login) {
+        return profileLinksComments(login, Page.of(1));
+    }
+
+    /**
+     * @param login user's login.
+     * @param page  page.
+     * @return given page of links' comments added by user.
+     */
+    public Chain<List<LinkComment>> profileLinksComments(String login, Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Profiles/Comments/login/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .apiParam("login", login)
+                .build(), new TypeReference<List<LinkComment>>() {
+        });
+    }
+
+    /**
+     * @param login user's login.
+     * @return first page of links published by user.
+     */
+    public Chain<List<Link>> profileLinksPublished(String login) {
+        return profileLinksPublished(login, Page.of(1));
+    }
+
+    /**
+     * @param login user's login.
+     * @param page  page.
+     * @return given page of links published by user.
+     */
+    public Chain<List<Link>> profileLinksPublished(String login, Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Profiles/Published/login/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .apiParam("login", login)
+                .build(), new TypeReference<List<Link>>() {
+        });
+    }
+
+    /**
+     * @param login user's login.
+     * @return first page of entries added by user.
+     */
+    public Chain<List<Entry>> profileEntries(String login) {
+        return profileEntries(login, Page.of(1));
+    }
+
+    /**
+     * @param login user's login.
+     * @param page  page.
+     * @return given page of entries added by user.
+     */
+    public Chain<List<Entry>> profileEntries(String login, Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Profiles/Entries/login/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .apiParam("login", login)
+                .build(), new TypeReference<List<Entry>>() {
+        });
+    }
+
+    /**
+     * @param login user's login.
+     * @return first page of entries commented by user.
+     */
+    public Chain<List<Entry>> profileEntriesCommented(String login) {
+        return profileEntriesCommented(login, Page.of(1));
+    }
+
+    /**
+     * @param login user's login.
+     * @param page  page.
+     * @return given page of entries commented by user.
+     */
+    public Chain<List<Entry>> profileEntriesCommented(String login, Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Profiles/CommentedEntries/login/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .apiParam("login", login)
+                .build(), new TypeReference<List<Entry>>() {
+        });
+    }
+
+    /**
+     * @param login user's login.
+     * @return first page of entries' comments by user.
+     */
+    public Chain<List<EntryComment>> profileEntriesComments(String login) {
+        return profileEntriesComments(login, Page.of(1));
+    }
+
+    /**
+     * @param login user's login.
+     * @param page  page.
+     * @return given page of entries' comments by user.
+     */
+    public Chain<List<EntryComment>> profileEntriesComments(String login, Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Profiles/EntriesComments/login/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .apiParam("login", login)
+                .build(), new TypeReference<List<EntryComment>>() {
+        });
+    }
+
+    /**
+     * @param login user's login.
+     * @return first page of related links added by user.
+     */
+    public Chain<List<Link>> profileRelatedLinks(String login) {
+        return profileRelatedLinks(login, Page.of(1));
+    }
+
+    /**
+     * @param login user's login.
+     * @param page  page.
+     * @return given page of related links added by user.
+     */
+    public Chain<List<Link>> profileRelatedLinks(String login, Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Profiles/EntriesComments/login/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .apiParam("login", login)
+                .build(), new TypeReference<List<Link>>() {
+        });
+    }
+
+    /**
+     * @param login user's login.
+     * @return first page of users following particular user.
+     */
+    public Chain<List<FullProfile>> profileFollowers(String login) {
+        return profileFollowers(login, Page.of(1));
+    }
+
+    /**
+     * @param login user's login.
+     * @param page  page.
+     * @return given page of users following particular user.
+     */
+    public Chain<List<FullProfile>> profileFollowers(String login, Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Profiles/Followers/login/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .apiParam("login", login)
+                .build(), new TypeReference<List<FullProfile>>() {
+        });
+    }
+
+    /**
+     * @param login user's login.
+     * @return first page of users being followed by particular user.
+     */
+    public Chain<List<FullProfile>> profileFollowed(String login) {
+        return profileFollowed(login, Page.of(1));
+    }
+
+    /**
+     * @param login user's login.
+     * @param page  page.
+     * @return given page of users being followed by particular user.
+     */
+    public Chain<List<FullProfile>> profileFollowed(String login, Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Profiles/Followed/login/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .apiParam("login", login)
+                .build(), new TypeReference<List<FullProfile>>() {
+        });
+    }
+
+    /**
+     * @param login user's login.
+     * @return first page of user's badges.
+     */
+    public Chain<List<Badge>> profileBadges(String login) {
+        return profileBadges(login, Page.of(1));
+    }
+
+    /**
+     * @param login user's login.
+     * @param page  page.
+     * @return given page of user's badges.
+     */
+    public Chain<List<Badge>> profileBadges(String login, Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Profiles/Badges/login/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .apiParam("login", login)
+                .build(), new TypeReference<List<Badge>>() {
+        });
+    }
+
+    /**
+     * @param login user's login.
+     * @return first page of user's digged links.
+     */
+    public Chain<List<Link>> profileDiggedLinks(String login) {
+        return profileDiggedLinks(login, Page.of(1));
+    }
+
+    /**
+     * @param login user's login.
+     * @param page  page.
+     * @return given page of user's digged links.
+     */
+    public Chain<List<Link>> profileDiggedLinks(String login, Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Profiles/Digged/login/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .apiParam("login", login)
+                .build(), new TypeReference<List<Link>>() {
+        });
+    }
+
+    /**
+     * @param login user's login.
+     * @return first page of user's buried links.
+     */
+    public Chain<List<Link>> profileBuriedLinks(String login) {
+        return profileBuriedLinks(login, Page.of(1));
+    }
+
+    /**
+     * @param login user's login.
+     * @param page  page.
+     * @return given page of user's buried links.
+     */
+    public Chain<List<Link>> profileBuriedLinks(String login, Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Profiles/Buried/login/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .apiParam("login", login)
+                .build(), new TypeReference<List<Link>>() {
+        });
+    }
+
+    /**
+     * @return first page of profiles from user rank.
+     */
+    public Chain<List<FullProfile>> profileRanking() {
+        return profileRanking(Page.of(1));
+    }
+
+    /**
+     * @param page page.
+     * @return given page of profiles from user rank.
+     */
+    public Chain<List<FullProfile>> profileRanking(Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Profiles/Rank/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .build(), new TypeReference<List<FullProfile>>() {
+        });
+    }
+
+    /**
+     * @return interaction status - being observed or blocked.
+     */
+    public Chain<InteractionStatus> observe(String login) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Profiles/Observe/login/")
+                .apiParam("login", login)
+                .build(), InteractionStatus.class);
+    }
+
+    /**
+     * @return interaction status - being observed or blocked.
+     */
+    public Chain<InteractionStatus> unobserve(String login) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Profiles/UnObserve/login/")
+                .apiParam("login", login)
+                .build(), InteractionStatus.class);
+    }
+
+    /**
+     * @return interaction status - being observed or blocked.
+     */
+    public Chain<InteractionStatus> block(String login) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Profiles/Block/login/")
+                .apiParam("login", login)
+                .build(), InteractionStatus.class);
+    }
+
+    /**
+     * @return interaction status - being observed or blocked.
+     */
+    public Chain<InteractionStatus> unblock(String login) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Profiles/UnBlock/login/")
+                .apiParam("login", login)
+                .build(), InteractionStatus.class);
     }
 
     public static final class Builder {
