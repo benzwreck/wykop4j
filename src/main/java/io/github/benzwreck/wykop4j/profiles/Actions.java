@@ -5,6 +5,9 @@ import io.github.benzwreck.wykop4j.links.Link;
 
 import java.util.List;
 
+/**
+ * User's actions - both entries and links.
+ */
 public class Actions {
     private final List<Entry> entries;
     private final List<Link> links;
@@ -14,10 +17,16 @@ public class Actions {
         this.links = links;
     }
 
+    /**
+     * @return list of entries added by user.
+     */
     public List<Entry> entries() {
         return entries;
     }
 
+    /**
+     * @return list of links added by user.
+     */
     public List<Link> links() {
         return links;
     }

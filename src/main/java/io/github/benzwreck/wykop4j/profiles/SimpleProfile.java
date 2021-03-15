@@ -2,6 +2,10 @@ package io.github.benzwreck.wykop4j.profiles;
 
 import java.util.Optional;
 
+/**
+ * Basic information about profile.
+ * To get more data check {@link FullProfile}
+ */
 public class SimpleProfile {
     private final String login;
     private final Color color;

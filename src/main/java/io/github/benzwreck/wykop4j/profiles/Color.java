@@ -1,5 +1,8 @@
 package io.github.benzwreck.wykop4j.profiles;
 
+/**
+ * Profile's color.
+ */
 public enum Color {
     GREEN("#339933", RGB.GREEN),
     ORANGE("#FF5917", RGB.ORANGE),
