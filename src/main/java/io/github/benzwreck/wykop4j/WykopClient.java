@@ -23,6 +23,7 @@ import io.github.benzwreck.wykop4j.profiles.Actions;
 import io.github.benzwreck.wykop4j.profiles.Badge;
 import io.github.benzwreck.wykop4j.profiles.FullProfile;
 import io.github.benzwreck.wykop4j.profiles.InteractionStatus;
+import io.github.benzwreck.wykop4j.terms.Terms;
 
 import java.io.File;
 import java.time.DateTimeException;
@@ -1031,6 +1032,17 @@ public class WykopClient {
                 .build(), InteractionStatus.class);
     }
 
+    public Chain<Terms> terms(){
+        return new Chain<>(new WykopRequest.Builder()
+        .url(WYKOP_URL + "/Terms/Index/")
+        .build(), Terms.class);
+    }
+
+    public Chain<Boolean> confirmTerms(){
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Terms/Confirm/")
+                .build(), Boolean.class);
+    }
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;
