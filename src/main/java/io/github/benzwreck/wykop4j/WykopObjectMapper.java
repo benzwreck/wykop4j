@@ -34,7 +34,9 @@ import io.github.benzwreck.wykop4j.exceptions.WykopException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 class WykopObjectMapper {
     private final ObjectMapper objectMapper;
@@ -72,7 +74,11 @@ class WykopObjectMapper {
         try {
             payload = handleUserNotFoundAsEmptyResponse(payload);
             JsonNode node = handleResponse(payload);
-            return objectMapper.readValue(objectMapper.treeAsTokens(node), typeReference);
+            T t = objectMapper.readValue(objectMapper.treeAsTokens(node), typeReference);
+            if (t instanceof List) {
+                return (T) Collections.unmodifiableList((List<T>) t);
+            }
+            return t;
         } catch (IOException e) {
             throw new WykopException(0, e.getMessage(), e.getMessage()); //todo magic numbers
         }
