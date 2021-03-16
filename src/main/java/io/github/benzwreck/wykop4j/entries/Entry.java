@@ -5,6 +5,7 @@ import io.github.benzwreck.wykop4j.profiles.SimpleProfile;
 import io.github.benzwreck.wykop4j.shared.UserVote;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -106,7 +107,7 @@ public class Entry {
      * @return possible list of comments.
      */
     public Optional<List<EntryComment>> comments() {
-        return Optional.ofNullable(comments);
+        return Optional.ofNullable(Collections.unmodifiableList(comments));
     }
 
     /**

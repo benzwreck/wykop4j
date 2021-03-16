@@ -1,5 +1,6 @@
 package io.github.benzwreck.wykop4j.entries;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,7 +27,7 @@ public class Survey {
      * @return list of answers.
      */
     public List<Answer> answers() {
-        return answers;
+        return Collections.unmodifiableList(answers);
     }
 
     /**
