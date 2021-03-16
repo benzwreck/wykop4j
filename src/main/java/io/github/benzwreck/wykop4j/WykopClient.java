@@ -1032,17 +1032,24 @@ public class WykopClient {
                 .build(), InteractionStatus.class);
     }
 
-    public Chain<Terms> terms(){
+    /**
+     * @return terms of use.
+     */
+    public Chain<Terms> terms() {
         return new Chain<>(new WykopRequest.Builder()
-        .url(WYKOP_URL + "/Terms/Index/")
-        .build(), Terms.class);
+                .url(WYKOP_URL + "/Terms/Index/")
+                .build(), Terms.class);
     }
 
-    public Chain<Boolean> confirmTerms(){
+    /**
+     * @return confirmation terms status.
+     */
+    public Chain<Boolean> confirmTerms() {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Terms/Confirm/")
                 .build(), Boolean.class);
     }
+
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;
