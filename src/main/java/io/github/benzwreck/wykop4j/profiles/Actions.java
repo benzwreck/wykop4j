@@ -3,6 +3,7 @@ package io.github.benzwreck.wykop4j.profiles;
 import io.github.benzwreck.wykop4j.entries.Entry;
 import io.github.benzwreck.wykop4j.links.Link;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -21,14 +22,14 @@ public class Actions {
      * @return list of entries added by user.
      */
     public List<Entry> entries() {
-        return entries;
+        return Collections.unmodifiableList(entries);
     }
 
     /**
      * @return list of links added by user.
      */
     public List<Link> links() {
-        return links;
+        return Collections.unmodifiableList(links);
     }
 
     @Override
