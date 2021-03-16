@@ -1038,6 +1038,11 @@ public class WykopClient {
         .build(), Terms.class);
     }
 
+    public Chain<Boolean> confirmTerms(){
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Terms/Confirm/")
+                .build(), Boolean.class);
+    }
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;

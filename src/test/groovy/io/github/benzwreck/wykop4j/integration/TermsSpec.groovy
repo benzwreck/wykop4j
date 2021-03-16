@@ -17,4 +17,8 @@ class TermsSpec extends Specification {
         }
     }
 
+    def "should confirm terms"() {
+        expect:
+        wykop.confirmTerms().execute() == true
+    }
 }
