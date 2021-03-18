@@ -8,7 +8,8 @@ import spock.lang.Specification
 import spock.lang.Unroll
 
 class MyWykopSpec extends Specification {
-    @Shared WykopClient wykop = IntegrationWykopClient.getInstance()
+    @Shared
+    WykopClient wykop = IntegrationWykopClient.getInstance()
 
     @Unroll
     def "should retrieve mywykop index data"() {
@@ -17,9 +18,13 @@ class MyWykopSpec extends Specification {
         then:
         noExceptionThrown()
         where:
-        action                                 | _
-        wykop.myWykopIndex()                   | _
-        wykop.myWykopIndex(ActionType.ENTRIES) | _
-        wykop.myWykopIndex(ActionType.LINKS)   | _
+        action                                        | _
+        wykop.myWykopIndexActions()                   | _
+        wykop.myWykopIndexActions(ActionType.ENTRIES) | _
+        wykop.myWykopIndexActions(ActionType.LINKS)   | _
+        wykop.myWykopTagsActions()                    | _
+        wykop.myWykopTagsActions(ActionType.ENTRIES)  | _
+        wykop.myWykopTagsActions(ActionType.LINKS)    | _
+
     }
 }

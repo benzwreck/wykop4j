@@ -1200,7 +1200,7 @@ public class WykopClient {
      * @param tag tag's name.
      * @return list of tag suggestions.
      */
-    public Chain<List<TagSuggestion>> suggestTags(String tag){
+    public Chain<List<TagSuggestion>> suggestTags(String tag) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Suggest/Tags/tag/")
                 .apiParam("tag", tag)
@@ -1212,7 +1212,7 @@ public class WykopClient {
      * @param login user's login.
      * @return list of user suggestions.
      */
-    public Chain<List<SimpleProfile>> suggestUsers(String login){
+    public Chain<List<SimpleProfile>> suggestUsers(String login) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Suggest/Users/login/")
                 .apiParam("login", login)
@@ -1223,21 +1223,21 @@ public class WykopClient {
     // Mywykop
 
     /**
-     * Observed users and tags from MyWykop.
+     * Actions from observed users and tags from MyWykop.
      *
      * @return first page of list of all actions.
      */
-    public Chain<Actions> myWykopIndex(){
-        return myWykopIndex(Page.of(1));
+    public Chain<Actions> myWykopIndexActions() {
+        return myWykopIndexActions(Page.of(1));
     }
 
     /**
-     * Observed users and tags from MyWykop.
+     * Actions from observed users and tags from MyWykop.
      *
      * @param page page.
      * @return given page of list of all actions.
      */
-    public Chain<Actions> myWykopIndex(Page page){
+    public Chain<Actions> myWykopIndexActions(Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Mywykop/Index/type/string/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
@@ -1245,26 +1245,73 @@ public class WykopClient {
     }
 
     /**
-     * Observed users and tags from MyWykop.
+     * Actions from observed users and tags from MyWykop.
      *
      * @param type type of returning value.
      * @return first page of list of {@link ActionType} actions.
      */
-    public Chain<Actions> myWykopIndex(ActionType type){
-        return myWykopIndex(type, Page.of(1));
+    public Chain<Actions> myWykopIndexActions(ActionType type) {
+        return myWykopIndexActions(type, Page.of(1));
     }
 
     /**
-     * Observed users and tags from MyWykop.
+     * Actions from observed users and tags from MyWykop.
      *
      * @param type type of returning value.
      * @param page page.
      * @return given page of list of {@link ActionType} actions.
      */
-    public Chain<Actions> myWykopIndex(ActionType type, Page page){
+    public Chain<Actions> myWykopIndexActions(ActionType type, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Mywykop/Index/type/string/page/int/")
-//                .namedParam("type", type.value())
+                .namedParam("type", type.value())
+                .namedParam("page", String.valueOf(page.value()))
+                .build(), Actions.class);
+    }
+
+    /**
+     * Actions from MyWykop's observed tags.
+     *
+     * @return first page of list of all actions.
+     */
+    public Chain<Actions> myWykopTagsActions() {
+        return myWykopTagsActions(Page.of(1));
+    }
+
+    /**
+     * Actions from MyWykop's observed tags.
+     *
+     * @param page page.
+     * @return given page of list of all actions.
+     */
+    public Chain<Actions> myWykopTagsActions(Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Mywykop/Tags/type/string/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .build(), Actions.class);
+    }
+
+    /**
+     * Actions from MyWykop's observed tags.
+     *
+     * @param type type of returning value.
+     * @return first page of list of {@link ActionType} actions.
+     */
+    public Chain<Actions> myWykopTagsActions(ActionType type) {
+        return myWykopIndexActions(type, Page.of(1));
+    }
+
+    /**
+     * Actions from MyWykop's observed tags.
+     *
+     * @param type type of returning value.
+     * @param page page.
+     * @return given page of list of {@link ActionType} actions.
+     */
+    public Chain<Actions> myWykopTagsActions(ActionType type, Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Mywykop/Tags/type/string/page/int/")
+                .namedParam("type", type.value())
                 .namedParam("page", String.valueOf(page.value()))
                 .build(), Actions.class);
     }
