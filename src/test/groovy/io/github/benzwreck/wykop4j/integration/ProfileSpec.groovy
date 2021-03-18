@@ -70,11 +70,11 @@ class ProfileSpec extends Specification {
             reaction.isBlocked() == isBlocked()
         }
         where:
-        name        | action                              || reaction
-        "observe"   | wykop.observeUser(secondAccountLogin) || new InteractionStatus(true, false)
-        "unobserve" | wykop.unobserve(secondAccountLogin) || new InteractionStatus(false, false)
-        "block"     | wykop.block(secondAccountLogin)     || new InteractionStatus(false, true)
-        "unblock"   | wykop.unblock(secondAccountLogin)   || new InteractionStatus(false, false)
+        name        | action                                  || reaction
+        "observe"   | wykop.observeUser(secondAccountLogin)   || new InteractionStatus(true, false)
+        "unobserve" | wykop.unobserveUser(secondAccountLogin) || new InteractionStatus(false, false)
+        "block"     | wykop.blockUser(secondAccountLogin)     || new InteractionStatus(false, true)
+        "unblock"   | wykop.unblockUser(secondAccountLogin)   || new InteractionStatus(false, false)
     }
 
     @Unroll
