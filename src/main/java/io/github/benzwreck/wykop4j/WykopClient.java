@@ -1385,6 +1385,30 @@ public class WykopClient {
                 .build(), new TypeReference<List<Entry>>() {
         });
     }
+
+    /**
+     * Links from observed users and tags.
+     *
+     * @return list of links.
+     */
+    public Chain<List<Link>> myWykopLinks(){
+        return myWykopLinks(Page.of(1));
+    }
+
+    /**
+     * Links from observed users and tags.
+     *
+     * @param page page.
+     * @return list of links.
+     */
+    public Chain<List<Link>> myWykopLinks(Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Mywykop/Links/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .build(), new TypeReference<List<Link>>() {
+        });
+    }
+
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;

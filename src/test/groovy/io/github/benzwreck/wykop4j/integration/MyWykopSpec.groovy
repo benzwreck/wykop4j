@@ -29,6 +29,6 @@ class MyWykopSpec extends Specification {
         wykop.myWykopUsersActions(ActionType.ENTRIES) | _
         wykop.myWykopUsersActions(ActionType.LINKS)   | _
         wykop.myWykopEntries()                        | _
+        wykop.myWykopLinks()                          | _
     }
-
 }
