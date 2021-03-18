@@ -71,7 +71,7 @@ class ProfileSpec extends Specification {
         }
         where:
         name        | action                              || reaction
-        "observe"   | wykop.observe(secondAccountLogin)   || new InteractionStatus(true, false)
+        "observe"   | wykop.observeUser(secondAccountLogin) || new InteractionStatus(true, false)
         "unobserve" | wykop.unobserve(secondAccountLogin) || new InteractionStatus(false, false)
         "block"     | wykop.block(secondAccountLogin)     || new InteractionStatus(false, true)
         "unblock"   | wykop.unblock(secondAccountLogin)   || new InteractionStatus(false, false)

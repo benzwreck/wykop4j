@@ -46,4 +46,13 @@ class TagSpec extends Specification {
         wykop.tagEntries(nonexistentTag) | _
     }
 
+    def "should observe tag"(){
+        expect:
+        with wykop.observeTag(wykopTag).execute(), {
+            isObserved()
+            !isBlocked()
+        }
+
+    }
+
 }

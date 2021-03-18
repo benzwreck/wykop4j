@@ -995,7 +995,7 @@ public class WykopClient {
     /**
      * @return interaction status - being observed or blocked.
      */
-    public Chain<InteractionStatus> observe(String login) {
+    public Chain<InteractionStatus> observeUser(String login) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/Observe/login/")
                 .apiParam("login", login)
@@ -1117,6 +1117,13 @@ public class WykopClient {
                 .namedParam("page", String.valueOf(page.value()))
                 .build(), new TypeReference<List<Entry>>() {
         });
+    }
+
+    public Chain<InteractionStatus> observeTag(String tag){
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Tags/Observe/tag/")
+                .apiParam("tag", tag)
+                .build(), InteractionStatus.class);
     }
 
     public static final class Builder {
