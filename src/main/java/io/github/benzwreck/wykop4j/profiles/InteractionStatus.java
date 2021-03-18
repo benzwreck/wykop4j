@@ -1,8 +1,8 @@
 package io.github.benzwreck.wykop4j.profiles;
 
 /**
- * Interaction status between user and given profile.
- * Shows if that profile is observed or blocked by user.
+ * Interaction status between current user and given user or tag.
+ * Shows if that user or tag is observed or blocked by current user.
  */
 public class InteractionStatus {
     private final boolean isObserved;
@@ -14,14 +14,14 @@ public class InteractionStatus {
     }
 
     /**
-     * @return true - if given profile is observed by user, false - otherwise.
+     * @return true - if given profile or tag is observed by current user, false - otherwise.
      */
     public boolean isObserved() {
         return isObserved;
     }
 
     /**
-     * @return true - if given profile is blocked by user, false - otherwise.
+     * @return true - if given profile or tag is blocked by current user, false - otherwise.
      */
     public boolean isBlocked() {
         return isBlocked;

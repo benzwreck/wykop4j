@@ -995,7 +995,7 @@ public class WykopClient {
     /**
      * @return interaction status - being observed or blocked.
      */
-    public Chain<InteractionStatus> observe(String login) {
+    public Chain<InteractionStatus> observeUser(String login) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/Observe/login/")
                 .apiParam("login", login)
@@ -1005,7 +1005,7 @@ public class WykopClient {
     /**
      * @return interaction status - being observed or blocked.
      */
-    public Chain<InteractionStatus> unobserve(String login) {
+    public Chain<InteractionStatus> unobserveUser(String login) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/UnObserve/login/")
                 .apiParam("login", login)
@@ -1015,7 +1015,7 @@ public class WykopClient {
     /**
      * @return interaction status - being observed or blocked.
      */
-    public Chain<InteractionStatus> block(String login) {
+    public Chain<InteractionStatus> blockUser(String login) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/Block/login/")
                 .apiParam("login", login)
@@ -1025,12 +1025,14 @@ public class WykopClient {
     /**
      * @return interaction status - being observed or blocked.
      */
-    public Chain<InteractionStatus> unblock(String login) {
+    public Chain<InteractionStatus> unblockUser(String login) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/UnBlock/login/")
                 .apiParam("login", login)
                 .build(), InteractionStatus.class);
     }
+
+    // Terms
 
     /**
      * @return terms of use.
@@ -1048,6 +1050,145 @@ public class WykopClient {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Terms/Confirm/")
                 .build(), Boolean.class);
+    }
+
+    // Tags
+
+    /**
+     * @param tag name of the tag, either with or without '#'.
+     * @return first page of actions.
+     */
+    public Chain<Actions> tagActions(String tag) {
+        return tagActions(tag, Page.of(1));
+    }
+
+    /**
+     * @param tag  name of the tag, either with or without '#'.
+     * @param page page.
+     * @return given page of actions.
+     */
+    public Chain<Actions> tagActions(String tag, Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Tags/Index/tag/page/int/")
+                .apiParam("tag", tag)
+                .namedParam("page", String.valueOf(page.value()))
+                .build(), Actions.class);
+    }
+
+    /**
+     * @param tag name of the tag, either with or without '#'.
+     * @return first page of list of links.
+     */
+    public Chain<List<Link>> tagLinks(String tag) {
+        return tagLinks(tag, Page.of(1));
+    }
+
+    /**
+     * @param tag  name of the tag, either with or without '#'.
+     * @param page page.
+     * @return given page of list of links.
+     */
+    public Chain<List<Link>> tagLinks(String tag, Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Tags/Links/tag/page/int/")
+                .apiParam("tag", tag)
+                .namedParam("page", String.valueOf(page.value()))
+                .build(), new TypeReference<List<Link>>() {
+        });
+    }
+
+    /**
+     * @param tag name of the tag, either with or without '#'.
+     * @return first page of list of entries.
+     */
+    public Chain<List<Entry>> tagEntries(String tag) {
+        return tagEntries(tag, Page.of(1));
+    }
+
+    /**
+     * @param tag  name of the tag, either with or without '#'.
+     * @param page page.
+     * @return given page of list of entries.
+     */
+    public Chain<List<Entry>> tagEntries(String tag, Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Tags/Entries/tag/page/int/")
+                .apiParam("tag", tag)
+                .namedParam("page", String.valueOf(page.value()))
+                .build(), new TypeReference<List<Entry>>() {
+        });
+    }
+
+    /**
+     * @param tag tag's name.
+     * @return interaction status - being observed or blocked.
+     */
+    public Chain<InteractionStatus> observeTag(String tag) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Tags/Observe/tag/")
+                .apiParam("tag", tag)
+                .build(), InteractionStatus.class);
+    }
+
+    /**
+     * @param tag tag's name.
+     * @return interaction status - being observed or blocked.
+     */
+    public Chain<InteractionStatus> unobserveTag(String tag) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Tags/Unobserve/tag/")
+                .apiParam("tag", tag)
+                .build(), InteractionStatus.class);
+    }
+
+    /**
+     * @param tag tag's name.
+     * @return interaction status - being observed or blocked.
+     */
+    public Chain<InteractionStatus> blockTag(String tag) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Tags/Block/tag/")
+                .apiParam("tag", tag)
+                .build(), InteractionStatus.class);
+    }
+
+    /**
+     * @param tag tag's name.
+     * @return interaction status - being observed or blocked.
+     */
+    public Chain<InteractionStatus> unblockTag(String tag) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Tags/Unblock/tag/")
+                .apiParam("tag", tag)
+                .build(), InteractionStatus.class);
+    }
+
+    /**
+     * Enable tag notifications.
+     *
+     * @param tag tag's name.
+     * @return nothing.
+     * @throws NiceTryException when you try to enable notification on not observed tag.
+     */
+    public Chain<Void> enableTagNotifications(String tag) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Tags/Notify/tag/")
+                .apiParam("tag", tag)
+                .build(), Void.class);
+    }
+
+    /**
+     * Disable tag notifications.
+     *
+     * @param tag tag's name.
+     * @return nothing.
+     * @throws NiceTryException when you try to disable notification on not observed tag.
+     */
+    public Chain<Void> disableTagNotifications(String tag) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Tags/Dontnotify/tag/")
+                .apiParam("tag", tag)
+                .build(), Void.class);
     }
 
     public static final class Builder {
