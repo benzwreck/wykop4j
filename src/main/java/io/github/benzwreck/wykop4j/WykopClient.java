@@ -1194,6 +1194,10 @@ public class WykopClient {
 
     // Suggest
 
+    /**
+     * @param tag tag's name.
+     * @return list of tag suggestions.
+     */
     public Chain<List<TagSuggestion>> suggestTags(String tag){
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Suggest/Tags/tag/")
