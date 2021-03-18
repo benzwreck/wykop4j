@@ -20,4 +20,15 @@ class TagSpec extends Specification {
         then:
         actions.entries().isEmpty() && actions.links().isEmpty()
     }
+
+    def "should return non-empty list of links"(){
+        expect:
+        !wykop.tagLinks("wykop").execute().isEmpty()
+    }
+
+    def "should return empty list"(){
+        expect:
+        wykop.tagLinks("ponsaddnasdnsaodnasodnodnaonandoanoan").execute().isEmpty()
+    }
+
 }
