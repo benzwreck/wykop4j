@@ -23,6 +23,8 @@ import io.github.benzwreck.wykop4j.profiles.Actions;
 import io.github.benzwreck.wykop4j.profiles.Badge;
 import io.github.benzwreck.wykop4j.profiles.FullProfile;
 import io.github.benzwreck.wykop4j.profiles.InteractionStatus;
+import io.github.benzwreck.wykop4j.profiles.SimpleProfile;
+import io.github.benzwreck.wykop4j.suggest.TagSuggestion;
 import io.github.benzwreck.wykop4j.terms.Terms;
 
 import java.io.File;
@@ -1189,6 +1191,32 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Tags/Dontnotify/tag/")
                 .apiParam("tag", tag)
                 .build(), Void.class);
+    }
+
+    // Suggest
+
+    /**
+     * @param tag tag's name.
+     * @return list of tag suggestions.
+     */
+    public Chain<List<TagSuggestion>> suggestTags(String tag){
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Suggest/Tags/tag/")
+                .apiParam("tag", tag)
+                .build(), new TypeReference<List<TagSuggestion>>() {
+        });
+    }
+
+    /**
+     * @param login user's login.
+     * @return list of user suggestions.
+     */
+    public Chain<List<SimpleProfile>> suggestUsers(String login){
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Suggest/Users/login/")
+                .apiParam("login", login)
+                .build(), new TypeReference<List<SimpleProfile>>() {
+        });
     }
 
     public static final class Builder {
