@@ -23,6 +23,7 @@ import io.github.benzwreck.wykop4j.profiles.Actions;
 import io.github.benzwreck.wykop4j.profiles.Badge;
 import io.github.benzwreck.wykop4j.profiles.FullProfile;
 import io.github.benzwreck.wykop4j.profiles.InteractionStatus;
+import io.github.benzwreck.wykop4j.suggest.TagSuggestion;
 import io.github.benzwreck.wykop4j.terms.Terms;
 
 import java.io.File;
@@ -1189,6 +1190,16 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Tags/Dontnotify/tag/")
                 .apiParam("tag", tag)
                 .build(), Void.class);
+    }
+
+    // Suggest
+
+    public Chain<List<TagSuggestion>> suggestTags(String tag){
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Suggest/Tags/tag/")
+                .apiParam("tag", tag)
+                .build(), new TypeReference<List<TagSuggestion>>() {
+        });
     }
 
     public static final class Builder {
