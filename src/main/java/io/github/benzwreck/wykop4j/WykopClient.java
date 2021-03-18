@@ -23,6 +23,7 @@ import io.github.benzwreck.wykop4j.profiles.Actions;
 import io.github.benzwreck.wykop4j.profiles.Badge;
 import io.github.benzwreck.wykop4j.profiles.FullProfile;
 import io.github.benzwreck.wykop4j.profiles.InteractionStatus;
+import io.github.benzwreck.wykop4j.profiles.SimpleProfile;
 import io.github.benzwreck.wykop4j.suggest.TagSuggestion;
 import io.github.benzwreck.wykop4j.terms.Terms;
 
@@ -1203,6 +1204,18 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Suggest/Tags/tag/")
                 .apiParam("tag", tag)
                 .build(), new TypeReference<List<TagSuggestion>>() {
+        });
+    }
+
+    /**
+     * @param login user's login.
+     * @return list of user suggestions.
+     */
+    public Chain<List<SimpleProfile>> suggestUsers(String login){
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Suggest/Users/login/")
+                .apiParam("login", login)
+                .build(), new TypeReference<List<SimpleProfile>>() {
         });
     }
 
