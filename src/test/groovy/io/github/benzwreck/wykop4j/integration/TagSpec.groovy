@@ -62,4 +62,16 @@ class TagSpec extends Specification {
         "unblock"   | wykop.unblockTag(wykopTag)   || new InteractionStatus(false, false)
     }
 
+    def "should enable and disable tag notification"(){
+        setup:
+        wykop.observeTag("wykopobrazapapieza").execute()
+        when:
+        wykop.enableTagNotifications("wykopobrazapapieza").execute()
+        wykop.disableTagNotifications("wykopobrazapapieza").execute()
+        then:
+        noExceptionThrown()
+        cleanup:
+        wykop.unobserveTag("wykopobrazapapieza").execute()
+    }
+
 }

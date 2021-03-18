@@ -1163,6 +1163,34 @@ public class WykopClient {
                 .build(), InteractionStatus.class);
     }
 
+    /**
+     * Enable tag notifications.
+     *
+     * @param tag tag's name.
+     * @return nothing.
+     * @throws NiceTryException when you try to enable notification on not observed tag.
+     */
+    public Chain<Void> enableTagNotifications(String tag) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Tags/Notify/tag/")
+                .apiParam("tag", tag)
+                .build(), Void.class);
+    }
+
+    /**
+     * Disable tag notifications.
+     *
+     * @param tag tag's name.
+     * @return nothing.
+     * @throws NiceTryException when you try to disable notification on not observed tag.
+     */
+    public Chain<Void> disableTagNotifications(String tag) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Tags/Dontnotify/tag/")
+                .apiParam("tag", tag)
+                .build(), Void.class);
+    }
+
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;
