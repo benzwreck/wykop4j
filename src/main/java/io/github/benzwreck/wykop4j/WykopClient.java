@@ -1097,6 +1097,28 @@ public class WykopClient {
         });
     }
 
+    /**
+     * @param tag name of the tag, either with or without '#'.
+     * @return first page of list of entries.
+     */
+    public Chain<List<Entry>> tagEntries(String tag) {
+        return tagEntries(tag, Page.of(1));
+    }
+
+    /**
+     * @param tag name of the tag, either with or without '#'.
+     * @param page page.
+     * @return given page of list of entries.
+     */
+    public Chain<List<Entry>> tagEntries(String tag, Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Tags/Entries/tag/page/int/")
+                .apiParam("tag", tag)
+                .namedParam("page", String.valueOf(page.value()))
+                .build(), new TypeReference<List<Entry>>() {
+        });
+    }
+
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;
