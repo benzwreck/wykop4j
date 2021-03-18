@@ -19,6 +19,7 @@ import io.github.benzwreck.wykop4j.links.HitsOption;
 import io.github.benzwreck.wykop4j.links.Link;
 import io.github.benzwreck.wykop4j.links.LinkComment;
 import io.github.benzwreck.wykop4j.notifications.Notification;
+import io.github.benzwreck.wykop4j.profiles.ActionType;
 import io.github.benzwreck.wykop4j.profiles.Actions;
 import io.github.benzwreck.wykop4j.profiles.Badge;
 import io.github.benzwreck.wykop4j.profiles.FullProfile;
@@ -1217,6 +1218,55 @@ public class WykopClient {
                 .apiParam("login", login)
                 .build(), new TypeReference<List<SimpleProfile>>() {
         });
+    }
+
+    // Mywykop
+
+    /**
+     * Observed users and tags from MyWykop.
+     *
+     * @return first page of list of all actions.
+     */
+    public Chain<Actions> myWykopIndex(){
+        return myWykopIndex(Page.of(1));
+    }
+
+    /**
+     * Observed users and tags from MyWykop.
+     *
+     * @param page page.
+     * @return given page of list of all actions.
+     */
+    public Chain<Actions> myWykopIndex(Page page){
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Mywykop/Index/type/string/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .build(), Actions.class);
+    }
+
+    /**
+     * Observed users and tags from MyWykop.
+     *
+     * @param type type of returning value.
+     * @return first page of list of {@link ActionType} actions.
+     */
+    public Chain<Actions> myWykopIndex(ActionType type){
+        return myWykopIndex(type, Page.of(1));
+    }
+
+    /**
+     * Observed users and tags from MyWykop.
+     *
+     * @param type type of returning value.
+     * @param page page.
+     * @return given page of list of {@link ActionType} actions.
+     */
+    public Chain<Actions> myWykopIndex(ActionType type, Page page){
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Mywykop/Index/type/string/page/int/")
+//                .namedParam("type", type.value())
+                .namedParam("page", String.valueOf(page.value()))
+                .build(), Actions.class);
     }
 
     public static final class Builder {
