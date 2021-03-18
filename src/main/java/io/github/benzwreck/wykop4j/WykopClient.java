@@ -1316,6 +1316,53 @@ public class WykopClient {
                 .build(), Actions.class);
     }
 
+    /**
+     * Actions from MyWykop's observed users.
+     *
+     * @return first page of list of all actions.
+     */
+    public Chain<Actions> myWykopUsersActions() {
+        return myWykopUsersActions(Page.of(1));
+    }
+
+    /**
+     * Actions from MyWykop's observed users.
+     *
+     * @param page page.
+     * @return given page of list of all actions.
+     */
+    public Chain<Actions> myWykopUsersActions(Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Mywykop/Users/type/string/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .build(), Actions.class);
+    }
+
+    /**
+     * Actions from MyWykop's observed users.
+     *
+     * @param type type of returning value.
+     * @return first page of list of {@link ActionType} actions.
+     */
+    public Chain<Actions> myWykopUsersActions(ActionType type) {
+        return myWykopUsersActions(type, Page.of(1));
+    }
+
+    /**
+     * Actions from MyWykop's observed users.
+     *
+     * @param type type of returning value.
+     * @param page page.
+     * @return given page of list of {@link ActionType} actions.
+     */
+    public Chain<Actions> myWykopUsersActions(ActionType type, Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Mywykop/Users/type/string/page/int/")
+                .namedParam("type", type.value())
+                .namedParam("page", String.valueOf(page.value()))
+                .build(), Actions.class);
+    }
+
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;
