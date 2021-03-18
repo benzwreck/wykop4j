@@ -1141,6 +1141,28 @@ public class WykopClient {
                 .build(), InteractionStatus.class);
     }
 
+    /**
+     * @param tag tag's name.
+     * @return interaction status - being observed or blocked.
+     */
+    public Chain<InteractionStatus> blockTag(String tag) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Tags/Block/tag/")
+                .apiParam("tag", tag)
+                .build(), InteractionStatus.class);
+    }
+
+    /**
+     * @param tag tag's name.
+     * @return interaction status - being observed or blocked.
+     */
+    public Chain<InteractionStatus> unblockTag(String tag) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Tags/Unblock/tag/")
+                .apiParam("tag", tag)
+                .build(), InteractionStatus.class);
+    }
+
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;

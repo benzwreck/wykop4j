@@ -58,6 +58,8 @@ class TagSpec extends Specification {
         name        | action                       || reaction
         "observe"   | wykop.observeTag(wykopTag)   || new InteractionStatus(true, false)
         "unobserve" | wykop.unobserveTag(wykopTag) || new InteractionStatus(false, false)
+        "block"     | wykop.blockTag(wykopTag)     || new InteractionStatus(false, true)
+        "unblock"   | wykop.unblockTag(wykopTag)   || new InteractionStatus(false, false)
     }
 
 }
