@@ -2,6 +2,7 @@ package io.github.benzwreck.wykop4j.integration
 
 import io.github.benzwreck.wykop4j.IntegrationWykopClient
 import io.github.benzwreck.wykop4j.WykopClient
+import io.github.benzwreck.wykop4j.profiles.InteractionStatus
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -46,13 +47,17 @@ class TagSpec extends Specification {
         wykop.tagEntries(nonexistentTag) | _
     }
 
-    def "should observe tag"(){
+    @Unroll
+    def "should #name tag"() {
         expect:
-        with wykop.observeTag(wykopTag).execute(), {
-            isObserved()
-            !isBlocked()
+        with action.execute(), {
+            reaction.isObserved() == isObserved()
+            reaction.isBlocked() == isBlocked()
         }
-
+        where:
+        name        | action                       || reaction
+        "observe"   | wykop.observeTag(wykopTag)   || new InteractionStatus(true, false)
+        "unobserve" | wykop.unobserveTag(wykopTag) || new InteractionStatus(false, false)
     }
 
 }

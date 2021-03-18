@@ -1005,7 +1005,7 @@ public class WykopClient {
     /**
      * @return interaction status - being observed or blocked.
      */
-    public Chain<InteractionStatus> unobserve(String login) {
+    public Chain<InteractionStatus> unobserveUser(String login) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/UnObserve/login/")
                 .apiParam("login", login)
@@ -1015,7 +1015,7 @@ public class WykopClient {
     /**
      * @return interaction status - being observed or blocked.
      */
-    public Chain<InteractionStatus> block(String login) {
+    public Chain<InteractionStatus> blockUser(String login) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/Block/login/")
                 .apiParam("login", login)
@@ -1025,7 +1025,7 @@ public class WykopClient {
     /**
      * @return interaction status - being observed or blocked.
      */
-    public Chain<InteractionStatus> unblock(String login) {
+    public Chain<InteractionStatus> unblockUser(String login) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/UnBlock/login/")
                 .apiParam("login", login)
@@ -1063,7 +1063,7 @@ public class WykopClient {
     }
 
     /**
-     * @param tag name of the tag, either with or without '#'.
+     * @param tag  name of the tag, either with or without '#'.
      * @param page page.
      * @return given page of actions.
      */
@@ -1084,7 +1084,7 @@ public class WykopClient {
     }
 
     /**
-     * @param tag name of the tag, either with or without '#'.
+     * @param tag  name of the tag, either with or without '#'.
      * @param page page.
      * @return given page of list of links.
      */
@@ -1106,7 +1106,7 @@ public class WykopClient {
     }
 
     /**
-     * @param tag name of the tag, either with or without '#'.
+     * @param tag  name of the tag, either with or without '#'.
      * @param page page.
      * @return given page of list of entries.
      */
@@ -1119,9 +1119,24 @@ public class WykopClient {
         });
     }
 
-    public Chain<InteractionStatus> observeTag(String tag){
+    /**
+     * @param tag tag's name.
+     * @return interaction status - being observed or blocked.
+     */
+    public Chain<InteractionStatus> observeTag(String tag) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Tags/Observe/tag/")
+                .apiParam("tag", tag)
+                .build(), InteractionStatus.class);
+    }
+
+    /**
+     * @param tag tag's name.
+     * @return interaction status - being observed or blocked.
+     */
+    public Chain<InteractionStatus> unobserveTag(String tag) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Tags/Unobserve/tag/")
                 .apiParam("tag", tag)
                 .build(), InteractionStatus.class);
     }
