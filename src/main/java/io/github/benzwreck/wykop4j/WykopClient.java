@@ -1363,6 +1363,28 @@ public class WykopClient {
                 .build(), Actions.class);
     }
 
+    /**
+     * Entries from observed users and tags.
+     *
+     * @return list of entries.
+     */
+    public Chain<List<Entry>> myWykopEntries(){
+        return myWykopEntries(Page.of(1));
+    }
+
+    /**
+     * Entries from observed users and tags.
+     *
+     * @param page page.
+     * @return list of entries.
+     */
+    public Chain<List<Entry>> myWykopEntries(Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Mywykop/Entries/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .build(), new TypeReference<List<Entry>>() {
+        });
+    }
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;
