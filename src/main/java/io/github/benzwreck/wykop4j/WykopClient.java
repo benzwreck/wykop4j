@@ -1464,6 +1464,17 @@ public class WykopClient {
         });
     }
 
+    /**
+     * @param login login.
+     * @return list of searched profiles.
+     */
+    public Chain<List<SimpleProfile>> searchProfiles(String login){
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Search/Profiles/")
+                .postParam("q", login)
+                .build(), new TypeReference<List<SimpleProfile>>() {
+        });
+    }
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;

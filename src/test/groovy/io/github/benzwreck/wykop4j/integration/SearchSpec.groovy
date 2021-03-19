@@ -15,30 +15,16 @@ class SearchSpec extends Specification {
             .phrase(phrase)
             .build()
 
-    def "should return list of searched links"() {
-        when:
-        def links = wykop.searchLinks(searchQuery).execute()
-        then:
-        links.stream().allMatch(link -> link.description().toLowerCase().contains(phrase))
-    }
-
-    def "should return list of searched entries"() {
-        when:
-        def links = wykop.searchEntries(searchQuery).execute()
-        then:
-        links.stream().allMatch(entry -> entry.body().get().toLowerCase().contains(phrase))
-    }
-
     @Unroll
     def "should return list of searched #name"() {
         expect:
         action.execute().stream().allMatch(predicate)
         where:
-        name      | action                           | predicate
-        "entries" | wykop.searchEntries(searchQuery) | (entry) -> entry.body().get().toLowerCase().contains(phrase)
-        "links"   | wykop.searchLinks(searchQuery)   | (link) -> link.description().toLowerCase().contains(phrase)
+        name       | action                           | predicate
+        "entries"  | wykop.searchEntries(searchQuery) | (entry) -> entry.body().get().toLowerCase().contains(phrase)
+        "links"    | wykop.searchLinks(searchQuery)   | (link) -> link.description().toLowerCase().contains(phrase)
+        "profiles" | wykop.searchProfiles("m__b")     | (profile) -> profile.login().contains("m__b")
     }
-
 
     @Unroll
     def "should search for different types"() {
