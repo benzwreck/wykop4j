@@ -25,6 +25,7 @@ import io.github.benzwreck.wykop4j.profiles.Badge;
 import io.github.benzwreck.wykop4j.profiles.FullProfile;
 import io.github.benzwreck.wykop4j.profiles.InteractionStatus;
 import io.github.benzwreck.wykop4j.profiles.SimpleProfile;
+import io.github.benzwreck.wykop4j.search.SearchQuery;
 import io.github.benzwreck.wykop4j.suggest.TagSuggestion;
 import io.github.benzwreck.wykop4j.terms.Terms;
 
@@ -1406,6 +1407,34 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Mywykop/Links/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
                 .build(), new TypeReference<List<Link>>() {
+        });
+    }
+
+    // Search
+
+    /**
+     * @param searchQuery search query.
+     * @return first page of list of links.
+     */
+    public Chain<List<Link>> searchLinks(SearchQuery searchQuery) {
+        return searchLinks(searchQuery, Page.of(1));
+    }
+
+    /**
+     * @param searchQuery search query.
+     * @param page page.
+     * @return given page of list of links.
+     */
+    public Chain<List<Link>> searchLinks(SearchQuery searchQuery, Page page) {
+        WykopRequest.Builder builder = new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Search/Links/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .postParam("what", searchQuery.type().value())
+                .postParam("sort", searchQuery.sorting().value())
+                .postParam("when", searchQuery.dateRange().value())
+                .postParam("votes", String.valueOf(searchQuery.minimumVoteCount()));
+        searchQuery.phrase().ifPresent(phrase -> builder.postParam("q", phrase));
+        return new Chain<>(builder.build(), new TypeReference<List<Link>>() {
         });
     }
 
