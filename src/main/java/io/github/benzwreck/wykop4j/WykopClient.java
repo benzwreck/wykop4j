@@ -1438,6 +1438,32 @@ public class WykopClient {
         });
     }
 
+    /**
+     * @param searchQuery search query.
+     * @return first page of list of entries.
+     */
+    public Chain<List<Entry>> searchEntries(SearchQuery searchQuery) {
+        return searchEntries(searchQuery, Page.of(1));
+    }
+
+    /**
+     * @param searchQuery search query.
+     * @param page page.
+     * @return given page of list of entries.
+     */
+    public Chain<List<Entry>> searchEntries(SearchQuery searchQuery, Page page) {
+        WykopRequest.Builder builder = new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Search/Entries/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .postParam("what", searchQuery.type().value())
+                .postParam("sort", searchQuery.sorting().value())
+                .postParam("when", searchQuery.dateRange().value())
+                .postParam("votes", String.valueOf(searchQuery.minimumVoteCount()));
+        searchQuery.phrase().ifPresent(phrase -> builder.postParam("q", phrase));
+        return new Chain<>(builder.build(), new TypeReference<List<Entry>>() {
+        });
+    }
+
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;
