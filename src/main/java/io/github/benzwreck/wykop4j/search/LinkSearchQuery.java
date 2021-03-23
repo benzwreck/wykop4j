@@ -1,16 +1,15 @@
 package io.github.benzwreck.wykop4j.search;
 
-import java.time.LocalDate;
 import java.util.Optional;
 
-public class SearchQuery {
+public class LinkSearchQuery {
     private final String phrase;
     private final Type type;
     private final Sorting sorting;
     private final DateRange dateRange;
     private final int minimumVoteCount;
 
-    public SearchQuery(String phrase, Type type, Sorting sorting, DateRange dateRange, int minimumVoteCount) {
+    private LinkSearchQuery(String phrase, Type type, Sorting sorting, DateRange dateRange, int minimumVoteCount) {
         this.phrase = phrase;
         this.type = type;
         this.sorting = sorting;
@@ -52,23 +51,10 @@ public class SearchQuery {
     }
 
     public enum Sorting {
-        BEST("best"), DIGGS("diggs"), COMMENTS("commments"), NEW("new");
+        BEST("best"), DIGGS("diggs"), NEW("new");
         private final String value;
 
         Sorting(String value) {
-            this.value = value;
-        }
-
-        public String value() {
-            return value;
-        }
-    }
-
-    public enum DateRange {
-        ALL("all"), TODAY("today"), YESTERDAY("yesterday"), WEEK("week"), MONTH("month");
-        private final String value;
-
-        DateRange(String value) {
             this.value = value;
         }
 
@@ -112,10 +98,10 @@ public class SearchQuery {
             return this;
         }
 
-        public SearchQuery build() {
+        public LinkSearchQuery build() {
             if (phrase != null && phrase.length() < 3)
                 throw new IllegalArgumentException("Phrase must be at least 3 characters long.");
-            return new SearchQuery(phrase, type, sorting, dateRange, minimumVoteCount);
+            return new LinkSearchQuery(phrase, type, sorting, dateRange, minimumVoteCount);
         }
     }
 }

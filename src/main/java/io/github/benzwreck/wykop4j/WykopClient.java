@@ -25,7 +25,8 @@ import io.github.benzwreck.wykop4j.profiles.Badge;
 import io.github.benzwreck.wykop4j.profiles.FullProfile;
 import io.github.benzwreck.wykop4j.profiles.InteractionStatus;
 import io.github.benzwreck.wykop4j.profiles.SimpleProfile;
-import io.github.benzwreck.wykop4j.search.SearchQuery;
+import io.github.benzwreck.wykop4j.search.EntrySearchQuery;
+import io.github.benzwreck.wykop4j.search.LinkSearchQuery;
 import io.github.benzwreck.wykop4j.suggest.TagSuggestion;
 import io.github.benzwreck.wykop4j.terms.Terms;
 
@@ -1413,53 +1414,83 @@ public class WykopClient {
     // Search
 
     /**
-     * @param searchQuery search query.
-     * @return first page of list of links.
+     * @param phrase search phrase.
+     * @return first page of list of links
      */
-    public Chain<List<Link>> searchLinks(SearchQuery searchQuery) {
-        return searchLinks(searchQuery, Page.of(1));
+    public Chain<List<Link>> searchLinks(String phrase) {
+        return searchLinks(phrase, Page.of(1));
     }
 
     /**
-     * @param searchQuery search query.
+     * @param phrase search phrase.
      * @param page page.
      * @return given page of list of links.
      */
-    public Chain<List<Link>> searchLinks(SearchQuery searchQuery, Page page) {
+    public Chain<List<Link>> searchLinks(String phrase, Page page) {
+        return searchLinks(new LinkSearchQuery.Builder().phrase(phrase).build(), page);
+    }
+    /**
+     * @param linkSearchQuery search query.
+     * @return first page of list of links.
+     */
+    public Chain<List<Link>> searchLinks(LinkSearchQuery linkSearchQuery) {
+        return searchLinks(linkSearchQuery, Page.of(1));
+    }
+
+    /**
+     * @param linkSearchQuery search query.
+     * @param page page.
+     * @return given page of list of links.
+     */
+    public Chain<List<Link>> searchLinks(LinkSearchQuery linkSearchQuery, Page page) {
         WykopRequest.Builder builder = new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Search/Links/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
-                .postParam("what", searchQuery.type().value())
-                .postParam("sort", searchQuery.sorting().value())
-                .postParam("when", searchQuery.dateRange().value())
-                .postParam("votes", String.valueOf(searchQuery.minimumVoteCount()));
-        searchQuery.phrase().ifPresent(phrase -> builder.postParam("q", phrase));
+                .postParam("what", linkSearchQuery.type().value())
+                .postParam("sort", linkSearchQuery.sorting().value())
+                .postParam("when", linkSearchQuery.dateRange().value())
+                .postParam("votes", String.valueOf(linkSearchQuery.minimumVoteCount()));
+        linkSearchQuery.phrase().ifPresent(phrase -> builder.postParam("q", phrase));
         return new Chain<>(builder.build(), new TypeReference<List<Link>>() {
         });
     }
 
     /**
-     * @param searchQuery search query.
+     * @param phrase search phrase.
      * @return first page of list of entries.
      */
-    public Chain<List<Entry>> searchEntries(SearchQuery searchQuery) {
-        return searchEntries(searchQuery, Page.of(1));
+    public Chain<List<Entry>> searchEntries(String phrase) {
+        return searchEntries(phrase, Page.of(1));
     }
 
     /**
-     * @param searchQuery search query.
+     * @param phrase search phrase.
      * @param page page.
      * @return given page of list of entries.
      */
-    public Chain<List<Entry>> searchEntries(SearchQuery searchQuery, Page page) {
+    public Chain<List<Entry>> searchEntries(String phrase, Page page) {
+        return searchEntries(new EntrySearchQuery.Builder().phrase(phrase).build(), page);
+    }
+
+    /**
+     * @param entrySearchQuery search query.
+     * @return first page of list of entries.
+     */
+    public Chain<List<Entry>> searchEntries(EntrySearchQuery entrySearchQuery) {
+        return searchEntries(entrySearchQuery, Page.of(1));
+    }
+
+    /**
+     * @param entrySearchQuery search query.
+     * @param page page.
+     * @return given page of list of entries.
+     */
+    public Chain<List<Entry>> searchEntries(EntrySearchQuery entrySearchQuery, Page page) {
         WykopRequest.Builder builder = new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Search/Entries/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
-                .postParam("what", searchQuery.type().value())
-                .postParam("sort", searchQuery.sorting().value())
-                .postParam("when", searchQuery.dateRange().value())
-                .postParam("votes", String.valueOf(searchQuery.minimumVoteCount()));
-        searchQuery.phrase().ifPresent(phrase -> builder.postParam("q", phrase));
+                .postParam("q", entrySearchQuery.phrase())
+                .postParam("when", entrySearchQuery.dateRange().value());
         return new Chain<>(builder.build(), new TypeReference<List<Entry>>() {
         });
     }
