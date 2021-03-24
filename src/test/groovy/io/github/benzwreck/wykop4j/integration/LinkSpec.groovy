@@ -2,7 +2,6 @@ package io.github.benzwreck.wykop4j.integration
 
 import io.github.benzwreck.wykop4j.IntegrationWykopClient
 import io.github.benzwreck.wykop4j.WykopClient
-import io.github.benzwreck.wykop4j.links.Link
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -21,10 +20,10 @@ class LinkSpec extends Specification {
         "upcoming" | wykop.upcomingLinks() | (link) -> link.status() == "upcoming"
     }
 
-    def "should return upcoming links"() {
+    def "should return favorite links"() {
         when:
-        def links = wykop.upcomingLinks().execute()
+        def links = wykop.favoriteLinks().execute()
         then:
-        links.stream().allMatch((link) -> link.status() == "upcoming")
+        links.isEmpty() || links.stream().allMatch(link -> link.userFavorite())
     }
 }
