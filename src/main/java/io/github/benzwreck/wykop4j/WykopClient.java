@@ -18,6 +18,7 @@ import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException;
 import io.github.benzwreck.wykop4j.links.HitsOption;
 import io.github.benzwreck.wykop4j.links.Link;
 import io.github.benzwreck.wykop4j.links.LinkComment;
+import io.github.benzwreck.wykop4j.links.LinkWithComments;
 import io.github.benzwreck.wykop4j.notifications.Notification;
 import io.github.benzwreck.wykop4j.profiles.ActionType;
 import io.github.benzwreck.wykop4j.profiles.Actions;
@@ -1556,6 +1557,7 @@ public class WykopClient {
     }
 
     /**
+     *
      * @param page page.
      * @return given page of favorite links.
      */
@@ -1564,6 +1566,30 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Links/Observed/page/int/")   //yep, it returns favorite links, not observed ones
                 .namedParam("page", String.valueOf(page.value()))
                 .build(), new TypeReference<List<Link>>() {
+        });
+    }
+
+    /**
+     * @param id link's id.
+     * @return possible link without comments.
+     */
+    public Chain<Optional<Link>> link(int id) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/Link/id/")
+                .apiParam("id", String.valueOf(id))
+                .build(), new TypeReference<Optional<Link>>() {
+        });
+    }
+
+    /**
+     * @param id link's id.
+     * @return possible link with comments.
+     */
+    public Chain<Optional<LinkWithComments>> linkWithComments(int id) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/Link/id/withcomments/true/")
+                .apiParam("id", String.valueOf(id))
+                .build(), new TypeReference<Optional<LinkWithComments>>() {
         });
     }
 
