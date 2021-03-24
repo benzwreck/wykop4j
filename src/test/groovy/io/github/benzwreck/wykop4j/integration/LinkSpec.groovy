@@ -72,14 +72,17 @@ class LinkSpec extends Specification {
         wykop.linkVoteDown(nonexistentId, VoteDownReason.DUPLICATE) | _
     }
 
-    def "should return list of upvotes"() {
-        when:
-        def votes = wykop.linkAllUpvotes(linkId).execute()
-        then:
-        votes.forEach(vote -> {
+    @Unroll
+    def "should return list of #name"() {
+        expect:
+        votes.execute().forEach(vote -> {
             assert vote.author().login() != null
             assert vote.date() != null
         }
         )
+        where:
+        name        | votes
+        "upvotes"   | wykop.linkAllUpvotes(linkId)
+        "downvotes" | wykop.linkAllDownvotes(linkId)
     }
 }

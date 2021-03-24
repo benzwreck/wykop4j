@@ -1649,6 +1649,18 @@ public class WykopClient {
         });
     }
 
+    /**
+     * @param linkId link's id.
+     * @return list of downvotes for a given link.
+     */
+    public Chain<List<Vote>> linkAllDownvotes(int linkId){
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/Downvoters/link_id/")
+                .apiParam("link_id", String.valueOf(linkId))
+                .build(), new TypeReference<List<Vote>>() {
+        });
+    }
+
 
     public static final class Builder {
         private UserCredentials userCredentials;
