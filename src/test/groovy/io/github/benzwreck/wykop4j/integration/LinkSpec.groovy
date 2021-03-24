@@ -8,6 +8,9 @@ import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import java.time.Month
+import java.time.Year
+
 class LinkSpec extends Specification {
     @Shared
     WykopClient wykop = IntegrationWykopClient.getInstance()
@@ -84,5 +87,15 @@ class LinkSpec extends Specification {
         name        | votes
         "upvotes"   | wykop.linkAllUpvotes(linkId)
         "downvotes" | wykop.linkAllDownvotes(linkId)
+    }
+
+    @Unroll
+    def "should return top links from #name"() {
+        expect:
+        links.execute().stream().allMatch(link -> link.isHot())
+        where:
+        name           | links
+        "2020"         | wykop.linkTop(Year.of(2020))
+        "January 2019" | wykop.linkTop(Year.of(2019), Month.JANUARY)
     }
 }

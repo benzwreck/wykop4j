@@ -1661,6 +1661,32 @@ public class WykopClient {
         });
     }
 
+    /**
+     * @param year year.
+     * @return list of top links from given year.
+     */
+    public Chain<List<Link>> linkTop(Year year){
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/Top/year/")
+                .apiParam("year", year.toString())
+                .build(), new TypeReference<List<Link>>() {
+        });
+    }
+
+    /**
+     * @param year year.
+     * @param month month.
+     * @return list of top links from a given year and month.
+     */
+    public Chain<List<Link>> linkTop(Year year, Month month){
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/Top/year/month/")
+                .apiParam("year", year.toString())
+                .apiParam("month", String.valueOf(month.getValue()))
+                .build(), new TypeReference<List<Link>>() {
+        });
+    }
+
 
     public static final class Builder {
         private UserCredentials userCredentials;
