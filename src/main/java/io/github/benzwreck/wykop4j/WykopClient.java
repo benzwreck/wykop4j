@@ -1529,6 +1529,25 @@ public class WykopClient {
         });
     }
 
+    /**
+     * @return first page of upcoming links.
+     */
+    public Chain<List<Link>> upcomingLinks() {
+        return upcomingLinks(Page.of(1));
+    }
+
+    /**
+     * @param page page.
+     * @return given page of upcoming links.
+     */
+    public Chain<List<Link>> upcomingLinks(Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/Upcoming/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .build(), new TypeReference<List<Link>>() {
+        });
+    }
+
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;
