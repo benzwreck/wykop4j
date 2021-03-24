@@ -2,6 +2,8 @@ package io.github.benzwreck.wykop4j.integration
 
 import io.github.benzwreck.wykop4j.IntegrationWykopClient
 import io.github.benzwreck.wykop4j.WykopClient
+import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException
+import io.github.benzwreck.wykop4j.links.VoteDownReason
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -43,11 +45,30 @@ class LinkSpec extends Specification {
     }
 
     @Unroll
-    def "should vote up link"() {
+    def "should #name link"() {
+        expect:
+        with data.execute(), {
+            buries() >= 0
+            digs() >= 0
+        }
+        where:
+        name          | data
+        "upvote"      | wykop.linkVoteUp(linkId)
+        "remove vote" | wykop.linkVoteRemove(linkId)
+        "downvote"    | wykop.linkVoteDown(linkId, VoteDownReason.DUPLICATE)
+        "remove vote" | wykop.linkVoteRemove(linkId)
+    }
+
+    @Unroll
+    def "should thrown an exception"() {
         when:
-        def data = wykop.linkVoteUp(linkId).execute()
+        state.execute()
         then:
-        data.buries() != 0
-        data.digs() != 0
+        thrown(ArchivalContentException)
+        where:
+        state                                                       | _
+        wykop.linkVoteUp(nonexistentId)                             | _
+        wykop.linkVoteRemove(nonexistentId)                         | _
+        wykop.linkVoteDown(nonexistentId, VoteDownReason.DUPLICATE) | _
     }
 }

@@ -20,6 +20,7 @@ import io.github.benzwreck.wykop4j.links.Link;
 import io.github.benzwreck.wykop4j.links.LinkComment;
 import io.github.benzwreck.wykop4j.links.LinkVoteData;
 import io.github.benzwreck.wykop4j.links.LinkWithComments;
+import io.github.benzwreck.wykop4j.links.VoteDownReason;
 import io.github.benzwreck.wykop4j.notifications.Notification;
 import io.github.benzwreck.wykop4j.profiles.ActionType;
 import io.github.benzwreck.wykop4j.profiles.Actions;
@@ -1558,7 +1559,6 @@ public class WykopClient {
     }
 
     /**
-     *
      * @param page page.
      * @return given page of favorite links.
      */
@@ -1599,6 +1599,7 @@ public class WykopClient {
      *
      * @param id link's id.
      * @return link's vote data.
+     * @throws ArchivalContentException when id is invalid.
      */
     public Chain<LinkVoteData> linkVoteUp(int id){
         return new Chain<>(new WykopRequest.Builder()
@@ -1606,6 +1607,36 @@ public class WykopClient {
                 .apiParam("id", String.valueOf(id))
                 .build(), LinkVoteData.class);
     }
+
+    /**
+     * Removes vote from given link.
+     *
+     * @param id link's id.
+     * @return link's vote data.
+     * @throws ArchivalContentException when id is invalid.
+     */
+    public Chain<LinkVoteData> linkVoteRemove(int id){
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/VoteRemove/id/")
+                .apiParam("id", String.valueOf(id))
+                .build(), LinkVoteData.class);
+    }
+
+    /**
+     * Votes down given link.
+     *
+     * @param id link's id.
+     * @return link's vote data.
+     * @throws ArchivalContentException when id is invalid.
+     */
+    public Chain<LinkVoteData> linkVoteDown(int id, VoteDownReason voteDownReason){
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/VoteDown/id/voteType/")
+                .apiParam("id", String.valueOf(id))
+                .apiParam("voteType", String.valueOf(voteDownReason.value()))
+                .build(), LinkVoteData.class);
+    }
+
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;
