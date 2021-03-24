@@ -18,6 +18,7 @@ import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException;
 import io.github.benzwreck.wykop4j.links.HitsOption;
 import io.github.benzwreck.wykop4j.links.Link;
 import io.github.benzwreck.wykop4j.links.LinkComment;
+import io.github.benzwreck.wykop4j.links.LinkVoteData;
 import io.github.benzwreck.wykop4j.links.LinkWithComments;
 import io.github.benzwreck.wykop4j.notifications.Notification;
 import io.github.benzwreck.wykop4j.profiles.ActionType;
@@ -239,7 +240,7 @@ public class WykopClient {
      * @return nothing.
      * @throws ArchivalContentException when non-existing entryId provided.
      */
-    public Chain<Void> voteUp(int entryId) {
+    public Chain<Void> entryVoteUp(int entryId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/VoteUp/id/")
                 .apiParam("id", String.valueOf(entryId))
@@ -251,7 +252,7 @@ public class WykopClient {
      * @return nothing.
      * @throws ArchivalContentException when non-existing entryId provided.
      */
-    public Chain<Void> removeVote(int entryId) {
+    public Chain<Void> entryRemoveVote(int entryId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/VoteRemove/id/")
                 .apiParam("id", String.valueOf(entryId))
@@ -262,7 +263,7 @@ public class WykopClient {
      * @param entryId entry's id to fetch voters from.
      * @return List of {@link Vote}s.
      */
-    public Chain<List<Vote>> allUpvotes(int entryId) {
+    public Chain<List<Vote>> entryAllUpvotes(int entryId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/Upvoters/entry_id/")
                 .apiParam("entry_id", String.valueOf(entryId))
@@ -1593,6 +1594,18 @@ public class WykopClient {
         });
     }
 
+    /**
+     * Votes up given link.
+     *
+     * @param id link's id.
+     * @return link's vote data.
+     */
+    public Chain<LinkVoteData> linkVoteUp(int id){
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/VoteUp/id/")
+                .apiParam("id", String.valueOf(id))
+                .build(), LinkVoteData.class);
+    }
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;

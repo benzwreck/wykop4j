@@ -10,7 +10,7 @@ class LinkSpec extends Specification {
     @Shared
     WykopClient wykop = IntegrationWykopClient.getInstance()
     @Shared
-    int linkId = wykop.upcomingLinks().execute().get(0).id()
+    int linkId = wykop.promotedLinks().execute().get(0).id()
     static int nonexistentId = -111
 
     @Unroll
@@ -30,20 +30,6 @@ class LinkSpec extends Specification {
         links.isEmpty() || links.stream().allMatch(link -> link.userFavorite())
     }
 
-    def "should return link"() {
-        when:
-        def link = wykop.link(linkId).execute()
-        then:
-        link.isPresent()
-    }
-
-    def "should return link with comments"() {
-        when:
-        def link = wykop.linkWithComments(linkId).execute()
-        then:
-        link.isPresent()
-    }
-
     @Unroll
     def "should return #name"() {
         expect:
@@ -54,5 +40,14 @@ class LinkSpec extends Specification {
         "empty Optional"     | wykop.link(nonexistentId)             | false
         "non-empty Optional" | wykop.linkWithComments(linkId)        | true
         "empty Optional"     | wykop.linkWithComments(nonexistentId) | false
+    }
+
+    @Unroll
+    def "should vote up link"() {
+        when:
+        def data = wykop.linkVoteUp(linkId).execute()
+        then:
+        data.buries() != 0
+        data.digs() != 0
     }
 }
