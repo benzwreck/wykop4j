@@ -1370,7 +1370,7 @@ public class WykopClient {
      *
      * @return list of entries.
      */
-    public Chain<List<Entry>> myWykopEntries(){
+    public Chain<List<Entry>> myWykopEntries() {
         return myWykopEntries(Page.of(1));
     }
 
@@ -1393,7 +1393,7 @@ public class WykopClient {
      *
      * @return list of links.
      */
-    public Chain<List<Link>> myWykopLinks(){
+    public Chain<List<Link>> myWykopLinks() {
         return myWykopLinks(Page.of(1));
     }
 
@@ -1423,12 +1423,13 @@ public class WykopClient {
 
     /**
      * @param phrase search phrase.
-     * @param page page.
+     * @param page   page.
      * @return given page of list of links.
      */
     public Chain<List<Link>> searchLinks(String phrase, Page page) {
         return searchLinks(new LinkSearchQuery.Builder().phrase(phrase).build(), page);
     }
+
     /**
      * @param linkSearchQuery search query.
      * @return first page of list of links.
@@ -1439,7 +1440,7 @@ public class WykopClient {
 
     /**
      * @param linkSearchQuery search query.
-     * @param page page.
+     * @param page            page.
      * @return given page of list of links.
      */
     public Chain<List<Link>> searchLinks(LinkSearchQuery linkSearchQuery, Page page) {
@@ -1465,7 +1466,7 @@ public class WykopClient {
 
     /**
      * @param phrase search phrase.
-     * @param page page.
+     * @param page   page.
      * @return given page of list of entries.
      */
     public Chain<List<Entry>> searchEntries(String phrase, Page page) {
@@ -1482,7 +1483,7 @@ public class WykopClient {
 
     /**
      * @param entrySearchQuery search query.
-     * @param page page.
+     * @param page             page.
      * @return given page of list of entries.
      */
     public Chain<List<Entry>> searchEntries(EntrySearchQuery entrySearchQuery, Page page) {
@@ -1499,13 +1500,35 @@ public class WykopClient {
      * @param login login.
      * @return list of searched profiles.
      */
-    public Chain<List<SimpleProfile>> searchProfiles(String login){
+    public Chain<List<SimpleProfile>> searchProfiles(String login) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Search/Profiles/")
                 .postParam("q", login)
                 .build(), new TypeReference<List<SimpleProfile>>() {
         });
     }
+
+    // Links
+
+    /**
+     * @return first page of promoted links.
+     */
+    public Chain<List<Link>> promotedLinks() {
+        return promotedLinks(Page.of(1));
+    }
+
+    /**
+     * @param page page.
+     * @return given page of promoted links.
+     */
+    public Chain<List<Link>> promotedLinks(Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/Promoted/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .build(), new TypeReference<List<Link>>() {
+        });
+    }
+
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;
