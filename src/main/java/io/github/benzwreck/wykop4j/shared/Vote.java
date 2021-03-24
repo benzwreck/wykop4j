@@ -1,4 +1,4 @@
-package io.github.benzwreck.wykop4j.entries;
+package io.github.benzwreck.wykop4j.shared;
 
 import io.github.benzwreck.wykop4j.profiles.SimpleProfile;
 
@@ -19,5 +19,13 @@ public class Vote {
 
     public LocalDateTime date() {
         return date;
+    }
+
+    @Override
+    public String toString() {
+        return "Vote{" +
+                "author=" + author +
+                ", date=" + date +
+                '}';
     }
 }

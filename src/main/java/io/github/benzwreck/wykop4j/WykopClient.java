@@ -10,7 +10,7 @@ import io.github.benzwreck.wykop4j.entries.NewComment;
 import io.github.benzwreck.wykop4j.entries.NewEntry;
 import io.github.benzwreck.wykop4j.entries.Period;
 import io.github.benzwreck.wykop4j.entries.Survey;
-import io.github.benzwreck.wykop4j.entries.Vote;
+import io.github.benzwreck.wykop4j.shared.Vote;
 import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException;
 import io.github.benzwreck.wykop4j.exceptions.CommentDoesNotExistException;
 import io.github.benzwreck.wykop4j.exceptions.NiceTryException;
@@ -1571,25 +1571,25 @@ public class WykopClient {
     }
 
     /**
-     * @param id link's id.
+     * @param linkId link's id.
      * @return possible link without comments.
      */
-    public Chain<Optional<Link>> link(int id) {
+    public Chain<Optional<Link>> link(int linkId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Link/id/")
-                .apiParam("id", String.valueOf(id))
+                .apiParam("id", String.valueOf(linkId))
                 .build(), new TypeReference<Optional<Link>>() {
         });
     }
 
     /**
-     * @param id link's id.
+     * @param linkId link's id.
      * @return possible link with comments.
      */
-    public Chain<Optional<LinkWithComments>> linkWithComments(int id) {
+    public Chain<Optional<LinkWithComments>> linkWithComments(int linkId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Link/id/withcomments/true/")
-                .apiParam("id", String.valueOf(id))
+                .apiParam("id", String.valueOf(linkId))
                 .build(), new TypeReference<Optional<LinkWithComments>>() {
         });
     }
@@ -1597,45 +1597,58 @@ public class WykopClient {
     /**
      * Votes up given link.
      *
-     * @param id link's id.
+     * @param linkId link's id.
      * @return link's vote data.
      * @throws ArchivalContentException when id is invalid.
      */
-    public Chain<LinkVoteData> linkVoteUp(int id){
+    public Chain<LinkVoteData> linkVoteUp(int linkId){
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/VoteUp/id/")
-                .apiParam("id", String.valueOf(id))
+                .apiParam("id", String.valueOf(linkId))
                 .build(), LinkVoteData.class);
     }
 
     /**
      * Removes vote from given link.
      *
-     * @param id link's id.
+     * @param linkId link's id.
      * @return link's vote data.
      * @throws ArchivalContentException when id is invalid.
      */
-    public Chain<LinkVoteData> linkVoteRemove(int id){
+    public Chain<LinkVoteData> linkVoteRemove(int linkId){
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/VoteRemove/id/")
-                .apiParam("id", String.valueOf(id))
+                .apiParam("id", String.valueOf(linkId))
                 .build(), LinkVoteData.class);
     }
 
     /**
      * Votes down given link.
      *
-     * @param id link's id.
+     * @param linkId link's id.
      * @return link's vote data.
      * @throws ArchivalContentException when id is invalid.
      */
-    public Chain<LinkVoteData> linkVoteDown(int id, VoteDownReason voteDownReason){
+    public Chain<LinkVoteData> linkVoteDown(int linkId, VoteDownReason voteDownReason){
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/VoteDown/id/voteType/")
-                .apiParam("id", String.valueOf(id))
+                .apiParam("id", String.valueOf(linkId))
                 .apiParam("voteType", String.valueOf(voteDownReason.value()))
                 .build(), LinkVoteData.class);
     }
+
+    /**
+     * @param linkId link's id.
+     * @return list of upvotes for a given link.
+     */
+    public Chain<List<Vote>> linkAllUpvotes(int linkId){
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/Upvoters/link_id/")
+                .apiParam("link_id", String.valueOf(linkId))
+                .build(), new TypeReference<List<Vote>>() {
+        });
+    }
+
 
     public static final class Builder {
         private UserCredentials userCredentials;
