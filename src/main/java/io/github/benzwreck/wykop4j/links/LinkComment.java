@@ -1,9 +1,11 @@
 package io.github.benzwreck.wykop4j.links;
 
+import io.github.benzwreck.wykop4j.media.Embed;
 import io.github.benzwreck.wykop4j.profiles.SimpleProfile;
 import io.github.benzwreck.wykop4j.shared.UserVote;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 public class LinkComment {
     private final Integer id;
@@ -18,12 +20,12 @@ public class LinkComment {
     private final Boolean blocked;
     private final Boolean favorite;
     private final Integer linkId;
-    private final Link link;
+    private final Embed embed;
     private final String violationUrl;
     private final Integer voteCountMinus;
     private final String original;
 
-    public LinkComment(Integer id, LocalDateTime date, SimpleProfile author, Integer voteCount, Integer voteCountPlus, String body, Integer parentId, Boolean canVote, UserVote userVote, Boolean blocked, Boolean favorite, Integer linkId, Link link, String violationUrl, Integer voteCountMinus, String original) {
+    public LinkComment(Integer id, LocalDateTime date, SimpleProfile author, Integer voteCount, Integer voteCountPlus, String body, Integer parentId, Boolean canVote, UserVote userVote, Boolean blocked, Boolean favorite, Integer linkId, Embed embed, String violationUrl, Integer voteCountMinus, String original) {
         this.id = id;
         this.date = date;
         this.author = author;
@@ -36,7 +38,7 @@ public class LinkComment {
         this.blocked = blocked;
         this.favorite = favorite;
         this.linkId = linkId;
-        this.link = link;
+        this.embed = embed;
         this.violationUrl = violationUrl;
         this.voteCountMinus = voteCountMinus;
         this.original = original;
@@ -90,8 +92,8 @@ public class LinkComment {
         return linkId;
     }
 
-    public Link link() {
-        return link;
+    public Optional<Embed> embed() {
+        return Optional.ofNullable(embed);
     }
 
     public String violationUrl() {
@@ -121,7 +123,6 @@ public class LinkComment {
                 ", blocked=" + blocked +
                 ", favorite=" + favorite +
                 ", linkId=" + linkId +
-                ", link=" + link +
                 ", violationUrl='" + violationUrl + '\'' +
                 ", voteCountMinus=" + voteCountMinus +
                 ", original='" + original + '\'' +

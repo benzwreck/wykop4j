@@ -83,38 +83,6 @@ class LinkMappingSpec extends Specification {
             blocked() == false
             favorite() == false
             linkId() == 5750693
-            with link(), {
-                id() == 5750693
-                title() == "Zasady działań moderacyjnych - standardy moderacji"
-                description() == "Wykopowicze, zdajemy sobie sprawę, że podejmowane przez nas działania moderacyjne nie zawsze spotykają się z Waszą aprobatą.  Wiemy też, że zdarza się, iż nie rozumiecie dlaczego zgłoszona przez Was treść została lub nie została przez nas..."
-                tags() == "#wykop #moderacja #zasady #polska"
-                sourceUrl() == "http://www.wykop.pl/artykul/5750693/zasady-dzialan-moderacyjnych-standardy-moderacji/"
-                voteCount() == 1164
-                buryCount() == 0
-                commentsCount() == 945
-                relatedCount() == 5
-                date() == LocalDateTime.of(2020, 10, 19, 16, 23, 02)
-                with author(), {
-                    login() == "wykop"
-                    color() == Color.ADMIN
-                    sex() == Optional.empty()
-                    avatar() == "https://www.wykop.pl/cdn/c3397992/wykop_U5laqyXEOf,q150.jpg"
-                }
-                preview() == "https://www.wykop.pl/cdn/c3397993/link_1603117815m5OxIJrwkSgutxxYYW5P4t,w104h74.jpg"
-                plus18() == false
-                status() == "promoted"
-                canVote() == true
-                isHot() == true
-                userFavorite() == false
-                userObserve() == false
-                with info().get(), {
-                    color() == Link.Info.Color.YELLOW
-                    body() == "Wykopowicze, dziękujemy za Wasze zaangażowanie, liczne komentarze, sugestie i opinie w temacie! \r\nW konsultacji z Wami przygotowaliśmy zbiór zasad oraz wytycznych, w których określiliśmy jakie treści, działania i aktywności w serwisie nie są akceptowane na Wykopie. Standardy moderacji dostępne będą publicznie pod adresem: https://www.wykop.pl/pomoc/standardy-moderacji/"
-                }
-                hasOwnContent() == true
-                url() == "https://www.wykop.pl/link/5750693/zasady-dzialan-moderacyjnych-standardy-moderacji/"
-                violationUrl() == "https://a2.wykop.pl/naruszenia/form/ot/link/od/5750693/ud/5xOL/hs/df5e78196a33ccffe400cd2fa9c05e815b4371a2/rn/79U7l1LE1b/"
-            }
             violationUrl() == "https://a2.wykop.pl/naruszenia/form/ot/comment/od/83090897/ud/5xOL/hs/fadd4e43958a10f0ea4cec36afbf3f5074d44a0c/rn/FyAEGlP498/"
             voteCountMinus() == -20
             original() == "@beconase: bardzo dziekuje :). Na szczescie, Najwazniejsi pamietaja :)"
