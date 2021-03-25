@@ -10,17 +10,16 @@ import io.github.benzwreck.wykop4j.entries.NewComment;
 import io.github.benzwreck.wykop4j.entries.NewEntry;
 import io.github.benzwreck.wykop4j.entries.Period;
 import io.github.benzwreck.wykop4j.entries.Survey;
-import io.github.benzwreck.wykop4j.exceptions.LinkCommentNotExistException;
-import io.github.benzwreck.wykop4j.links.LinkCommentVoteData;
-import io.github.benzwreck.wykop4j.links.LinkCommentsSorting;
-import io.github.benzwreck.wykop4j.shared.Vote;
 import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException;
 import io.github.benzwreck.wykop4j.exceptions.CommentDoesNotExistException;
+import io.github.benzwreck.wykop4j.exceptions.LinkCommentNotExistException;
 import io.github.benzwreck.wykop4j.exceptions.NiceTryException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException;
 import io.github.benzwreck.wykop4j.links.HitsOption;
 import io.github.benzwreck.wykop4j.links.Link;
 import io.github.benzwreck.wykop4j.links.LinkComment;
+import io.github.benzwreck.wykop4j.links.LinkCommentVoteData;
+import io.github.benzwreck.wykop4j.links.LinkCommentsSorting;
 import io.github.benzwreck.wykop4j.links.LinkVoteData;
 import io.github.benzwreck.wykop4j.links.LinkWithComments;
 import io.github.benzwreck.wykop4j.links.VoteDownReason;
@@ -33,6 +32,7 @@ import io.github.benzwreck.wykop4j.profiles.InteractionStatus;
 import io.github.benzwreck.wykop4j.profiles.SimpleProfile;
 import io.github.benzwreck.wykop4j.search.EntrySearchQuery;
 import io.github.benzwreck.wykop4j.search.LinkSearchQuery;
+import io.github.benzwreck.wykop4j.shared.Vote;
 import io.github.benzwreck.wykop4j.suggest.TagSuggestion;
 import io.github.benzwreck.wykop4j.terms.Terms;
 
@@ -1604,7 +1604,7 @@ public class WykopClient {
      * @return link's vote data.
      * @throws ArchivalContentException when id is invalid.
      */
-    public Chain<LinkVoteData> linkVoteUp(int linkId){
+    public Chain<LinkVoteData> linkVoteUp(int linkId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/VoteUp/id/")
                 .apiParam("id", String.valueOf(linkId))
@@ -1618,7 +1618,7 @@ public class WykopClient {
      * @return link's vote data.
      * @throws ArchivalContentException when id is invalid.
      */
-    public Chain<LinkVoteData> linkVoteRemove(int linkId){
+    public Chain<LinkVoteData> linkVoteRemove(int linkId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/VoteRemove/id/")
                 .apiParam("id", String.valueOf(linkId))
@@ -1632,7 +1632,7 @@ public class WykopClient {
      * @return link's vote data.
      * @throws ArchivalContentException when id is invalid.
      */
-    public Chain<LinkVoteData> linkVoteDown(int linkId, VoteDownReason voteDownReason){
+    public Chain<LinkVoteData> linkVoteDown(int linkId, VoteDownReason voteDownReason) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/VoteDown/id/voteType/")
                 .apiParam("id", String.valueOf(linkId))
@@ -1644,7 +1644,7 @@ public class WykopClient {
      * @param linkId link's id.
      * @return list of upvotes for a given link.
      */
-    public Chain<List<Vote>> linkAllUpvotes(int linkId){
+    public Chain<List<Vote>> linkAllUpvotes(int linkId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Upvoters/link_id/")
                 .apiParam("link_id", String.valueOf(linkId))
@@ -1656,7 +1656,7 @@ public class WykopClient {
      * @param linkId link's id.
      * @return list of downvotes for a given link.
      */
-    public Chain<List<Vote>> linkAllDownvotes(int linkId){
+    public Chain<List<Vote>> linkAllDownvotes(int linkId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Downvoters/link_id/")
                 .apiParam("link_id", String.valueOf(linkId))
@@ -1668,7 +1668,7 @@ public class WykopClient {
      * @param year year.
      * @return list of top links from given year.
      */
-    public Chain<List<Link>> linkTop(Year year){
+    public Chain<List<Link>> linkTop(Year year) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Top/year/")
                 .apiParam("year", year.toString())
@@ -1677,11 +1677,11 @@ public class WykopClient {
     }
 
     /**
-     * @param year year.
+     * @param year  year.
      * @param month month.
      * @return list of top links from a given year and month.
      */
-    public Chain<List<Link>> linkTop(Year year, Month month){
+    public Chain<List<Link>> linkTop(Year year, Month month) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Top/year/month/")
                 .apiParam("year", year.toString())
@@ -1699,11 +1699,11 @@ public class WykopClient {
     }
 
     /**
-     * @param linkId link's id.
+     * @param linkId              link's id.
      * @param linkCommentsSorting type of sorting.
      * @return list of link's comments
      */
-    public Chain<List<LinkComment>> linkComments(int linkId, LinkCommentsSorting linkCommentsSorting){
+    public Chain<List<LinkComment>> linkComments(int linkId, LinkCommentsSorting linkCommentsSorting) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Comments/link/sort/string/")
                 .apiParam("link", String.valueOf(linkId))
@@ -1715,7 +1715,7 @@ public class WykopClient {
     /**
      * Votes up given link's comment.
      *
-     * @param linkId link's id.
+     * @param linkId        link's id.
      * @param linkCommentId link's comment id.
      * @return vote data.
      * @throws LinkCommentNotExistException when link's comment does not exist.
@@ -1731,7 +1731,7 @@ public class WykopClient {
     /**
      * Votes down given link's comment.
      *
-     * @param linkId link's id.
+     * @param linkId        link's id.
      * @param linkCommentId link's comment id.
      * @return vote data.
      * @throws LinkCommentNotExistException when link's comment does not exist.
@@ -1739,6 +1739,22 @@ public class WykopClient {
     public Chain<LinkCommentVoteData> linkCommentVoteDown(int linkId, int linkCommentId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/CommentVoteDown/link/comment/")
+                .apiParam("link", String.valueOf(linkId))
+                .apiParam("comment", String.valueOf(linkCommentId))
+                .build(), LinkCommentVoteData.class);
+    }
+
+    /**
+     * Removes vote from a given link's comment.
+     *
+     * @param linkId        link's id.
+     * @param linkCommentId link's comment id.
+     * @return vote data.
+     * @throws LinkCommentNotExistException when link's comment does not exist.
+     */
+    public Chain<LinkCommentVoteData> linkCommentVoteRemove(int linkId, int linkCommentId) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/CommentVoteCancel/link/comment/")
                 .apiParam("link", String.valueOf(linkId))
                 .apiParam("comment", String.valueOf(linkCommentId))
                 .build(), LinkCommentVoteData.class);

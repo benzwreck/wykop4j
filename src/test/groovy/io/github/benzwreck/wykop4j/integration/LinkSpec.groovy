@@ -72,10 +72,10 @@ class LinkSpec extends Specification {
         then:
         thrown(ArchivalContentException)
         where:
-        name          | state
-        "vote up"     | wykop.linkVoteUp(nonexistentId)
-        "vote down"   | wykop.linkVoteDown(nonexistentId, VoteDownReason.DUPLICATE)
-        "vote remove" | wykop.linkVoteRemove(nonexistentId)
+        name               | state
+        "vote up"          | wykop.linkVoteUp(nonexistentId)
+        "vote down"        | wykop.linkVoteDown(nonexistentId, VoteDownReason.DUPLICATE)
+        "remove vote from" | wykop.linkVoteRemove(nonexistentId)
     }
 
     @Unroll
@@ -118,9 +118,10 @@ class LinkSpec extends Specification {
             voteCountPlus() >= 0
         }
         where:
-        name        | action
-        "vote up"   | wykop.linkCommentVoteUp(linkId, linkCommentId)
-        "vote down" | wykop.linkCommentVoteDown(linkId, linkCommentId)
+        name               | action
+        "vote up"          | wykop.linkCommentVoteUp(linkId, linkCommentId)
+        "vote down"        | wykop.linkCommentVoteDown(linkId, linkCommentId)
+        "remove vote from" | wykop.linkCommentVoteRemove(linkId, linkCommentId)
     }
 
     def "should throw an exception when trying to #name link's comment"() {
@@ -129,8 +130,9 @@ class LinkSpec extends Specification {
         then:
         thrown(LinkCommentNotExistException)
         where:
-        name          | state
-        "vote up"     | wykop.linkCommentVoteUp(nonexistentId,nonexistentId)
-        "vote down"   | wykop.linkCommentVoteDown(nonexistentId, nonexistentId)
+        name               | state
+        "vote up"          | wykop.linkCommentVoteUp(nonexistentId, nonexistentId)
+        "vote down"        | wykop.linkCommentVoteDown(nonexistentId, nonexistentId)
+        "remove vote from" | wykop.linkCommentVoteRemove(nonexistentId, nonexistentId)
     }
 }
