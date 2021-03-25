@@ -3,6 +3,7 @@ package io.github.benzwreck.wykop4j.integration
 import io.github.benzwreck.wykop4j.IntegrationWykopClient
 import io.github.benzwreck.wykop4j.WykopClient
 import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException
+import io.github.benzwreck.wykop4j.exceptions.LinkCommentNotExistException
 import io.github.benzwreck.wykop4j.links.VoteDownReason
 import spock.lang.Shared
 import spock.lang.Specification
@@ -104,5 +105,24 @@ class LinkSpec extends Specification {
         def comments = wykop.linkComments(linkId).execute()
         then:
         comments.stream().allMatch(comment -> comment.linkId() == linkId)
+    }
+
+    def "should vote up a link comment"() {
+        given:
+        int linkCommentId = wykop.linkComments(linkId).execute().get(0).id()
+        when:
+        def linkCommentVoteData = wykop.linkCommentVoteUp(linkId, linkCommentId).execute()
+        then:
+        with linkCommentVoteData, {
+            voteCount() >= 0
+            voteCountPlus() >= 0
+        }
+    }
+
+    def "should throw an exception"() {
+        when:
+        wykop.linkCommentVoteUp(nonexistentId, nonexistentId).execute()
+        then:
+        thrown(LinkCommentNotExistException)
     }
 }

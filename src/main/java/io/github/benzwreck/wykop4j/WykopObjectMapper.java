@@ -25,6 +25,7 @@ import io.github.benzwreck.wykop4j.exceptions.DailyRequestLimitExceededException
 import io.github.benzwreck.wykop4j.exceptions.InvalidAPIKeyException;
 import io.github.benzwreck.wykop4j.exceptions.InvalidUserCredentialsException;
 import io.github.benzwreck.wykop4j.exceptions.LimitExceededException;
+import io.github.benzwreck.wykop4j.exceptions.LinkCommentNotExistException;
 import io.github.benzwreck.wykop4j.exceptions.NiceTryException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToDeleteCommentException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException;
@@ -134,6 +135,8 @@ class WykopObjectMapper {
                 throw new CommentDoesNotExistException();
             case 506:
                 throw new LimitExceededException();
+            case 515:
+                throw new LinkCommentNotExistException();
             case 552:
                 throw new ActionForbiddenException();
             case 999:

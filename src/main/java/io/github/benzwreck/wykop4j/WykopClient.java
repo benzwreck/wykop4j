@@ -10,6 +10,8 @@ import io.github.benzwreck.wykop4j.entries.NewComment;
 import io.github.benzwreck.wykop4j.entries.NewEntry;
 import io.github.benzwreck.wykop4j.entries.Period;
 import io.github.benzwreck.wykop4j.entries.Survey;
+import io.github.benzwreck.wykop4j.exceptions.LinkCommentNotExistException;
+import io.github.benzwreck.wykop4j.links.LinkCommentVoteData;
 import io.github.benzwreck.wykop4j.links.LinkCommentsSorting;
 import io.github.benzwreck.wykop4j.shared.Vote;
 import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException;
@@ -1695,6 +1697,7 @@ public class WykopClient {
     public Chain<List<LinkComment>> linkComments(int linkId) {
         return linkComments(linkId, LinkCommentsSorting.BEST);
     }
+
     /**
      * @param linkId link's id.
      * @param linkCommentsSorting type of sorting.
@@ -1707,6 +1710,20 @@ public class WykopClient {
                 .namedParam("sort", linkCommentsSorting.value())
                 .build(), new TypeReference<List<LinkComment>>() {
         });
+    }
+
+    /**
+     * @param linkId link's id.
+     * @param linkCommentId link's comment id.
+     * @return vote data.
+     * @throws LinkCommentNotExistException when link's comment does not exist.
+     */
+    public Chain<LinkCommentVoteData> linkCommentVoteUp(int linkId, int linkCommentId) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/CommentVoteUp/link/comment/")
+                .apiParam("link", String.valueOf(linkId))
+                .apiParam("comment", String.valueOf(linkCommentId))
+                .build(), LinkCommentVoteData.class);
     }
 
     public static final class Builder {
