@@ -10,6 +10,7 @@ import io.github.benzwreck.wykop4j.entries.NewComment;
 import io.github.benzwreck.wykop4j.entries.NewEntry;
 import io.github.benzwreck.wykop4j.entries.Period;
 import io.github.benzwreck.wykop4j.entries.Survey;
+import io.github.benzwreck.wykop4j.links.LinkCommentsSorting;
 import io.github.benzwreck.wykop4j.shared.Vote;
 import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException;
 import io.github.benzwreck.wykop4j.exceptions.CommentDoesNotExistException;
@@ -1687,6 +1688,26 @@ public class WykopClient {
         });
     }
 
+    /**
+     * @param linkId link's id.
+     * @return list of link's comments
+     */
+    public Chain<List<LinkComment>> linkComments(int linkId) {
+        return linkComments(linkId, LinkCommentsSorting.BEST);
+    }
+    /**
+     * @param linkId link's id.
+     * @param linkCommentsSorting type of sorting.
+     * @return list of link's comments
+     */
+    public Chain<List<LinkComment>> linkComments(int linkId, LinkCommentsSorting linkCommentsSorting){
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/Comments/link/sort/string/")
+                .apiParam("link", String.valueOf(linkId))
+                .namedParam("sort", linkCommentsSorting.value())
+                .build(), new TypeReference<List<LinkComment>>() {
+        });
+    }
 
     public static final class Builder {
         private UserCredentials userCredentials;

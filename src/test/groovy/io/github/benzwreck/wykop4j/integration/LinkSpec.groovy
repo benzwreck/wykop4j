@@ -98,4 +98,11 @@ class LinkSpec extends Specification {
         "2020"         | wykop.linkTop(Year.of(2020))
         "January 2019" | wykop.linkTop(Year.of(2019), Month.JANUARY)
     }
+
+    def "should return list of comments"() {
+        when:
+        def comments = wykop.linkComments(linkId).execute()
+        then:
+        comments.stream().allMatch(comment -> comment.linkId() == linkId)
+    }
 }
