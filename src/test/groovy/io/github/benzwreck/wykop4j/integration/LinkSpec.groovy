@@ -17,6 +17,8 @@ class LinkSpec extends Specification {
     WykopClient wykop = IntegrationWykopClient.getInstance()
     @Shared
     int linkId = wykop.promotedLinks().execute().get(0).id()
+    @Shared
+    int linkCommentId = wykop.linkComments(linkId).execute().get(0).id()
     static int nonexistentId = -111
 
     @Unroll
@@ -64,16 +66,16 @@ class LinkSpec extends Specification {
     }
 
     @Unroll
-    def "should thrown an exception"() {
+    def "should thrown an exception when trying to #name link"() {
         when:
         state.execute()
         then:
         thrown(ArchivalContentException)
         where:
-        state                                                       | _
-        wykop.linkVoteUp(nonexistentId)                             | _
-        wykop.linkVoteRemove(nonexistentId)                         | _
-        wykop.linkVoteDown(nonexistentId, VoteDownReason.DUPLICATE) | _
+        name          | state
+        "vote up"     | wykop.linkVoteUp(nonexistentId)
+        "vote down"   | wykop.linkVoteDown(nonexistentId, VoteDownReason.DUPLICATE)
+        "vote remove" | wykop.linkVoteRemove(nonexistentId)
     }
 
     @Unroll
@@ -107,22 +109,28 @@ class LinkSpec extends Specification {
         comments.stream().allMatch(comment -> comment.linkId() == linkId)
     }
 
-    def "should vote up a link comment"() {
-        given:
-        int linkCommentId = wykop.linkComments(linkId).execute().get(0).id()
+    def "should #name a link comment"() {
         when:
-        def linkCommentVoteData = wykop.linkCommentVoteUp(linkId, linkCommentId).execute()
+        def linkCommentVoteData = action.execute()
         then:
         with linkCommentVoteData, {
             voteCount() >= 0
             voteCountPlus() >= 0
         }
+        where:
+        name        | action
+        "vote up"   | wykop.linkCommentVoteUp(linkId, linkCommentId)
+        "vote down" | wykop.linkCommentVoteDown(linkId, linkCommentId)
     }
 
-    def "should throw an exception"() {
+    def "should throw an exception when trying to #name link's comment"() {
         when:
-        wykop.linkCommentVoteUp(nonexistentId, nonexistentId).execute()
+        state.execute()
         then:
         thrown(LinkCommentNotExistException)
+        where:
+        name          | state
+        "vote up"     | wykop.linkCommentVoteUp(nonexistentId,nonexistentId)
+        "vote down"   | wykop.linkCommentVoteDown(nonexistentId, nonexistentId)
     }
 }

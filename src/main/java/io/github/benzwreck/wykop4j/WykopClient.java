@@ -1713,6 +1713,8 @@ public class WykopClient {
     }
 
     /**
+     * Votes up given link's comment.
+     *
      * @param linkId link's id.
      * @param linkCommentId link's comment id.
      * @return vote data.
@@ -1721,6 +1723,22 @@ public class WykopClient {
     public Chain<LinkCommentVoteData> linkCommentVoteUp(int linkId, int linkCommentId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/CommentVoteUp/link/comment/")
+                .apiParam("link", String.valueOf(linkId))
+                .apiParam("comment", String.valueOf(linkCommentId))
+                .build(), LinkCommentVoteData.class);
+    }
+
+    /**
+     * Votes down given link's comment.
+     *
+     * @param linkId link's id.
+     * @param linkCommentId link's comment id.
+     * @return vote data.
+     * @throws LinkCommentNotExistException when link's comment does not exist.
+     */
+    public Chain<LinkCommentVoteData> linkCommentVoteDown(int linkId, int linkCommentId) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/CommentVoteDown/link/comment/")
                 .apiParam("link", String.valueOf(linkId))
                 .apiParam("comment", String.valueOf(linkCommentId))
                 .build(), LinkCommentVoteData.class);
