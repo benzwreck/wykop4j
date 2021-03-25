@@ -3,13 +3,13 @@ package io.github.benzwreck.wykop4j.entries;
 import java.io.File;
 import java.util.Optional;
 
-public class NewComment {
+public class NewEntryComment {
     private final String body;
     private final String urlEmbed;
     private final File fileEmbed;
     private final String shownFileName;
 
-    private NewComment(String body, String urlEmbed, File fileEmbed, String shownFileName) {
+    private NewEntryComment(String body, String urlEmbed, File fileEmbed, String shownFileName) {
         this.body = body;
         this.urlEmbed = urlEmbed;
         this.fileEmbed = fileEmbed;
@@ -59,11 +59,11 @@ public class NewComment {
             return this;
         }
 
-        public NewComment build() {
+        public NewEntryComment build() {
             if ((body == null && fileEmbed == null && urlEmbed == null)) {
-                throw new IllegalArgumentException("Between Body or Media, at least one of them should be provided.");
+                throw new IllegalArgumentException("At least one of Body and Media must be provided.");
             }
-            return new NewComment(body, urlEmbed, fileEmbed, shownFileName);
+            return new NewEntryComment(body, urlEmbed, fileEmbed, shownFileName);
         }
     }
 }

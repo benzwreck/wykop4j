@@ -3,7 +3,7 @@ package io.github.benzwreck.wykop4j.integration
 import io.github.benzwreck.wykop4j.IntegrationWykopClient
 import io.github.benzwreck.wykop4j.WykopClient
 import io.github.benzwreck.wykop4j.entries.Entry
-import io.github.benzwreck.wykop4j.entries.NewComment
+import io.github.benzwreck.wykop4j.entries.NewEntryComment
 import io.github.benzwreck.wykop4j.entries.NewEntry
 import io.github.benzwreck.wykop4j.Page
 import io.github.benzwreck.wykop4j.entries.Period
@@ -28,7 +28,7 @@ class EntrySpec extends Specification {
             .withBody("obraz")
             .withMedia("https://www.wykop.pl/cdn/c3201142/comment_1613001626Mwe2NcUAMJ1yLKZJumQQjC.jpg")
             .build()
-    private def newCommentWithBodyAndUrlMedia = new NewComment.Builder()
+    private def newCommentWithBodyAndUrlMedia = new NewEntryComment.Builder()
             .withBody("obraz")
             .withMedia("https://www.wykop.pl/cdn/c3201142/comment_1613001626Mwe2NcUAMJ1yLKZJumQQjC.jpg")
             .build()
@@ -294,7 +294,7 @@ class EntrySpec extends Specification {
     }
 
     def "should edit comment"() {
-        def differentNewComment = new NewComment.Builder()
+        def differentNewComment = new NewEntryComment.Builder()
                 .withBody("lolol")
                 .build()
         when:

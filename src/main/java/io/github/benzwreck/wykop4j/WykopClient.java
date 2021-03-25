@@ -6,7 +6,7 @@ import io.github.benzwreck.wykop4j.conversations.Message;
 import io.github.benzwreck.wykop4j.conversations.NewMessage;
 import io.github.benzwreck.wykop4j.entries.Entry;
 import io.github.benzwreck.wykop4j.entries.EntryComment;
-import io.github.benzwreck.wykop4j.entries.NewComment;
+import io.github.benzwreck.wykop4j.entries.NewEntryComment;
 import io.github.benzwreck.wykop4j.entries.NewEntry;
 import io.github.benzwreck.wykop4j.entries.Period;
 import io.github.benzwreck.wykop4j.entries.Survey;
@@ -22,6 +22,7 @@ import io.github.benzwreck.wykop4j.links.LinkCommentVoteData;
 import io.github.benzwreck.wykop4j.links.LinkCommentsSorting;
 import io.github.benzwreck.wykop4j.links.LinkVoteData;
 import io.github.benzwreck.wykop4j.links.LinkWithComments;
+import io.github.benzwreck.wykop4j.links.NewLinkComment;
 import io.github.benzwreck.wykop4j.links.VoteDownReason;
 import io.github.benzwreck.wykop4j.notifications.Notification;
 import io.github.benzwreck.wykop4j.profiles.ActionType;
@@ -289,19 +290,19 @@ public class WykopClient {
 
     /**
      * @param entryId    entry's id.
-     * @param newComment new comment to be added.
+     * @param newEntryComment new comment to be added.
      * @return Added comment.
      * @throws ArchivalContentException when non-existing id is provided.
      */
-    public Chain<EntryComment> addEntryComment(int entryId, NewComment newComment) {
+    public Chain<EntryComment> addEntryComment(int entryId, NewEntryComment newEntryComment) {
         WykopRequest.Builder requestBuilder = new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/CommentAdd/entry_id/")
                 .apiParam("entry_id", String.valueOf(entryId));
-        newComment.body().ifPresent(body -> requestBuilder.postParam("body", body));
-        newComment.urlEmbed().ifPresent(url -> requestBuilder.postParam("embed", url));
-        Optional<File> fileEmbed = newComment.fileEmbed();
+        newEntryComment.body().ifPresent(body -> requestBuilder.postParam("body", body));
+        newEntryComment.urlEmbed().ifPresent(url -> requestBuilder.postParam("embed", url));
+        Optional<File> fileEmbed = newEntryComment.fileEmbed();
         if (fileEmbed.isPresent()) {
-            Optional<String> shownFileName = newComment.shownFileName();
+            Optional<String> shownFileName = newEntryComment.shownFileName();
             if (shownFileName.isPresent()) {
                 requestBuilder.file(fileEmbed.get(), shownFileName.get());
             } else {
@@ -313,20 +314,20 @@ public class WykopClient {
 
     /**
      * @param commentId  comment's id.
-     * @param newComment new comment to be changed.
+     * @param newEntryComment new comment to be changed.
      * @return Changed comment.
      * @throws UnableToModifyEntryException when provided commentId does not belong to user's comment.
      * @throws ArchivalContentException     when provided commentId does not exist.
      */
-    public Chain<EntryComment> editEntryComment(int commentId, NewComment newComment) {
+    public Chain<EntryComment> editEntryComment(int commentId, NewEntryComment newEntryComment) {
         WykopRequest.Builder requestBuilder = new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/CommentEdit/comment_id/")
                 .apiParam("comment_id", String.valueOf(commentId));
-        newComment.body().ifPresent(body -> requestBuilder.postParam("body", body));
-        newComment.urlEmbed().ifPresent(url -> requestBuilder.postParam("embed", url));
-        Optional<File> fileEmbed = newComment.fileEmbed();
+        newEntryComment.body().ifPresent(body -> requestBuilder.postParam("body", body));
+        newEntryComment.urlEmbed().ifPresent(url -> requestBuilder.postParam("embed", url));
+        Optional<File> fileEmbed = newEntryComment.fileEmbed();
         if (fileEmbed.isPresent()) {
-            Optional<String> shownFileName = newComment.shownFileName();
+            Optional<String> shownFileName = newEntryComment.shownFileName();
             if (shownFileName.isPresent()) {
                 requestBuilder.file(fileEmbed.get(), shownFileName.get());
             } else {
