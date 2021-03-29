@@ -6,8 +6,8 @@ import io.github.benzwreck.wykop4j.conversations.Message;
 import io.github.benzwreck.wykop4j.conversations.NewMessage;
 import io.github.benzwreck.wykop4j.entries.Entry;
 import io.github.benzwreck.wykop4j.entries.EntryComment;
-import io.github.benzwreck.wykop4j.entries.NewEntryComment;
 import io.github.benzwreck.wykop4j.entries.NewEntry;
+import io.github.benzwreck.wykop4j.entries.NewEntryComment;
 import io.github.benzwreck.wykop4j.entries.Period;
 import io.github.benzwreck.wykop4j.entries.Survey;
 import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException;
@@ -289,7 +289,7 @@ public class WykopClient {
     }
 
     /**
-     * @param entryId    entry's id.
+     * @param entryId         entry's id.
      * @param newEntryComment new comment to be added.
      * @return Added comment.
      * @throws ArchivalContentException when non-existing id is provided.
@@ -313,7 +313,7 @@ public class WykopClient {
     }
 
     /**
-     * @param commentId  comment's id.
+     * @param commentId       comment's id.
      * @param newEntryComment new comment to be changed.
      * @return Changed comment.
      * @throws UnableToModifyEntryException when provided commentId does not belong to user's comment.
@@ -1759,6 +1759,71 @@ public class WykopClient {
                 .apiParam("link", String.valueOf(linkId))
                 .apiParam("comment", String.valueOf(linkCommentId))
                 .build(), LinkCommentVoteData.class);
+    }
+
+    /**
+     * @param linkId link's id.
+     * @param newLinkComment comment to be added to link.
+     * @return link's comment.
+     */
+    public Chain<LinkComment> linkAddComment(int linkId, NewLinkComment newLinkComment) {
+        WykopRequest.Builder builder = new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/CommentAdd/link/")
+                .apiParam("link", String.valueOf(linkId));
+                newLinkComment.body().ifPresent(body -> builder.postParam("body", body));
+                newLinkComment.urlEmbed().ifPresent(urlEmbed -> builder.postParam("embed", urlEmbed));
+                newLinkComment.shownFileName().ifPresentOrElse(shownFileName ->
+                        newLinkComment.fileEmbed().ifPresent(file ->builder.file(file, shownFileName)),
+                        () -> newLinkComment.fileEmbed().ifPresent(builder::file));
+        return new Chain<>(builder.build(), LinkComment.class);
+    }
+
+    /**
+     * @param linkId link's id.
+     * @param linkCommentId link's comment id.
+     * @param newLinkComment comment to be added to link's comment.
+     * @return link's comment.
+     */
+    public Chain<LinkComment> linkAddComment(int linkId, int linkCommentId, NewLinkComment newLinkComment) {
+        WykopRequest.Builder builder = new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/CommentAdd/link/comment_id/")
+                .apiParam("comment_id", String.valueOf(linkCommentId))
+                .apiParam("link", String.valueOf(linkId));
+        newLinkComment.body().ifPresent(body -> builder.postParam("body", body));
+        newLinkComment.urlEmbed().ifPresent(urlEmbed -> builder.postParam("embed", urlEmbed));
+        newLinkComment.shownFileName().ifPresentOrElse(shownFileName ->
+                newLinkComment.fileEmbed().ifPresent(file ->builder.file(file, shownFileName)),
+                () -> newLinkComment.fileEmbed().ifPresent(builder::file));
+
+        return new Chain<>(builder.build(), LinkComment.class);
+    }
+
+    /**
+     * @param linkCommentId comment id.
+     * @param newLinkComment comment to be changed with given linkCommentId.
+     * @return edited link's comment.
+     */
+    public Chain<LinkComment> linkEditComment(int linkCommentId, NewLinkComment newLinkComment) {
+        WykopRequest.Builder builder = new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/CommentEdit/comment_id/")
+                .apiParam("comment_id", String.valueOf(linkCommentId));
+        newLinkComment.body().ifPresent(body -> builder.postParam("body", body));
+        newLinkComment.urlEmbed().ifPresent(urlEmbed -> builder.postParam("embed", urlEmbed));
+        newLinkComment.shownFileName().ifPresentOrElse(shownFileName ->
+                        newLinkComment.fileEmbed().ifPresent(file ->builder.file(file, shownFileName)),
+                () -> newLinkComment.fileEmbed().ifPresent(builder::file));
+        return new Chain<>(builder.build(), LinkComment.class);
+    }
+
+    /**
+     * @param linkCommentId comment id.
+     * @return deleted link's comment.
+     */
+    public Chain<LinkComment> linkDeleteComment(int linkCommentId) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/CommentDelete/comment_id/")
+                .apiParam("comment_id", String.valueOf(linkCommentId))
+                .build(), LinkComment.class);
     }
 
     public static final class Builder {
