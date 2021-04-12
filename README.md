@@ -49,7 +49,7 @@ Optional<Entry> entry = wykop.entry(entryId).execute();
 List<Entry> entries = wykop.entriesStream().execute();
 ```
 
-All methods that have been implemented so far are shown [here (Polish only)](https://www.github.com/benzwreck/wykop4j/wiki).
+All methods that have been implemented so far are shown [here (Polish only)](https://github.com/benzwreck/wykop4j/wiki/Zaimplementowane-metody).
 
 ## Plans for the future
 
