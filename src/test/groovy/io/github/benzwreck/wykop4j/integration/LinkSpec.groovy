@@ -3,8 +3,11 @@ package io.github.benzwreck.wykop4j.integration
 import io.github.benzwreck.wykop4j.IntegrationWykopClient
 import io.github.benzwreck.wykop4j.WykopClient
 import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException
+import io.github.benzwreck.wykop4j.exceptions.LinkAlreadyExistsException
 import io.github.benzwreck.wykop4j.exceptions.LinkCommentNotExistException
+import io.github.benzwreck.wykop4j.links.NewLinkComment
 import io.github.benzwreck.wykop4j.links.VoteDownReason
+import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -20,6 +23,24 @@ class LinkSpec extends Specification {
     @Shared
     int linkCommentId = wykop.linkComments(linkId).execute().get(0).id()
     static int nonexistentId = -111
+
+    def "should throw an exception when trying to prepare link draft and link already exists"() {
+        when:
+        wykop.linkPrepareDraft("https://www.wykop.pl").execute()
+        then:
+        thrown LinkAlreadyExistsException
+    }
+
+    def "should return link draft"() {
+        when:
+        def linkDraft = wykop.linkPrepareDraft("https://www.youtube.com/watch?v=8Xtqb00N").execute()
+        then:
+        with linkDraft, {
+            key() != null
+            sourceUrl() != null
+            !duplicates().isEmpty()
+        }
+    }
 
     @Unroll
     def "should return #name links"() {
@@ -109,6 +130,7 @@ class LinkSpec extends Specification {
         comments.stream().allMatch(comment -> comment.linkId() == linkId)
     }
 
+    @Unroll
     def "should #name a link comment"() {
         when:
         def linkCommentVoteData = action.execute()
@@ -124,6 +146,7 @@ class LinkSpec extends Specification {
         "remove vote from" | wykop.linkCommentVoteRemove(linkId, linkCommentId)
     }
 
+    @Unroll
     def "should throw an exception when trying to #name link's comment"() {
         when:
         state.execute()

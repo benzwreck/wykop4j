@@ -12,6 +12,7 @@ import io.github.benzwreck.wykop4j.entries.Period;
 import io.github.benzwreck.wykop4j.entries.Survey;
 import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException;
 import io.github.benzwreck.wykop4j.exceptions.CommentDoesNotExistException;
+import io.github.benzwreck.wykop4j.exceptions.LinkAlreadyExistsException;
 import io.github.benzwreck.wykop4j.exceptions.LinkCommentNotExistException;
 import io.github.benzwreck.wykop4j.exceptions.NiceTryException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException;
@@ -20,8 +21,10 @@ import io.github.benzwreck.wykop4j.links.Link;
 import io.github.benzwreck.wykop4j.links.LinkComment;
 import io.github.benzwreck.wykop4j.links.LinkCommentVoteData;
 import io.github.benzwreck.wykop4j.links.LinkCommentsSorting;
+import io.github.benzwreck.wykop4j.links.LinkDraft;
 import io.github.benzwreck.wykop4j.links.LinkVoteData;
 import io.github.benzwreck.wykop4j.links.LinkWithComments;
+import io.github.benzwreck.wykop4j.links.NewLink;
 import io.github.benzwreck.wykop4j.links.NewLinkComment;
 import io.github.benzwreck.wykop4j.links.VoteDownReason;
 import io.github.benzwreck.wykop4j.notifications.Notification;
@@ -1515,6 +1518,40 @@ public class WykopClient {
         });
     }
 
+    // AddLink
+
+    /**
+     * Prepares a link's draft which is used to add a new link.
+     *
+     * @param url url you'd like to create a link from
+     * @return draft of the link
+     * @throws LinkAlreadyExistsException when trying to create a draft and link already exists
+     */
+    public Chain<LinkDraft> linkPrepareDraft(String url){
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Addlink/Draft/")
+                .postParam("url", url)
+                .build(), LinkDraft.class);
+    }
+
+    public Chain<String> linkPrepareImage(String key){
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Addlink/Images/key/string/")
+                .namedParam("key", key)
+                .build(), String.class);
+    }
+
+    public Chain<Link> linkAdd(NewLink newLink){
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Addlink/Add/key/string/")
+                .namedParam("key", "595878326141494341524578")
+                .postParam("title", "testapi")
+                .postParam("description", "testuje api")
+                .postParam("tags", "testapi")
+                .postParam("url", "https://www.youtube.com/watch?v=Bm5iA4Zupek")
+                .build(), Link.class);
+    }
+
     // Links
 
     /**
@@ -1762,7 +1799,7 @@ public class WykopClient {
     }
 
     /**
-     * @param linkId link's id.
+     * @param linkId         link's id.
      * @param newLinkComment comment to be added to link.
      * @return link's comment.
      */
@@ -1770,17 +1807,17 @@ public class WykopClient {
         WykopRequest.Builder builder = new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/CommentAdd/link/")
                 .apiParam("link", String.valueOf(linkId));
-                newLinkComment.body().ifPresent(body -> builder.postParam("body", body));
-                newLinkComment.urlEmbed().ifPresent(urlEmbed -> builder.postParam("embed", urlEmbed));
-                newLinkComment.shownFileName().ifPresentOrElse(shownFileName ->
-                        newLinkComment.fileEmbed().ifPresent(file ->builder.file(file, shownFileName)),
-                        () -> newLinkComment.fileEmbed().ifPresent(builder::file));
+        newLinkComment.body().ifPresent(body -> builder.postParam("body", body));
+        newLinkComment.urlEmbed().ifPresent(urlEmbed -> builder.postParam("embed", urlEmbed));
+        newLinkComment.shownFileName().ifPresentOrElse(shownFileName ->
+                        newLinkComment.fileEmbed().ifPresent(file -> builder.file(file, shownFileName)),
+                () -> newLinkComment.fileEmbed().ifPresent(builder::file));
         return new Chain<>(builder.build(), LinkComment.class);
     }
 
     /**
-     * @param linkId link's id.
-     * @param linkCommentId link's comment id.
+     * @param linkId         link's id.
+     * @param linkCommentId  link's comment id.
      * @param newLinkComment comment to be added to link's comment.
      * @return link's comment.
      */
@@ -1792,14 +1829,14 @@ public class WykopClient {
         newLinkComment.body().ifPresent(body -> builder.postParam("body", body));
         newLinkComment.urlEmbed().ifPresent(urlEmbed -> builder.postParam("embed", urlEmbed));
         newLinkComment.shownFileName().ifPresentOrElse(shownFileName ->
-                newLinkComment.fileEmbed().ifPresent(file ->builder.file(file, shownFileName)),
+                        newLinkComment.fileEmbed().ifPresent(file -> builder.file(file, shownFileName)),
                 () -> newLinkComment.fileEmbed().ifPresent(builder::file));
 
         return new Chain<>(builder.build(), LinkComment.class);
     }
 
     /**
-     * @param linkCommentId comment id.
+     * @param linkCommentId  comment id.
      * @param newLinkComment comment to be changed with given linkCommentId.
      * @return edited link's comment.
      */
@@ -1810,7 +1847,7 @@ public class WykopClient {
         newLinkComment.body().ifPresent(body -> builder.postParam("body", body));
         newLinkComment.urlEmbed().ifPresent(urlEmbed -> builder.postParam("embed", urlEmbed));
         newLinkComment.shownFileName().ifPresentOrElse(shownFileName ->
-                        newLinkComment.fileEmbed().ifPresent(file ->builder.file(file, shownFileName)),
+                        newLinkComment.fileEmbed().ifPresent(file -> builder.file(file, shownFileName)),
                 () -> newLinkComment.fileEmbed().ifPresent(builder::file));
         return new Chain<>(builder.build(), LinkComment.class);
     }

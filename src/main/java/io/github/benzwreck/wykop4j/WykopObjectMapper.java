@@ -25,6 +25,7 @@ import io.github.benzwreck.wykop4j.exceptions.DailyRequestLimitExceededException
 import io.github.benzwreck.wykop4j.exceptions.InvalidAPIKeyException;
 import io.github.benzwreck.wykop4j.exceptions.InvalidUserCredentialsException;
 import io.github.benzwreck.wykop4j.exceptions.LimitExceededException;
+import io.github.benzwreck.wykop4j.exceptions.LinkAlreadyExistsException;
 import io.github.benzwreck.wykop4j.exceptions.LinkCommentNotExistException;
 import io.github.benzwreck.wykop4j.exceptions.NiceTryException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToDeleteCommentException;
@@ -59,7 +60,8 @@ class WykopObjectMapper {
                 .registerModule(new ProfileMappingModule())
                 .registerModule(new ConversationMessageModule())
                 .registerModule(new LinkInfoColorModule())
-                .registerModule(new ProfileActionsModule());
+                .registerModule(new ProfileActionsModule())
+                .registerModule(new LinkDraftMappingModule());
     }
 
     public <T> T map(String payload, Class<T> clazz) {
@@ -85,23 +87,18 @@ class WykopObjectMapper {
         }
     }
 
-    private String handleNotFoundAsEmptyResponse(String payload) {
-        if (payload.startsWith("{\"data\":null,\"error\":{\"code\":13")
-                || payload.startsWith("{\"data\":null,\"error\":{\"code\":41")) {
-            return "{\"data\":[]}";
-        }
-        return payload;
-    }
-
     private JsonNode handleResponse(String payload) throws JsonProcessingException {
         payload = handleServerErrorHtmlResponse(payload);
-        JsonNode node = objectMapper.readTree(payload);
         if (conversationDeleted(payload)) {
             return BooleanNode.valueOf(true);
         }
+        JsonNode node = objectMapper.readTree(payload);
         if (node.hasNonNull("error")) {
             if (emptyEntryResponse(node))
                 return node.get("data");
+        }
+        if (node.hasNonNull("duplicates")) {
+            return node;
         }
         if (node.hasNonNull("data")) {
             JsonNode data = node.get("data");
@@ -112,8 +109,6 @@ class WykopObjectMapper {
         }
         JsonNode error = node.get("error");
         int errorCode = error.get("code").intValue();
-        String messageEn = error.get("message_en").asText();
-        String messagePl = error.get("message_pl").asText();
         switch (errorCode) {
             case 1:
                 throw new InvalidAPIKeyException();
@@ -137,12 +132,24 @@ class WykopObjectMapper {
                 throw new LimitExceededException();
             case 515:
                 throw new LinkCommentNotExistException();
+            case 522:
+                throw new LinkAlreadyExistsException();
             case 552:
                 throw new ActionForbiddenException();
             case 999:
                 throw new NiceTryException();
         }
+        String messageEn = error.get("message_en").asText();
+        String messagePl = error.get("message_pl").asText();
         throw new WykopException(errorCode, messageEn, messagePl);
+    }
+
+    private String handleNotFoundAsEmptyResponse(String payload) {
+        if (payload.startsWith("{\"data\":null,\"error\":{\"code\":13")
+                || payload.startsWith("{\"data\":null,\"error\":{\"code\":41")) {
+            return "{\"data\":[]}";
+        }
+        return payload;
     }
 
     private boolean conversationDeleted(String payload) {
