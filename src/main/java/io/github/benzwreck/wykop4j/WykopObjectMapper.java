@@ -30,6 +30,7 @@ import io.github.benzwreck.wykop4j.exceptions.LinkCommentNotExistException;
 import io.github.benzwreck.wykop4j.exceptions.NiceTryException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToDeleteCommentException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException;
+import io.github.benzwreck.wykop4j.exceptions.UserBlockedByAnotherUserException;
 import io.github.benzwreck.wykop4j.exceptions.UserCannotOberveThemselfException;
 import io.github.benzwreck.wykop4j.exceptions.UserNotFoundException;
 import io.github.benzwreck.wykop4j.exceptions.WykopException;
@@ -132,6 +133,8 @@ class WykopObjectMapper {
                 throw new UnableToDeleteCommentException();
             case 81:
                 throw new CommentDoesNotExistException();
+            case 102:
+                throw new UserBlockedByAnotherUserException();
             case 506:
                 throw new LimitExceededException();
             case 515:
