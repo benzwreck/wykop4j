@@ -54,6 +54,7 @@ All methods that have been implemented so far are shown [here (Polish only)](htt
 ## Plans for the future
 
 - [ ] Implement missing API methods.
+- [ ] Make API less Stringly typed (sometimes official documentation does not provide necessary data to ensure possible return type).
 - [ ] Support async operations.
 - [ ] Add more configuration features.
 - [ ] Replace Okhttp with Java 11 Http Client.
