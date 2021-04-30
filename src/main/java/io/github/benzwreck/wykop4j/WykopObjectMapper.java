@@ -31,7 +31,7 @@ import io.github.benzwreck.wykop4j.exceptions.NiceTryException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToDeleteCommentException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException;
 import io.github.benzwreck.wykop4j.exceptions.UserBlockedByAnotherUserException;
-import io.github.benzwreck.wykop4j.exceptions.UserCannotOberveThemselfException;
+import io.github.benzwreck.wykop4j.exceptions.UserCannotObserveThemselfException;
 import io.github.benzwreck.wykop4j.exceptions.UserNotFoundException;
 import io.github.benzwreck.wykop4j.exceptions.WykopException;
 
@@ -126,7 +126,7 @@ class WykopObjectMapper {
             case 24:
                 throw new ArchivalContentException();
             case 33:
-                throw new UserCannotOberveThemselfException();
+                throw new UserCannotObserveThemselfException();
             case 35:
                 throw new UnableToModifyEntryException();
             case 37:
