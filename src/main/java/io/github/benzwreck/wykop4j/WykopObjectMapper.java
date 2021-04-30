@@ -30,6 +30,7 @@ import io.github.benzwreck.wykop4j.exceptions.LinkCommentNotExistException;
 import io.github.benzwreck.wykop4j.exceptions.NiceTryException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToDeleteCommentException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException;
+import io.github.benzwreck.wykop4j.exceptions.UserCannotOberveThemselfException;
 import io.github.benzwreck.wykop4j.exceptions.UserNotFoundException;
 import io.github.benzwreck.wykop4j.exceptions.WykopException;
 
@@ -123,6 +124,8 @@ class WykopObjectMapper {
                 throw new InvalidUserCredentialsException();
             case 24:
                 throw new ArchivalContentException();
+            case 33:
+                throw new UserCannotOberveThemselfException();
             case 35:
                 throw new UnableToModifyEntryException();
             case 37:
