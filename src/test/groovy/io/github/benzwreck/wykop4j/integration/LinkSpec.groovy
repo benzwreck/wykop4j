@@ -16,6 +16,8 @@ import java.time.Month
 import java.time.Year
 
 class LinkSpec extends Specification {
+    static final String imageUrl = "https://art-madam.pl/zdjecie/nowoczesny-obraz-do-salonu-drukowany-na-plotnie,swsbnckstxdjnwbh.jpg"
+    static final String linkUrl = "https://jsonformatter.org/"
     @Shared
     WykopClient wykop = IntegrationWykopClient.getInstance()
     @Shared
@@ -33,12 +35,26 @@ class LinkSpec extends Specification {
 
     def "should return link draft"() {
         when:
-        def linkDraft = wykop.linkPrepareDraft("https://www.youtube.com/watch?v=8Xtqb00N").execute()
+        def linkDraft = wykop.linkPrepareDraft(linkUrl).execute()
         then:
         with linkDraft, {
             key() != null
             sourceUrl() != null
             !duplicates().isEmpty()
+        }
+    }
+
+    def "should return image draft or sth"() {
+        given:
+        def imageKey = wykop.linkPrepareDraft(imageUrl).execute().key()
+        when:
+        def image = wykop.linkPrepareImage(imageKey).execute().get()
+        then:
+        with image, {
+            key() != null
+            type() != null
+            previewUrl() != null
+            sourceUrl() != null
         }
     }
 

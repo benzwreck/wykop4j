@@ -24,8 +24,8 @@ import io.github.benzwreck.wykop4j.links.LinkCommentsSorting;
 import io.github.benzwreck.wykop4j.links.LinkDraft;
 import io.github.benzwreck.wykop4j.links.LinkVoteData;
 import io.github.benzwreck.wykop4j.links.LinkWithComments;
-import io.github.benzwreck.wykop4j.links.NewLink;
 import io.github.benzwreck.wykop4j.links.NewLinkComment;
+import io.github.benzwreck.wykop4j.links.PreparedImage;
 import io.github.benzwreck.wykop4j.links.VoteDownReason;
 import io.github.benzwreck.wykop4j.notifications.Notification;
 import io.github.benzwreck.wykop4j.profiles.ActionType;
@@ -1527,28 +1527,34 @@ public class WykopClient {
      * @return draft of the link
      * @throws LinkAlreadyExistsException when trying to create a draft and link already exists
      */
-    public Chain<LinkDraft> linkPrepareDraft(String url){
+    public Chain<LinkDraft> linkPrepareDraft(String url) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Addlink/Draft/")
                 .postParam("url", url)
                 .build(), LinkDraft.class);
     }
 
-    public Chain<String> linkPrepareImage(String key){
+    /**
+     * @param key {@link LinkDraft}'s key.
+     * @return possible {@link PreparedImage}.
+     */
+    public Chain<Optional<PreparedImage>> linkPrepareImage(String key) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Addlink/Images/key/string/")
                 .namedParam("key", key)
-                .build(), String.class);
+                .build(), new TypeReference<>() {
+        });
     }
 
-    public Chain<Link> linkAdd(NewLink newLink){
+    public Chain<Link> linkAdd(String key) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Addlink/Add/key/string/")
-                .namedParam("key", "595878326141494341524578")
+                .namedParam("key", key) //"595878326141494341524578")
                 .postParam("title", "testapi")
                 .postParam("description", "testuje api")
-                .postParam("tags", "testapi")
+                .postParam("tags", "testapi test")
                 .postParam("url", "https://www.youtube.com/watch?v=Bm5iA4Zupek")
+                .postParam("photo", "1619766193TL85ipJoH0ZkoZHKCCSHp40.jpg")
                 .build(), Link.class);
     }
 

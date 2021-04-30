@@ -76,6 +76,7 @@ class WykopObjectMapper {
     public <T> T map(String payload, TypeReference<T> typeReference) {
         try {
             payload = handleNotFoundAsEmptyResponse(payload);
+            payload = handleLinkPrepareImageResponse(payload);
             JsonNode node = handleResponse(payload);
             T t = objectMapper.readValue(objectMapper.treeAsTokens(node), typeReference);
             if (t instanceof List) {
@@ -148,6 +149,14 @@ class WykopObjectMapper {
         if (payload.startsWith("{\"data\":null,\"error\":{\"code\":13")
                 || payload.startsWith("{\"data\":null,\"error\":{\"code\":41")) {
             return "{\"data\":[]}";
+        }
+        return payload;
+    }
+
+    private String handleLinkPrepareImageResponse(String payload) {
+        if (payload.startsWith("{\"data\":[{\"key\":")) {
+            return payload.replace("{\"data\":[{\"key\":", "{\"data\":{\"key\":")
+                    .replace("}]}", "}}");
         }
         return payload;
     }
