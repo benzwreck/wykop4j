@@ -11,11 +11,16 @@ import io.github.benzwreck.wykop4j.entries.NewEntryComment;
 import io.github.benzwreck.wykop4j.entries.Period;
 import io.github.benzwreck.wykop4j.entries.Survey;
 import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException;
+import io.github.benzwreck.wykop4j.exceptions.BodyContainsOnlyPmException;
+import io.github.benzwreck.wykop4j.exceptions.CannotReplyOnDeletedObjectsException;
 import io.github.benzwreck.wykop4j.exceptions.CommentDoesNotExistException;
+import io.github.benzwreck.wykop4j.exceptions.InvalidValueException;
 import io.github.benzwreck.wykop4j.exceptions.LinkAlreadyExistsException;
 import io.github.benzwreck.wykop4j.exceptions.LinkCommentNotExistException;
 import io.github.benzwreck.wykop4j.exceptions.NiceTryException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException;
+import io.github.benzwreck.wykop4j.exceptions.UserBlockedByAnotherUserException;
+import io.github.benzwreck.wykop4j.exceptions.UserCannotObserveThemselfException;
 import io.github.benzwreck.wykop4j.links.HitsOption;
 import io.github.benzwreck.wykop4j.links.Link;
 import io.github.benzwreck.wykop4j.links.LinkComment;
@@ -24,6 +29,7 @@ import io.github.benzwreck.wykop4j.links.LinkCommentsSorting;
 import io.github.benzwreck.wykop4j.links.LinkDraft;
 import io.github.benzwreck.wykop4j.links.LinkVoteData;
 import io.github.benzwreck.wykop4j.links.LinkWithComments;
+import io.github.benzwreck.wykop4j.links.NewLink;
 import io.github.benzwreck.wykop4j.links.NewLinkComment;
 import io.github.benzwreck.wykop4j.links.PreparedImage;
 import io.github.benzwreck.wykop4j.links.VoteDownReason;
@@ -646,6 +652,7 @@ public class WykopClient {
      * @param login      user's login.
      * @param newMessage message you'd like to send.
      * @return sent message.
+     * @throws UserBlockedByAnotherUserException when you are blocked by another user.
      */
     public Chain<Message> sendMessage(String login, NewMessage newMessage) {
         WykopRequest.Builder builder = new WykopRequest.Builder()
@@ -1008,7 +1015,9 @@ public class WykopClient {
     }
 
     /**
+     * @param login user's login.
      * @return interaction status - being observed or blocked.
+     * @throws UserCannotObserveThemselfException when you try to observe yourself.
      */
     public Chain<InteractionStatus> observeUser(String login) {
         return new Chain<>(new WykopRequest.Builder()
@@ -1018,7 +1027,9 @@ public class WykopClient {
     }
 
     /**
+     * @param login user's login.
      * @return interaction status - being observed or blocked.
+     * @throws UserCannotObserveThemselfException when you try to observe yourself.
      */
     public Chain<InteractionStatus> unobserveUser(String login) {
         return new Chain<>(new WykopRequest.Builder()
@@ -1028,7 +1039,9 @@ public class WykopClient {
     }
 
     /**
+     * @param login user's login.
      * @return interaction status - being observed or blocked.
+     * @throws UserCannotObserveThemselfException when you try to observe yourself.
      */
     public Chain<InteractionStatus> blockUser(String login) {
         return new Chain<>(new WykopRequest.Builder()
@@ -1038,7 +1051,9 @@ public class WykopClient {
     }
 
     /**
+     * @param login user's login.
      * @return interaction status - being observed or blocked.
+     * @throws UserCannotObserveThemselfException when you try to observe yourself.
      */
     public Chain<InteractionStatus> unblockUser(String login) {
         return new Chain<>(new WykopRequest.Builder()
@@ -1546,16 +1561,27 @@ public class WykopClient {
         });
     }
 
-    public Chain<Link> linkAdd(String key) {
-        return new Chain<>(new WykopRequest.Builder()
+    /**
+     * Adds a new link to Wykop site.
+     * This class is not properly tested - Wykop has no sandbox, all tests run on live server.
+     * Hence, some exceptions may be thrown while using this method.
+     * I'll be glad if you create an issue on <a href="https://www.github.com/benzwreck/wykop4j">github</a> or add a new pull request.
+     *
+     * @param newLink link you'd like to add.
+     * @return added link.
+     * @throws InvalidValueException when some of the fields are missing.
+     */
+    public Chain<Link> linkAdd(NewLink newLink) {
+        WykopRequest.Builder linkRequest = new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Addlink/Add/key/string/")
-                .namedParam("key", key) //"595878326141494341524578")
-                .postParam("title", "testapi")
-                .postParam("description", "testuje api")
-                .postParam("tags", "testapi test")
-                .postParam("url", "https://www.youtube.com/watch?v=Bm5iA4Zupek")
-                .postParam("photo", "1619766193TL85ipJoH0ZkoZHKCCSHp40.jpg")
-                .build(), Link.class);
+                .namedParam("key", newLink.key())
+                .postParam("title", newLink.title())
+                .postParam("description", newLink.description())
+                .postParam("tags", newLink.tags())
+                .postParam("url", newLink.url())
+                .postParam("plus18", String.valueOf(newLink.isAdult()));
+        newLink.photoKey().ifPresent(photoKey -> linkRequest.postParam("photo", photoKey));
+        return new Chain<>(linkRequest.build(), Link.class);
     }
 
     // Links
@@ -1861,6 +1887,8 @@ public class WykopClient {
     /**
      * @param linkCommentId comment id.
      * @return deleted link's comment.
+     * @throws CannotReplyOnDeletedObjectsException when link does not exist or somebody has already answered to this comment.
+     * @throws BodyContainsOnlyPmException when you're trying to change a comment which aren't yours.
      */
     public Chain<LinkComment> linkDeleteComment(int linkCommentId) {
         return new Chain<>(new WykopRequest.Builder()
