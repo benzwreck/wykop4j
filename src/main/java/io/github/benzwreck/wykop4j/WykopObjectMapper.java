@@ -20,10 +20,13 @@ import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import io.github.benzwreck.wykop4j.exceptions.ActionForbiddenException;
 import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException;
 import io.github.benzwreck.wykop4j.exceptions.AuthorizationException;
+import io.github.benzwreck.wykop4j.exceptions.BodyContainsOnlyPmException;
+import io.github.benzwreck.wykop4j.exceptions.CannotReplyOnDeletedObjectsException;
 import io.github.benzwreck.wykop4j.exceptions.CommentDoesNotExistException;
 import io.github.benzwreck.wykop4j.exceptions.DailyRequestLimitExceededException;
 import io.github.benzwreck.wykop4j.exceptions.InvalidAPIKeyException;
 import io.github.benzwreck.wykop4j.exceptions.InvalidUserCredentialsException;
+import io.github.benzwreck.wykop4j.exceptions.InvalidValueException;
 import io.github.benzwreck.wykop4j.exceptions.LimitExceededException;
 import io.github.benzwreck.wykop4j.exceptions.LinkAlreadyExistsException;
 import io.github.benzwreck.wykop4j.exceptions.LinkCommentNotExistException;
@@ -139,10 +142,16 @@ class WykopObjectMapper {
                 throw new LimitExceededException();
             case 515:
                 throw new LinkCommentNotExistException();
+            case 517:
+                throw new CannotReplyOnDeletedObjectsException();
             case 522:
                 throw new LinkAlreadyExistsException();
+            case 530:
+                throw new InvalidValueException();
             case 552:
                 throw new ActionForbiddenException();
+            case 602:
+                throw new BodyContainsOnlyPmException();
             case 999:
                 throw new NiceTryException();
         }
