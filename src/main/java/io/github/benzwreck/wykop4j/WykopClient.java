@@ -12,6 +12,7 @@ import io.github.benzwreck.wykop4j.entries.Period;
 import io.github.benzwreck.wykop4j.entries.Survey;
 import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException;
 import io.github.benzwreck.wykop4j.exceptions.BodyContainsOnlyPmException;
+import io.github.benzwreck.wykop4j.exceptions.CannotEditCommentsWithAnswerException;
 import io.github.benzwreck.wykop4j.exceptions.CannotReplyOnDeletedObjectsException;
 import io.github.benzwreck.wykop4j.exceptions.CommentDoesNotExistException;
 import io.github.benzwreck.wykop4j.exceptions.InvalidValueException;
@@ -1563,8 +1564,8 @@ public class WykopClient {
 
     /**
      * Adds a new link to Wykop site.
-     * This class is not properly tested - Wykop has no sandbox, all tests run on live server.
-     * Hence, some exceptions may be thrown while using this method.
+     * This method is not properly tested - Wykop has no sandbox, all tests run on live server.
+     * Hence, some exceptions may be thrown while using this method. All known exceptions are listed below.
      * I'll be glad if you create an issue on <a href="https://www.github.com/benzwreck/wykop4j">github</a> or add a new pull request.
      *
      * @param newLink link you'd like to add.
@@ -1831,6 +1832,8 @@ public class WykopClient {
     }
 
     /**
+     * Adds a new comment to the link.
+     *
      * @param linkId         link's id.
      * @param newLinkComment comment to be added to link.
      * @return link's comment.
@@ -1848,6 +1851,8 @@ public class WykopClient {
     }
 
     /**
+     * Adds a new comment to the link's comment.
+     *
      * @param linkId         link's id.
      * @param linkCommentId  link's comment id.
      * @param newLinkComment comment to be added to link's comment.
@@ -1868,9 +1873,16 @@ public class WykopClient {
     }
 
     /**
+     * Changes given comment with new {@link NewLinkComment}.<br>
+     * <p>
+     * This method is not properly tested - Wykop has no sandbox, all tests run on live server.<br>
+     * Hence, some exceptions may be thrown while using this method. All known exceptions are listed below.<br>
+     * I'll be glad if you create an issue on <a href="https://www.github.com/benzwreck/wykop4j">github</a> or add a new pull request.
+     *
      * @param linkCommentId  comment id.
      * @param newLinkComment comment to be changed with given linkCommentId.
      * @return edited link's comment.
+     * @throws CannotEditCommentsWithAnswerException when you try to edit comment when somebody has already answered it.
      */
     public Chain<LinkComment> linkEditComment(int linkCommentId, NewLinkComment newLinkComment) {
         WykopRequest.Builder builder = new WykopRequest.Builder()
@@ -1885,16 +1897,30 @@ public class WykopClient {
     }
 
     /**
+     * Deletes given comment.<br>
+     * <p>
+     * This method is not properly tested - Wykop has no sandbox, all tests run on live server.<br>
+     * Hence, some exceptions may be thrown while using this method. All known exceptions are listed below.<br>
+     * I'll be glad if you create an issue on <a href="https://www.github.com/benzwreck/wykop4j">github</a> or add a new pull request.
+     *
      * @param linkCommentId comment id.
      * @return deleted link's comment.
      * @throws CannotReplyOnDeletedObjectsException when link does not exist or somebody has already answered to this comment.
-     * @throws BodyContainsOnlyPmException when you're trying to change a comment which aren't yours.
+     * @throws BodyContainsOnlyPmException          when you're trying to change a comment which aren't yours.
      */
     public Chain<LinkComment> linkDeleteComment(int linkCommentId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/CommentDelete/comment_id/")
                 .apiParam("comment_id", String.valueOf(linkCommentId))
                 .build(), LinkComment.class);
+    }
+
+    public Chain<Optional<LinkComment>> linkComment(int id) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/Comment/comment/")
+                .apiParam("comment", String.valueOf(id))
+                .build(), new TypeReference<>() {
+        });
     }
 
     public static final class Builder {

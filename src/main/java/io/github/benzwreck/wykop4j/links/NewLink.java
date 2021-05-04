@@ -1,5 +1,11 @@
 package io.github.benzwreck.wykop4j.links;
 
+import java.util.Optional;
+
+/**
+ * Provides all mandatory information to create a new {@link Link}.
+ * All fields except photoKey must be given to create {@link NewLink}.
+ */
 public class NewLink {
     private final String key;
     private final String title;
@@ -17,6 +23,34 @@ public class NewLink {
         this.photoKey = photoKey;
         this.url = url;
         this.isAdult = isAdult;
+    }
+
+    public String key() {
+        return key;
+    }
+
+    public String title() {
+        return title;
+    }
+
+    public String description() {
+        return description;
+    }
+
+    public String tags() {
+        return tags;
+    }
+
+    public Optional<String> photoKey() {
+        return Optional.of(photoKey);
+    }
+
+    public String url() {
+        return url;
+    }
+
+    public boolean isAdult() {
+        return isAdult;
     }
 
     public static final class Builder {
@@ -67,6 +101,8 @@ public class NewLink {
         }
 
         public NewLink build() {
+            if (key == null || title == null || description == null || tags == null || url == null)
+                throw new IllegalArgumentException("Fields: key, title, description, tags and url must be provided.");
             return new NewLink(key, title, description, tags, photoKey, url, isAdult);
         }
     }

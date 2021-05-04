@@ -5,9 +5,7 @@ import io.github.benzwreck.wykop4j.WykopClient
 import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException
 import io.github.benzwreck.wykop4j.exceptions.LinkAlreadyExistsException
 import io.github.benzwreck.wykop4j.exceptions.LinkCommentNotExistException
-import io.github.benzwreck.wykop4j.links.NewLinkComment
 import io.github.benzwreck.wykop4j.links.VoteDownReason
-import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -44,7 +42,7 @@ class LinkSpec extends Specification {
         }
     }
 
-    def "should return image draft or sth"() {
+    def "should return image draft"() {
         given:
         def imageKey = wykop.linkPrepareDraft(imageUrl).execute().key()
         when:
@@ -173,5 +171,15 @@ class LinkSpec extends Specification {
         "vote up"          | wykop.linkCommentVoteUp(nonexistentId, nonexistentId)
         "vote down"        | wykop.linkCommentVoteDown(nonexistentId, nonexistentId)
         "remove vote from" | wykop.linkCommentVoteRemove(nonexistentId, nonexistentId)
+    }
+
+    def "should return link's comment"() {
+        given:
+        def linkId = wykop.linkTop(Year.of(2020)).execute().get(0).id()
+        def id = wykop.linkWithComments(linkId).execute().get().comments().get(0).id()
+        when:
+        def comment = wykop.linkComment(id).execute().get()
+        then:
+        comment.id() != null
     }
 }

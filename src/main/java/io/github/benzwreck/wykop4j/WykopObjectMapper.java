@@ -21,6 +21,7 @@ import io.github.benzwreck.wykop4j.exceptions.ActionForbiddenException;
 import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException;
 import io.github.benzwreck.wykop4j.exceptions.AuthorizationException;
 import io.github.benzwreck.wykop4j.exceptions.BodyContainsOnlyPmException;
+import io.github.benzwreck.wykop4j.exceptions.CannotEditCommentsWithAnswerException;
 import io.github.benzwreck.wykop4j.exceptions.CannotReplyOnDeletedObjectsException;
 import io.github.benzwreck.wykop4j.exceptions.CommentDoesNotExistException;
 import io.github.benzwreck.wykop4j.exceptions.DailyRequestLimitExceededException;
@@ -146,6 +147,8 @@ class WykopObjectMapper {
                 throw new CannotReplyOnDeletedObjectsException();
             case 522:
                 throw new LinkAlreadyExistsException();
+            case 529:
+                throw new CannotEditCommentsWithAnswerException();
             case 530:
                 throw new InvalidValueException();
             case 552:
