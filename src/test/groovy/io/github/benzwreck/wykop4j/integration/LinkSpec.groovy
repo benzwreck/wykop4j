@@ -206,4 +206,13 @@ class LinkSpec extends Specification {
         then:
         listOfLinks.isEmpty()
     }
+
+    def "should toggle favorite link"(){
+        given:
+        def id = wykop.linkTop(Year.of(2020)).execute().get(0).id()
+        when:
+        def value = wykop.linkFavorite(id).execute()
+        then:
+        value
+    }
 }

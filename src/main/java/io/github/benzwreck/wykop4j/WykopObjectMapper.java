@@ -97,7 +97,7 @@ class WykopObjectMapper {
 
     private JsonNode handleResponse(String payload) throws JsonProcessingException {
         payload = handleServerErrorHtmlResponse(payload);
-        if (conversationDeleted(payload)) {
+        if (conversationDeletedOrLinksFavoriteToggle(payload)) {
             return BooleanNode.valueOf(true);
         }
         JsonNode node = objectMapper.readTree(payload);
@@ -180,7 +180,7 @@ class WykopObjectMapper {
         return payload;
     }
 
-    private boolean conversationDeleted(String payload) {
+    private boolean conversationDeletedOrLinksFavoriteToggle(String payload) {
         return payload.equals("{\"data\":[true]}");
     }
 

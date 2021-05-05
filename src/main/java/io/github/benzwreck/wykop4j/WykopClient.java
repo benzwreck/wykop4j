@@ -2007,6 +2007,20 @@ public class WykopClient {
                 .build(), RelatedLinkVoteData.class);
     }
 
+    /**
+     * Toggles favorite state.<br>
+     * TBH I have no idea what this API call does. It should toggle favorite, it returns value, but on live site it seems to do nothing ¯\_(ツ)\_/¯
+     *
+     * @param linkId link's id.
+     * @return mostly true, but what it does? No idea.
+     */
+    public Chain<Boolean> linkFavorite(int linkId) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/Favorite/id/int/")
+                .namedParam("int", String.valueOf(linkId))
+                .build(), Boolean.class);
+    }
+
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;
