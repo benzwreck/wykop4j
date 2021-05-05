@@ -5,6 +5,7 @@ import io.github.benzwreck.wykop4j.WykopClient
 import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException
 import io.github.benzwreck.wykop4j.exceptions.LinkAlreadyExistsException
 import io.github.benzwreck.wykop4j.exceptions.LinkCommentNotExistException
+import io.github.benzwreck.wykop4j.links.Link
 import io.github.benzwreck.wykop4j.links.VoteDownReason
 import spock.lang.Shared
 import spock.lang.Specification

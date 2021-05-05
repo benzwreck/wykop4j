@@ -32,8 +32,10 @@ import io.github.benzwreck.wykop4j.links.LinkVoteData;
 import io.github.benzwreck.wykop4j.links.LinkWithComments;
 import io.github.benzwreck.wykop4j.links.NewLink;
 import io.github.benzwreck.wykop4j.links.NewLinkComment;
+import io.github.benzwreck.wykop4j.links.NewRelatedLink;
 import io.github.benzwreck.wykop4j.links.PreparedImage;
 import io.github.benzwreck.wykop4j.links.RelatedLink;
+import io.github.benzwreck.wykop4j.links.RelatedLinkVoteData;
 import io.github.benzwreck.wykop4j.links.VoteDownReason;
 import io.github.benzwreck.wykop4j.notifications.Notification;
 import io.github.benzwreck.wykop4j.profiles.ActionType;
@@ -1942,6 +1944,67 @@ public class WykopClient {
                 .apiParam("link", String.valueOf(linkId))
                 .build(), new TypeReference<>() {
         });
+    }
+
+    /**
+     * Adds a {@link RelatedLink} to given {@link Link}.
+     * <p>
+     * This method is not properly tested - Wykop has no sandbox, all tests run on live server.<br>
+     * Hence, some exceptions may be thrown while using this method. All known exceptions are listed below.<br>
+     * I'll be glad if you create an issue on <a href="https://www.github.com/benzwreck/wykop4j">github</a> or add a new pull request.
+     *
+     * @param linkId         link's id.
+     * @param newRelatedLink link you'd like to add to related links.
+     * @return related link.
+     */
+    public Chain<RelatedLink> addRelatedLinks(int linkId, NewRelatedLink newRelatedLink) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/RelatedAdd/link/")
+                .apiParam("link", String.valueOf(linkId))
+                .postParam("title", newRelatedLink.title())
+                .postParam("url", newRelatedLink.url().toString())
+                .postParam("plus18", String.valueOf(newRelatedLink.isAdultOnly()))
+                .build(), RelatedLink.class);
+    }
+
+    /**
+     * Votes up given related link.
+     *
+     * <p>
+     * This method is not properly tested - Wykop has no sandbox, all tests run on live server.<br>
+     * Hence, some exceptions may be thrown while using this method. All known exceptions are listed below.<br>
+     * I'll be glad if you create an issue on <a href="https://www.github.com/benzwreck/wykop4j">github</a> or add a new pull request.
+     *
+     * @param linkId        link's id.
+     * @param relatedLinkId related link's id.
+     * @return vote data with vote count.
+     */
+    public Chain<RelatedLinkVoteData> linkRelatedVoteUp(int linkId, int relatedLinkId) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/RelatedVoteUp/link_id/related_link_id/")
+                .apiParam("link_id", String.valueOf(linkId))
+                .apiParam("related_link_id", String.valueOf(relatedLinkId))
+                .build(), RelatedLinkVoteData.class);
+    }
+
+    /**
+     * Votes down given related link.
+     *
+     * <p>
+     * This method is not properly tested - Wykop has no sandbox, all tests run on live server.<br>
+     * Hence, some exceptions may be thrown while using this method. All known exceptions are listed below.<br>
+     * I'll be glad if you create an issue on <a href="https://www.github.com/benzwreck/wykop4j">github</a> or add a new pull request.
+     *
+     * @param linkId        link's id.
+     * @param relatedLinkId related link's id.
+     * @return vote data with vote count.
+     */
+    public Chain<RelatedLinkVoteData> linkRelatedVoteDown(int linkId, int relatedLinkId) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/RelatedVoteDown/link_id/related_link_id/")
+                .apiParam("link_id", String.valueOf(linkId))
+                .apiParam("related_link_id", String.valueOf(relatedLinkId))
+                .build(), RelatedLinkVoteData.class);
     }
 
     public static final class Builder {
