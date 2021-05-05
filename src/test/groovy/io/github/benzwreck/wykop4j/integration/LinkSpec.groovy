@@ -182,4 +182,11 @@ class LinkSpec extends Specification {
         then:
         comment.id() != null
     }
+
+    def "should return an empty Optional"() {
+        when:
+        def comment = wykop.linkComment(nonexistentId).execute()
+        then:
+        !comment.isPresent()
+    }
 }
