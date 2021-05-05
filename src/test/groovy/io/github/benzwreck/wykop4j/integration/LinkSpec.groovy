@@ -183,10 +183,26 @@ class LinkSpec extends Specification {
         comment.id() != null
     }
 
-    def "should return an empty Optional"() {
+    def "link comment - should return an empty Optional"() {
         when:
         def comment = wykop.linkComment(nonexistentId).execute()
         then:
         !comment.isPresent()
+    }
+
+    def "should return list of related links"() {
+        given:
+        def linkId = wykop.linkTop(Year.of(2020)).execute().get(0).id()
+        when:
+        def listOfLinks = wykop.relatedLinks(linkId).execute()
+        then:
+        !listOfLinks.isEmpty()
+    }
+
+    def "related links - should return an empty Optional"() {
+        when:
+        def listOfLinks = wykop.relatedLinks(nonexistentId).execute()
+        then:
+        listOfLinks.isEmpty()
     }
 }

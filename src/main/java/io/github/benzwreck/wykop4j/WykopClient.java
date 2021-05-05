@@ -1929,6 +1929,20 @@ public class WykopClient {
         });
     }
 
+    /**
+     * Fetches all related links of link with given linkId.
+     *
+     * @param linkId link's id.
+     * @return List of related links.
+     */
+    public Chain<List<Link>> relatedLinks(int linkId) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/Related/link/")
+                .apiParam("link", String.valueOf(linkId))
+                .build(), new TypeReference<>() {
+        });
+    }
+
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;
