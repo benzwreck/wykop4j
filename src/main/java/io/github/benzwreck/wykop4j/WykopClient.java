@@ -1915,6 +1915,12 @@ public class WykopClient {
                 .build(), LinkComment.class);
     }
 
+    /**
+     * Fetches {@link LinkComment} with given id or returns empty Optional.
+     *
+     * @param id comment's id.
+     * @return possible {@link LinkComment}.
+     */
     public Chain<Optional<LinkComment>> linkComment(int id) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Comment/comment/")
