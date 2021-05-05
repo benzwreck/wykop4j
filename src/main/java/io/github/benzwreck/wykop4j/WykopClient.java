@@ -33,6 +33,7 @@ import io.github.benzwreck.wykop4j.links.LinkWithComments;
 import io.github.benzwreck.wykop4j.links.NewLink;
 import io.github.benzwreck.wykop4j.links.NewLinkComment;
 import io.github.benzwreck.wykop4j.links.PreparedImage;
+import io.github.benzwreck.wykop4j.links.RelatedLink;
 import io.github.benzwreck.wykop4j.links.VoteDownReason;
 import io.github.benzwreck.wykop4j.notifications.Notification;
 import io.github.benzwreck.wykop4j.profiles.ActionType;
@@ -1935,7 +1936,7 @@ public class WykopClient {
      * @param linkId link's id.
      * @return List of related links.
      */
-    public Chain<List<Link>> relatedLinks(int linkId) {
+    public Chain<List<RelatedLink>> relatedLinks(int linkId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Related/link/")
                 .apiParam("link", String.valueOf(linkId))
