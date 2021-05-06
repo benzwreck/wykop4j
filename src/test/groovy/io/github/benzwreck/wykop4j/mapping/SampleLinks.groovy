@@ -213,4 +213,45 @@ class SampleLinks {
   }
 }
 '''
+    String linkDraft = '''
+{
+  "data": {
+    "key": "595878775a67414642685578",
+    "title": "Best JSON Formatter and JSON Validator: Online JSON Formatter",
+    "description": "Online JSON Formatter and JSON Validator will format JSON data, and helps to validate, convert JSON to XML, JSON to CSV. Save and Share JSON",
+    "source_url": "https://jsonformatter.org/"
+  },
+  "duplicates": [
+    {
+      "id": 100453,
+      "title": "Water Powered Cars - Convert Your Car To Run On Water And Save Money",
+      "description": "Water Powered Cars - Convert Your Car To Run On Water And Save Money",
+      "tags": "#technologia #nowetechnologie #water #powered #cars",
+      "source_url": "http://ezinearticles.com/?Water-Powered-Cars---Convert-Your-Car-To-Run-On-Water-And-Save-Money&amp;id=1081759",
+      "vote_count": 0,
+      "bury_count": 0,
+      "comments_count": 0,
+      "related_count": 0,
+      "date": "2008-10-07 07:03:00",
+      "author": {
+        "login": "biten98",
+        "color": 1001,
+        "avatar": "https://www.wykop.pl/cdn/c3397992/avatar_def,q150.png",
+        "signup_at": "2008-10-04 06:59:27",
+        "violation_url": "https://a2.wykop.pl/naruszenia/form/ot/profile/od/69949/ud/9KdP/hs/2a18b7f55a6b4dd0fa67faa6b453c7cac31887bf/rn/7Sn1EUrRwN/"
+      },
+      "plus18": false,
+      "status": "removed",
+      "can_vote": false,
+      "is_hot": false,
+      "archived": true,
+      "user_favorite": false,
+      "user_observe": false,
+      "has_own_content": false,
+      "url": "https://www.wykop.pl/link/100453/water-powered-cars-convert-your-car-to-run-on-water-and-save-money/",
+      "violation_url": "https://a2.wykop.pl/naruszenia/form/ot/link/od/100453/ud/9KdP/hs/5dcff10519b9453f52d5faca0e4b9fdb104a0a3c/rn/IAiK7aJ2I0/"
+    }
+  ]
+}
+'''
 }

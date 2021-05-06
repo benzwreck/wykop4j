@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference
 import io.github.benzwreck.wykop4j.WykopMappingTestObject
 import io.github.benzwreck.wykop4j.links.Link
 import io.github.benzwreck.wykop4j.links.LinkComment
+import io.github.benzwreck.wykop4j.links.LinkDraft
 import io.github.benzwreck.wykop4j.links.RelatedLinkVoteData
 import io.github.benzwreck.wykop4j.profiles.Color
 import io.github.benzwreck.wykop4j.profiles.Sex
@@ -91,10 +92,51 @@ class LinkMappingSpec extends Specification {
 
     }
 
-    def "should map json to related link vote data"(){
+    def "should map json to related link vote data"() {
         given:
         RelatedLinkVoteData relatedLinkVoteData = mapper.map(sampleLinks.relatedLinkVoteData, RelatedLinkVoteData)
         expect:
         relatedLinkVoteData.voteCount() == 62
+    }
+
+    def "should map json to link draft"() {
+        given:
+        LinkDraft linkDraft = mapper.map(sampleLinks.linkDraft, LinkDraft)
+        expect:
+        with linkDraft, {
+            key() == "595878775a67414642685578"
+            title().get() == "Best JSON Formatter and JSON Validator: Online JSON Formatter"
+            description().get() == "Online JSON Formatter and JSON Validator will format JSON data, and helps to validate, convert JSON to XML, JSON to CSV. Save and Share JSON"
+            sourceUrl() == "https://jsonformatter.org/"
+            with duplicates().get(0), {
+                id() == 100453
+                title() == "Water Powered Cars - Convert Your Car To Run On Water And Save Money"
+                description() == "Water Powered Cars - Convert Your Car To Run On Water And Save Money"
+                tags() == "#technologia #nowetechnologie #water #powered #cars"
+                sourceUrl() == "http://ezinearticles.com/?Water-Powered-Cars---Convert-Your-Car-To-Run-On-Water-And-Save-Money&amp;id=1081759"
+                voteCount() == 0
+                buryCount() == 0
+                commentsCount() == 0
+                relatedCount() == 0
+                date() == LocalDateTime.of(2008, 10, 07, 07, 03, 00)
+                with author(), {
+                    login() == "biten98"
+                    color() == Color.BANNED
+                    avatar() == "https://www.wykop.pl/cdn/c3397992/avatar_def,q150.png"
+                    sex().isEmpty()
+                }
+                plus18() == false
+                status() == "removed"
+                canVote() == false
+                isHot() == false
+                archived() == true
+                userFavorite() == false
+                userObserve() == false
+                hasOwnContent() == false
+                url() == "https://www.wykop.pl/link/100453/water-powered-cars-convert-your-car-to-run-on-water-and-save-money/"
+                violationUrl() == "https://a2.wykop.pl/naruszenia/form/ot/link/od/100453/ud/9KdP/hs/5dcff10519b9453f52d5faca0e4b9fdb104a0a3c/rn/IAiK7aJ2I0/"
+
+            }
+        }
     }
 }
