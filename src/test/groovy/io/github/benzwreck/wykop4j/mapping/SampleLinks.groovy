@@ -203,4 +203,14 @@ class SampleLinks {
       "original": "@beconase: bardzo dziekuje :). Na szczescie, Najwazniejsi pamietaja :)"
     }
 }'''
+    String relatedLinkVoteData = '''
+{
+  "data": {
+    "vote_count": 62
+  },
+  "item": {
+    "vote_count": 62
+  }
+}
+'''
 }

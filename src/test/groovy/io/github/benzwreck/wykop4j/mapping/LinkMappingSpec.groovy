@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference
 import io.github.benzwreck.wykop4j.WykopMappingTestObject
 import io.github.benzwreck.wykop4j.links.Link
 import io.github.benzwreck.wykop4j.links.LinkComment
+import io.github.benzwreck.wykop4j.links.RelatedLinkVoteData
 import io.github.benzwreck.wykop4j.profiles.Color
 import io.github.benzwreck.wykop4j.profiles.Sex
 import io.github.benzwreck.wykop4j.shared.UserVote
@@ -88,5 +89,12 @@ class LinkMappingSpec extends Specification {
             original() == "@beconase: bardzo dziekuje :). Na szczescie, Najwazniejsi pamietaja :)"
         }
 
+    }
+
+    def "should map json to related link vote data"(){
+        given:
+        RelatedLinkVoteData relatedLinkVoteData = mapper.map(sampleLinks.relatedLinkVoteData, RelatedLinkVoteData)
+        expect:
+        relatedLinkVoteData.voteCount() == 62
     }
 }

@@ -5,7 +5,6 @@ import io.github.benzwreck.wykop4j.WykopClient
 import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException
 import io.github.benzwreck.wykop4j.exceptions.LinkAlreadyExistsException
 import io.github.benzwreck.wykop4j.exceptions.LinkCommentNotExistException
-import io.github.benzwreck.wykop4j.links.Link
 import io.github.benzwreck.wykop4j.links.VoteDownReason
 import spock.lang.Shared
 import spock.lang.Specification
@@ -207,7 +206,7 @@ class LinkSpec extends Specification {
         listOfLinks.isEmpty()
     }
 
-    def "should toggle favorite link"(){
+    def "should toggle favorite link"() {
         given:
         def id = wykop.linkTop(Year.of(2020)).execute().get(0).id()
         when:
