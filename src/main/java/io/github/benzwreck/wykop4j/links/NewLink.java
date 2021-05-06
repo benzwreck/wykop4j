@@ -65,6 +65,16 @@ public class NewLink {
         public Builder() {
         }
 
+        public Builder(Builder builder){
+            this.key = builder.key;
+            this.title = builder.title;
+            this.description = builder.description;
+            this.tags = builder.tags;
+            this.photoKey = builder.photoKey;
+            this.url = builder.url;
+            this.isAdult = builder.isAdult;
+        }
+
         public Builder withKey(String key) {
             this.key = key;
             return this;
