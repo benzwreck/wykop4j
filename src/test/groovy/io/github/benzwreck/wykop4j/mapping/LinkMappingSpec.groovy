@@ -5,6 +5,7 @@ import io.github.benzwreck.wykop4j.WykopMappingTestObject
 import io.github.benzwreck.wykop4j.links.Link
 import io.github.benzwreck.wykop4j.links.LinkComment
 import io.github.benzwreck.wykop4j.links.LinkDraft
+import io.github.benzwreck.wykop4j.links.PreparedImage
 import io.github.benzwreck.wykop4j.links.RelatedLinkVoteData
 import io.github.benzwreck.wykop4j.profiles.Color
 import io.github.benzwreck.wykop4j.profiles.Sex
@@ -137,6 +138,18 @@ class LinkMappingSpec extends Specification {
                 violationUrl() == "https://a2.wykop.pl/naruszenia/form/ot/link/od/100453/ud/9KdP/hs/5dcff10519b9453f52d5faca0e4b9fdb104a0a3c/rn/IAiK7aJ2I0/"
 
             }
+        }
+    }
+
+    def "should map json to image draft"(){
+        given:
+        PreparedImage preparedImage = mapper.map(sampleLinks.preparedImage, PreparedImage)
+        expect:
+        with preparedImage, {
+            key() == "595878775a67414b43784578"
+            type() == "image/jpeg"
+            previewUrl() == "https://preview.pl/prev.jpg"
+            sourceUrl() == "https://art-madam.pl/zdjecie/nowoczesny-obraz-do-salonu-drukowany-na-plotnie,swsbnckstxdjnwbh.jpg"
         }
     }
 }

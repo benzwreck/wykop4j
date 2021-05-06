@@ -254,4 +254,14 @@ class SampleLinks {
   ]
 }
 '''
+    String preparedImage = '''
+{
+  "data": {
+    "key": "595878775a67414b43784578",
+    "type": "image/jpeg",
+    "preview_url": "https://preview.pl/prev.jpg",
+    "source_url": "https://art-madam.pl/zdjecie/nowoczesny-obraz-do-salonu-drukowany-na-plotnie,swsbnckstxdjnwbh.jpg"
+  }
+}
+'''
 }
