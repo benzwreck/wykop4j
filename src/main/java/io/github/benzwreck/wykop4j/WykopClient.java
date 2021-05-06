@@ -6,18 +6,37 @@ import io.github.benzwreck.wykop4j.conversations.Message;
 import io.github.benzwreck.wykop4j.conversations.NewMessage;
 import io.github.benzwreck.wykop4j.entries.Entry;
 import io.github.benzwreck.wykop4j.entries.EntryComment;
-import io.github.benzwreck.wykop4j.entries.NewComment;
 import io.github.benzwreck.wykop4j.entries.NewEntry;
+import io.github.benzwreck.wykop4j.entries.NewEntryComment;
 import io.github.benzwreck.wykop4j.entries.Period;
 import io.github.benzwreck.wykop4j.entries.Survey;
-import io.github.benzwreck.wykop4j.entries.Vote;
 import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException;
+import io.github.benzwreck.wykop4j.exceptions.BodyContainsOnlyPmException;
+import io.github.benzwreck.wykop4j.exceptions.CannotEditCommentsWithAnswerException;
+import io.github.benzwreck.wykop4j.exceptions.CannotReplyOnDeletedObjectsException;
 import io.github.benzwreck.wykop4j.exceptions.CommentDoesNotExistException;
+import io.github.benzwreck.wykop4j.exceptions.InvalidValueException;
+import io.github.benzwreck.wykop4j.exceptions.LinkAlreadyExistsException;
+import io.github.benzwreck.wykop4j.exceptions.LinkCommentNotExistException;
 import io.github.benzwreck.wykop4j.exceptions.NiceTryException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException;
+import io.github.benzwreck.wykop4j.exceptions.UserBlockedByAnotherUserException;
+import io.github.benzwreck.wykop4j.exceptions.UserCannotObserveThemselfException;
 import io.github.benzwreck.wykop4j.links.HitsOption;
 import io.github.benzwreck.wykop4j.links.Link;
 import io.github.benzwreck.wykop4j.links.LinkComment;
+import io.github.benzwreck.wykop4j.links.LinkCommentVoteData;
+import io.github.benzwreck.wykop4j.links.LinkCommentsSorting;
+import io.github.benzwreck.wykop4j.links.LinkDraft;
+import io.github.benzwreck.wykop4j.links.LinkVoteData;
+import io.github.benzwreck.wykop4j.links.LinkWithComments;
+import io.github.benzwreck.wykop4j.links.NewLink;
+import io.github.benzwreck.wykop4j.links.NewLinkComment;
+import io.github.benzwreck.wykop4j.links.NewRelatedLink;
+import io.github.benzwreck.wykop4j.links.PreparedImage;
+import io.github.benzwreck.wykop4j.links.RelatedLink;
+import io.github.benzwreck.wykop4j.links.RelatedLinkVoteData;
+import io.github.benzwreck.wykop4j.links.VoteDownReason;
 import io.github.benzwreck.wykop4j.notifications.Notification;
 import io.github.benzwreck.wykop4j.profiles.ActionType;
 import io.github.benzwreck.wykop4j.profiles.Actions;
@@ -27,6 +46,7 @@ import io.github.benzwreck.wykop4j.profiles.InteractionStatus;
 import io.github.benzwreck.wykop4j.profiles.SimpleProfile;
 import io.github.benzwreck.wykop4j.search.EntrySearchQuery;
 import io.github.benzwreck.wykop4j.search.LinkSearchQuery;
+import io.github.benzwreck.wykop4j.shared.Vote;
 import io.github.benzwreck.wykop4j.suggest.TagSuggestion;
 import io.github.benzwreck.wykop4j.terms.Terms;
 
@@ -238,7 +258,7 @@ public class WykopClient {
      * @return nothing.
      * @throws ArchivalContentException when non-existing entryId provided.
      */
-    public Chain<Void> voteUp(int entryId) {
+    public Chain<Void> entryVoteUp(int entryId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/VoteUp/id/")
                 .apiParam("id", String.valueOf(entryId))
@@ -250,7 +270,7 @@ public class WykopClient {
      * @return nothing.
      * @throws ArchivalContentException when non-existing entryId provided.
      */
-    public Chain<Void> removeVote(int entryId) {
+    public Chain<Void> entryRemoveVote(int entryId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/VoteRemove/id/")
                 .apiParam("id", String.valueOf(entryId))
@@ -261,7 +281,7 @@ public class WykopClient {
      * @param entryId entry's id to fetch voters from.
      * @return List of {@link Vote}s.
      */
-    public Chain<List<Vote>> allUpvotes(int entryId) {
+    public Chain<List<Vote>> entryAllUpvotes(int entryId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/Upvoters/entry_id/")
                 .apiParam("entry_id", String.valueOf(entryId))
@@ -282,20 +302,20 @@ public class WykopClient {
     }
 
     /**
-     * @param entryId    entry's id.
-     * @param newComment new comment to be added.
+     * @param entryId         entry's id.
+     * @param newEntryComment new comment to be added.
      * @return Added comment.
      * @throws ArchivalContentException when non-existing id is provided.
      */
-    public Chain<EntryComment> addEntryComment(int entryId, NewComment newComment) {
+    public Chain<EntryComment> addEntryComment(int entryId, NewEntryComment newEntryComment) {
         WykopRequest.Builder requestBuilder = new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/CommentAdd/entry_id/")
                 .apiParam("entry_id", String.valueOf(entryId));
-        newComment.body().ifPresent(body -> requestBuilder.postParam("body", body));
-        newComment.urlEmbed().ifPresent(url -> requestBuilder.postParam("embed", url));
-        Optional<File> fileEmbed = newComment.fileEmbed();
+        newEntryComment.body().ifPresent(body -> requestBuilder.postParam("body", body));
+        newEntryComment.urlEmbed().ifPresent(url -> requestBuilder.postParam("embed", url));
+        Optional<File> fileEmbed = newEntryComment.fileEmbed();
         if (fileEmbed.isPresent()) {
-            Optional<String> shownFileName = newComment.shownFileName();
+            Optional<String> shownFileName = newEntryComment.shownFileName();
             if (shownFileName.isPresent()) {
                 requestBuilder.file(fileEmbed.get(), shownFileName.get());
             } else {
@@ -306,21 +326,21 @@ public class WykopClient {
     }
 
     /**
-     * @param commentId  comment's id.
-     * @param newComment new comment to be changed.
+     * @param commentId       comment's id.
+     * @param newEntryComment new comment to be changed.
      * @return Changed comment.
      * @throws UnableToModifyEntryException when provided commentId does not belong to user's comment.
      * @throws ArchivalContentException     when provided commentId does not exist.
      */
-    public Chain<EntryComment> editEntryComment(int commentId, NewComment newComment) {
+    public Chain<EntryComment> editEntryComment(int commentId, NewEntryComment newEntryComment) {
         WykopRequest.Builder requestBuilder = new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/CommentEdit/comment_id/")
                 .apiParam("comment_id", String.valueOf(commentId));
-        newComment.body().ifPresent(body -> requestBuilder.postParam("body", body));
-        newComment.urlEmbed().ifPresent(url -> requestBuilder.postParam("embed", url));
-        Optional<File> fileEmbed = newComment.fileEmbed();
+        newEntryComment.body().ifPresent(body -> requestBuilder.postParam("body", body));
+        newEntryComment.urlEmbed().ifPresent(url -> requestBuilder.postParam("embed", url));
+        Optional<File> fileEmbed = newEntryComment.fileEmbed();
         if (fileEmbed.isPresent()) {
-            Optional<String> shownFileName = newComment.shownFileName();
+            Optional<String> shownFileName = newEntryComment.shownFileName();
             if (shownFileName.isPresent()) {
                 requestBuilder.file(fileEmbed.get(), shownFileName.get());
             } else {
@@ -636,6 +656,7 @@ public class WykopClient {
      * @param login      user's login.
      * @param newMessage message you'd like to send.
      * @return sent message.
+     * @throws UserBlockedByAnotherUserException when you are blocked by another user.
      */
     public Chain<Message> sendMessage(String login, NewMessage newMessage) {
         WykopRequest.Builder builder = new WykopRequest.Builder()
@@ -998,7 +1019,9 @@ public class WykopClient {
     }
 
     /**
+     * @param login user's login.
      * @return interaction status - being observed or blocked.
+     * @throws UserCannotObserveThemselfException when you try to observe yourself.
      */
     public Chain<InteractionStatus> observeUser(String login) {
         return new Chain<>(new WykopRequest.Builder()
@@ -1008,7 +1031,9 @@ public class WykopClient {
     }
 
     /**
+     * @param login user's login.
      * @return interaction status - being observed or blocked.
+     * @throws UserCannotObserveThemselfException when you try to observe yourself.
      */
     public Chain<InteractionStatus> unobserveUser(String login) {
         return new Chain<>(new WykopRequest.Builder()
@@ -1018,7 +1043,9 @@ public class WykopClient {
     }
 
     /**
+     * @param login user's login.
      * @return interaction status - being observed or blocked.
+     * @throws UserCannotObserveThemselfException when you try to observe yourself.
      */
     public Chain<InteractionStatus> blockUser(String login) {
         return new Chain<>(new WykopRequest.Builder()
@@ -1028,7 +1055,9 @@ public class WykopClient {
     }
 
     /**
+     * @param login user's login.
      * @return interaction status - being observed or blocked.
+     * @throws UserCannotObserveThemselfException when you try to observe yourself.
      */
     public Chain<InteractionStatus> unblockUser(String login) {
         return new Chain<>(new WykopRequest.Builder()
@@ -1370,7 +1399,7 @@ public class WykopClient {
      *
      * @return list of entries.
      */
-    public Chain<List<Entry>> myWykopEntries(){
+    public Chain<List<Entry>> myWykopEntries() {
         return myWykopEntries(Page.of(1));
     }
 
@@ -1393,7 +1422,7 @@ public class WykopClient {
      *
      * @return list of links.
      */
-    public Chain<List<Link>> myWykopLinks(){
+    public Chain<List<Link>> myWykopLinks() {
         return myWykopLinks(Page.of(1));
     }
 
@@ -1423,12 +1452,13 @@ public class WykopClient {
 
     /**
      * @param phrase search phrase.
-     * @param page page.
+     * @param page   page.
      * @return given page of list of links.
      */
     public Chain<List<Link>> searchLinks(String phrase, Page page) {
         return searchLinks(new LinkSearchQuery.Builder().phrase(phrase).build(), page);
     }
+
     /**
      * @param linkSearchQuery search query.
      * @return first page of list of links.
@@ -1439,7 +1469,7 @@ public class WykopClient {
 
     /**
      * @param linkSearchQuery search query.
-     * @param page page.
+     * @param page            page.
      * @return given page of list of links.
      */
     public Chain<List<Link>> searchLinks(LinkSearchQuery linkSearchQuery, Page page) {
@@ -1465,7 +1495,7 @@ public class WykopClient {
 
     /**
      * @param phrase search phrase.
-     * @param page page.
+     * @param page   page.
      * @return given page of list of entries.
      */
     public Chain<List<Entry>> searchEntries(String phrase, Page page) {
@@ -1482,7 +1512,7 @@ public class WykopClient {
 
     /**
      * @param entrySearchQuery search query.
-     * @param page page.
+     * @param page             page.
      * @return given page of list of entries.
      */
     public Chain<List<Entry>> searchEntries(EntrySearchQuery entrySearchQuery, Page page) {
@@ -1499,13 +1529,498 @@ public class WykopClient {
      * @param login login.
      * @return list of searched profiles.
      */
-    public Chain<List<SimpleProfile>> searchProfiles(String login){
+    public Chain<List<SimpleProfile>> searchProfiles(String login) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Search/Profiles/")
                 .postParam("q", login)
                 .build(), new TypeReference<List<SimpleProfile>>() {
         });
     }
+
+    // AddLink
+
+    /**
+     * Prepares a link's draft which is used to add a new link.
+     *
+     * @param url url you'd like to create a link from
+     * @return draft of the link
+     * @throws LinkAlreadyExistsException when trying to create a draft and link already exists
+     */
+    public Chain<LinkDraft> linkPrepareDraft(String url) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Addlink/Draft/")
+                .postParam("url", url)
+                .build(), LinkDraft.class);
+    }
+
+    /**
+     * @param key {@link LinkDraft}'s key.
+     * @return possible {@link PreparedImage}.
+     */
+    public Chain<Optional<PreparedImage>> linkPrepareImage(String key) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Addlink/Images/key/string/")
+                .namedParam("key", key)
+                .build(), new TypeReference<>() {
+        });
+    }
+
+    /**
+     * Adds a new link to Wykop site.
+     * This method is not properly tested - Wykop has no sandbox, all tests run on live server.
+     * Hence, some exceptions may be thrown while using this method. All known exceptions are listed below.
+     * I'll be glad if you create an issue on <a href="https://www.github.com/benzwreck/wykop4j">github</a> or add a new pull request.
+     *
+     * @param newLink link you'd like to add.
+     * @return added link.
+     * @throws InvalidValueException when some of the fields are missing.
+     */
+    public Chain<Link> linkAdd(NewLink newLink) {
+        WykopRequest.Builder linkRequest = new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Addlink/Add/key/string/")
+                .namedParam("key", newLink.key())
+                .postParam("title", newLink.title())
+                .postParam("description", newLink.description())
+                .postParam("tags", newLink.tags())
+                .postParam("url", newLink.url())
+                .postParam("plus18", String.valueOf(newLink.isAdult()));
+        newLink.photoKey().ifPresent(photoKey -> linkRequest.postParam("photo", photoKey));
+        return new Chain<>(linkRequest.build(), Link.class);
+    }
+
+    // Links
+
+    /**
+     * @return first page of promoted links.
+     */
+    public Chain<List<Link>> promotedLinks() {
+        return promotedLinks(Page.of(1));
+    }
+
+    /**
+     * @param page page.
+     * @return given page of promoted links.
+     */
+    public Chain<List<Link>> promotedLinks(Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/Promoted/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .build(), new TypeReference<List<Link>>() {
+        });
+    }
+
+    /**
+     * @return first page of upcoming links.
+     */
+    public Chain<List<Link>> upcomingLinks() {
+        return upcomingLinks(Page.of(1));
+    }
+
+    /**
+     * @param page page.
+     * @return given page of upcoming links.
+     */
+    public Chain<List<Link>> upcomingLinks(Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/Upcoming/page/int/")
+                .namedParam("page", String.valueOf(page.value()))
+                .build(), new TypeReference<List<Link>>() {
+        });
+    }
+
+    /**
+     * @return first page of favorite links.
+     */
+    public Chain<List<Link>> favoriteLinks() {
+        return favoriteLinks(Page.of(1));
+    }
+
+    /**
+     * @param page page.
+     * @return given page of favorite links.
+     */
+    public Chain<List<Link>> favoriteLinks(Page page) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/Observed/page/int/")   //yep, it returns favorite links, not observed ones
+                .namedParam("page", String.valueOf(page.value()))
+                .build(), new TypeReference<List<Link>>() {
+        });
+    }
+
+    /**
+     * @param linkId link's id.
+     * @return possible link without comments.
+     */
+    public Chain<Optional<Link>> link(int linkId) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/Link/id/")
+                .apiParam("id", String.valueOf(linkId))
+                .build(), new TypeReference<Optional<Link>>() {
+        });
+    }
+
+    /**
+     * @param linkId link's id.
+     * @return possible link with comments.
+     */
+    public Chain<Optional<LinkWithComments>> linkWithComments(int linkId) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/Link/id/withcomments/true/")
+                .apiParam("id", String.valueOf(linkId))
+                .build(), new TypeReference<Optional<LinkWithComments>>() {
+        });
+    }
+
+    /**
+     * Votes up given link.
+     *
+     * @param linkId link's id.
+     * @return link's vote data.
+     * @throws ArchivalContentException when id is invalid.
+     */
+    public Chain<LinkVoteData> linkVoteUp(int linkId) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/VoteUp/id/")
+                .apiParam("id", String.valueOf(linkId))
+                .build(), LinkVoteData.class);
+    }
+
+    /**
+     * Removes vote from given link.
+     *
+     * @param linkId link's id.
+     * @return link's vote data.
+     * @throws ArchivalContentException when id is invalid.
+     */
+    public Chain<LinkVoteData> linkVoteRemove(int linkId) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/VoteRemove/id/")
+                .apiParam("id", String.valueOf(linkId))
+                .build(), LinkVoteData.class);
+    }
+
+    /**
+     * Votes down given link.
+     *
+     * @param linkId link's id.
+     * @return link's vote data.
+     * @throws ArchivalContentException when id is invalid.
+     */
+    public Chain<LinkVoteData> linkVoteDown(int linkId, VoteDownReason voteDownReason) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/VoteDown/id/voteType/")
+                .apiParam("id", String.valueOf(linkId))
+                .apiParam("voteType", String.valueOf(voteDownReason.value()))
+                .build(), LinkVoteData.class);
+    }
+
+    /**
+     * @param linkId link's id.
+     * @return list of upvotes for a given link.
+     */
+    public Chain<List<Vote>> linkAllUpvotes(int linkId) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/Upvoters/link_id/")
+                .apiParam("link_id", String.valueOf(linkId))
+                .build(), new TypeReference<List<Vote>>() {
+        });
+    }
+
+    /**
+     * @param linkId link's id.
+     * @return list of downvotes for a given link.
+     */
+    public Chain<List<Vote>> linkAllDownvotes(int linkId) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/Downvoters/link_id/")
+                .apiParam("link_id", String.valueOf(linkId))
+                .build(), new TypeReference<List<Vote>>() {
+        });
+    }
+
+    /**
+     * @param year year.
+     * @return list of top links from given year.
+     */
+    public Chain<List<Link>> linkTop(Year year) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/Top/year/")
+                .apiParam("year", year.toString())
+                .build(), new TypeReference<List<Link>>() {
+        });
+    }
+
+    /**
+     * @param year  year.
+     * @param month month.
+     * @return list of top links from a given year and month.
+     */
+    public Chain<List<Link>> linkTop(Year year, Month month) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/Top/year/month/")
+                .apiParam("year", year.toString())
+                .apiParam("month", String.valueOf(month.getValue()))
+                .build(), new TypeReference<List<Link>>() {
+        });
+    }
+
+    /**
+     * @param linkId link's id.
+     * @return list of link's comments
+     */
+    public Chain<List<LinkComment>> linkComments(int linkId) {
+        return linkComments(linkId, LinkCommentsSorting.BEST);
+    }
+
+    /**
+     * @param linkId              link's id.
+     * @param linkCommentsSorting type of sorting.
+     * @return list of link's comments
+     */
+    public Chain<List<LinkComment>> linkComments(int linkId, LinkCommentsSorting linkCommentsSorting) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/Comments/link/sort/string/")
+                .apiParam("link", String.valueOf(linkId))
+                .namedParam("sort", linkCommentsSorting.value())
+                .build(), new TypeReference<List<LinkComment>>() {
+        });
+    }
+
+    /**
+     * Votes up given link's comment.
+     *
+     * @param linkId        link's id.
+     * @param linkCommentId link's comment id.
+     * @return vote data.
+     * @throws LinkCommentNotExistException when link's comment does not exist.
+     */
+    public Chain<LinkCommentVoteData> linkCommentVoteUp(int linkId, int linkCommentId) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/CommentVoteUp/link/comment/")
+                .apiParam("link", String.valueOf(linkId))
+                .apiParam("comment", String.valueOf(linkCommentId))
+                .build(), LinkCommentVoteData.class);
+    }
+
+    /**
+     * Votes down given link's comment.
+     *
+     * @param linkId        link's id.
+     * @param linkCommentId link's comment id.
+     * @return vote data.
+     * @throws LinkCommentNotExistException when link's comment does not exist.
+     */
+    public Chain<LinkCommentVoteData> linkCommentVoteDown(int linkId, int linkCommentId) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/CommentVoteDown/link/comment/")
+                .apiParam("link", String.valueOf(linkId))
+                .apiParam("comment", String.valueOf(linkCommentId))
+                .build(), LinkCommentVoteData.class);
+    }
+
+    /**
+     * Removes vote from a given link's comment.
+     *
+     * @param linkId        link's id.
+     * @param linkCommentId link's comment id.
+     * @return vote data.
+     * @throws LinkCommentNotExistException when link's comment does not exist.
+     */
+    public Chain<LinkCommentVoteData> linkCommentVoteRemove(int linkId, int linkCommentId) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/CommentVoteCancel/link/comment/")
+                .apiParam("link", String.valueOf(linkId))
+                .apiParam("comment", String.valueOf(linkCommentId))
+                .build(), LinkCommentVoteData.class);
+    }
+
+    /**
+     * Adds a new comment to the link.
+     *
+     * @param linkId         link's id.
+     * @param newLinkComment comment to be added to link.
+     * @return link's comment.
+     */
+    public Chain<LinkComment> linkAddComment(int linkId, NewLinkComment newLinkComment) {
+        WykopRequest.Builder builder = new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/CommentAdd/link/")
+                .apiParam("link", String.valueOf(linkId));
+        newLinkComment.body().ifPresent(body -> builder.postParam("body", body));
+        newLinkComment.urlEmbed().ifPresent(urlEmbed -> builder.postParam("embed", urlEmbed));
+        newLinkComment.shownFileName().ifPresentOrElse(shownFileName ->
+                        newLinkComment.fileEmbed().ifPresent(file -> builder.file(file, shownFileName)),
+                () -> newLinkComment.fileEmbed().ifPresent(builder::file));
+        return new Chain<>(builder.build(), LinkComment.class);
+    }
+
+    /**
+     * Adds a new comment to the link's comment.
+     *
+     * @param linkId         link's id.
+     * @param linkCommentId  link's comment id.
+     * @param newLinkComment comment to be added to link's comment.
+     * @return link's comment.
+     */
+    public Chain<LinkComment> linkAddComment(int linkId, int linkCommentId, NewLinkComment newLinkComment) {
+        WykopRequest.Builder builder = new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/CommentAdd/link/comment_id/")
+                .apiParam("comment_id", String.valueOf(linkCommentId))
+                .apiParam("link", String.valueOf(linkId));
+        newLinkComment.body().ifPresent(body -> builder.postParam("body", body));
+        newLinkComment.urlEmbed().ifPresent(urlEmbed -> builder.postParam("embed", urlEmbed));
+        newLinkComment.shownFileName().ifPresentOrElse(shownFileName ->
+                        newLinkComment.fileEmbed().ifPresent(file -> builder.file(file, shownFileName)),
+                () -> newLinkComment.fileEmbed().ifPresent(builder::file));
+
+        return new Chain<>(builder.build(), LinkComment.class);
+    }
+
+    /**
+     * Changes given comment with new {@link NewLinkComment}.<br>
+     * <p>
+     * This method is not properly tested - Wykop has no sandbox, all tests run on live server.<br>
+     * Hence, some exceptions may be thrown while using this method. All known exceptions are listed below.<br>
+     * I'll be glad if you create an issue on <a href="https://www.github.com/benzwreck/wykop4j">github</a> or add a new pull request.
+     *
+     * @param linkCommentId  comment id.
+     * @param newLinkComment comment to be changed with given linkCommentId.
+     * @return edited link's comment.
+     * @throws CannotEditCommentsWithAnswerException when you try to edit comment when somebody has already answered it.
+     */
+    public Chain<LinkComment> linkEditComment(int linkCommentId, NewLinkComment newLinkComment) {
+        WykopRequest.Builder builder = new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/CommentEdit/comment_id/")
+                .apiParam("comment_id", String.valueOf(linkCommentId));
+        newLinkComment.body().ifPresent(body -> builder.postParam("body", body));
+        newLinkComment.urlEmbed().ifPresent(urlEmbed -> builder.postParam("embed", urlEmbed));
+        newLinkComment.shownFileName().ifPresentOrElse(shownFileName ->
+                        newLinkComment.fileEmbed().ifPresent(file -> builder.file(file, shownFileName)),
+                () -> newLinkComment.fileEmbed().ifPresent(builder::file));
+        return new Chain<>(builder.build(), LinkComment.class);
+    }
+
+    /**
+     * Deletes given comment.<br>
+     * <p>
+     * This method is not properly tested - Wykop has no sandbox, all tests run on live server.<br>
+     * Hence, some exceptions may be thrown while using this method. All known exceptions are listed below.<br>
+     * I'll be glad if you create an issue on <a href="https://www.github.com/benzwreck/wykop4j">github</a> or add a new pull request.
+     *
+     * @param linkCommentId comment id.
+     * @return deleted link's comment.
+     * @throws CannotReplyOnDeletedObjectsException when link does not exist or somebody has already answered to this comment.
+     * @throws BodyContainsOnlyPmException          when you're trying to change a comment which aren't yours.
+     */
+    public Chain<LinkComment> linkDeleteComment(int linkCommentId) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/CommentDelete/comment_id/")
+                .apiParam("comment_id", String.valueOf(linkCommentId))
+                .build(), LinkComment.class);
+    }
+
+    /**
+     * Fetches {@link LinkComment} with given id or returns empty Optional.
+     *
+     * @param id comment's id.
+     * @return possible {@link LinkComment}.
+     */
+    public Chain<Optional<LinkComment>> linkComment(int id) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/Comment/comment/")
+                .apiParam("comment", String.valueOf(id))
+                .build(), new TypeReference<>() {
+        });
+    }
+
+    /**
+     * Fetches all related links of link with given linkId.
+     *
+     * @param linkId link's id.
+     * @return List of related links.
+     */
+    public Chain<List<RelatedLink>> relatedLinks(int linkId) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/Related/link/")
+                .apiParam("link", String.valueOf(linkId))
+                .build(), new TypeReference<>() {
+        });
+    }
+
+    /**
+     * Adds a {@link RelatedLink} to given {@link Link}.
+     * <p>
+     * This method is not properly tested - Wykop has no sandbox, all tests run on live server.<br>
+     * Hence, some exceptions may be thrown while using this method. All known exceptions are listed below.<br>
+     * I'll be glad if you create an issue on <a href="https://www.github.com/benzwreck/wykop4j">github</a> or add a new pull request.
+     *
+     * @param linkId         link's id.
+     * @param newRelatedLink link you'd like to add to related links.
+     * @return related link.
+     */
+    public Chain<RelatedLink> addRelatedLinks(int linkId, NewRelatedLink newRelatedLink) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/RelatedAdd/link/")
+                .apiParam("link", String.valueOf(linkId))
+                .postParam("title", newRelatedLink.title())
+                .postParam("url", newRelatedLink.url().toString())
+                .postParam("plus18", String.valueOf(newRelatedLink.isAdultOnly()))
+                .build(), RelatedLink.class);
+    }
+
+    /**
+     * Votes up given related link.
+     *
+     * <p>
+     * This method is not properly tested - Wykop has no sandbox, all tests run on live server.<br>
+     * Hence, some exceptions may be thrown while using this method. All known exceptions are listed below.<br>
+     * I'll be glad if you create an issue on <a href="https://www.github.com/benzwreck/wykop4j">github</a> or add a new pull request.
+     *
+     * @param linkId        link's id.
+     * @param relatedLinkId related link's id.
+     * @return vote data with vote count.
+     */
+    public Chain<RelatedLinkVoteData> linkRelatedVoteUp(int linkId, int relatedLinkId) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/RelatedVoteUp/link_id/related_link_id/")
+                .apiParam("link_id", String.valueOf(linkId))
+                .apiParam("related_link_id", String.valueOf(relatedLinkId))
+                .build(), RelatedLinkVoteData.class);
+    }
+
+    /**
+     * Votes down given related link.
+     *
+     * <p>
+     * This method is not properly tested - Wykop has no sandbox, all tests run on live server.<br>
+     * Hence, some exceptions may be thrown while using this method. All known exceptions are listed below.<br>
+     * I'll be glad if you create an issue on <a href="https://www.github.com/benzwreck/wykop4j">github</a> or add a new pull request.
+     *
+     * @param linkId        link's id.
+     * @param relatedLinkId related link's id.
+     * @return vote data with vote count.
+     */
+    public Chain<RelatedLinkVoteData> linkRelatedVoteDown(int linkId, int relatedLinkId) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/RelatedVoteDown/link_id/related_link_id/")
+                .apiParam("link_id", String.valueOf(linkId))
+                .apiParam("related_link_id", String.valueOf(relatedLinkId))
+                .build(), RelatedLinkVoteData.class);
+    }
+
+    /**
+     * Toggles favorite state.<br>
+     * TBH I have no idea what this API call does. It should toggle favorite, it returns value, but on live site it seems to do nothing ¯\_(ツ)\_/¯
+     *
+     * @param linkId link's id.
+     * @return mostly true, but what it does? No idea.
+     */
+    public Chain<Boolean> linkFavorite(int linkId) {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Links/Favorite/id/int/")
+                .namedParam("int", String.valueOf(linkId))
+                .build(), Boolean.class);
+    }
+
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;

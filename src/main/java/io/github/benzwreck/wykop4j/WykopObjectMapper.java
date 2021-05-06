@@ -20,14 +20,22 @@ import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import io.github.benzwreck.wykop4j.exceptions.ActionForbiddenException;
 import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException;
 import io.github.benzwreck.wykop4j.exceptions.AuthorizationException;
+import io.github.benzwreck.wykop4j.exceptions.BodyContainsOnlyPmException;
+import io.github.benzwreck.wykop4j.exceptions.CannotEditCommentsWithAnswerException;
+import io.github.benzwreck.wykop4j.exceptions.CannotReplyOnDeletedObjectsException;
 import io.github.benzwreck.wykop4j.exceptions.CommentDoesNotExistException;
 import io.github.benzwreck.wykop4j.exceptions.DailyRequestLimitExceededException;
 import io.github.benzwreck.wykop4j.exceptions.InvalidAPIKeyException;
 import io.github.benzwreck.wykop4j.exceptions.InvalidUserCredentialsException;
+import io.github.benzwreck.wykop4j.exceptions.InvalidValueException;
 import io.github.benzwreck.wykop4j.exceptions.LimitExceededException;
+import io.github.benzwreck.wykop4j.exceptions.LinkAlreadyExistsException;
+import io.github.benzwreck.wykop4j.exceptions.LinkCommentNotExistException;
 import io.github.benzwreck.wykop4j.exceptions.NiceTryException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToDeleteCommentException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException;
+import io.github.benzwreck.wykop4j.exceptions.UserBlockedByAnotherUserException;
+import io.github.benzwreck.wykop4j.exceptions.UserCannotObserveThemselfException;
 import io.github.benzwreck.wykop4j.exceptions.UserNotFoundException;
 import io.github.benzwreck.wykop4j.exceptions.WykopException;
 
@@ -58,7 +66,9 @@ class WykopObjectMapper {
                 .registerModule(new ProfileMappingModule())
                 .registerModule(new ConversationMessageModule())
                 .registerModule(new LinkInfoColorModule())
-                .registerModule(new ProfileActionsModule());
+                .registerModule(new ProfileActionsModule())
+                .registerModule(new RelatedLinkVoteDataModule())
+                .registerModule(new LinkDraftMappingModule());
     }
 
     public <T> T map(String payload, Class<T> clazz) {
@@ -72,7 +82,8 @@ class WykopObjectMapper {
 
     public <T> T map(String payload, TypeReference<T> typeReference) {
         try {
-            payload = handleUserNotFoundAsEmptyResponse(payload);
+            payload = handleNotFoundAsEmptyResponse(payload);
+            payload = handleLinkPrepareImageResponse(payload);
             JsonNode node = handleResponse(payload);
             T t = objectMapper.readValue(objectMapper.treeAsTokens(node), typeReference);
             if (t instanceof List) {
@@ -84,21 +95,18 @@ class WykopObjectMapper {
         }
     }
 
-    private String handleUserNotFoundAsEmptyResponse(String payload) {
-        return payload.startsWith("{\"data\":null,\"error\":{\"code\":13")
-                ? "{\"data\":[]}"
-                : payload;
-    }
-
     private JsonNode handleResponse(String payload) throws JsonProcessingException {
         payload = handleServerErrorHtmlResponse(payload);
-        JsonNode node = objectMapper.readTree(payload);
-        if (conversationDeleted(payload)) {
+        if (conversationDeletedOrLinksFavoriteToggle(payload)) {
             return BooleanNode.valueOf(true);
         }
+        JsonNode node = objectMapper.readTree(payload);
         if (node.hasNonNull("error")) {
             if (emptyEntryResponse(node))
                 return node.get("data");
+        }
+        if (node.hasNonNull("duplicates")) {
+            return node;
         }
         if (node.hasNonNull("data")) {
             JsonNode data = node.get("data");
@@ -109,8 +117,6 @@ class WykopObjectMapper {
         }
         JsonNode error = node.get("error");
         int errorCode = error.get("code").intValue();
-        String messageEn = error.get("message_en").asText();
-        String messagePl = error.get("message_pl").asText();
         switch (errorCode) {
             case 1:
                 throw new InvalidAPIKeyException();
@@ -124,23 +130,57 @@ class WykopObjectMapper {
                 throw new InvalidUserCredentialsException();
             case 24:
                 throw new ArchivalContentException();
+            case 33:
+                throw new UserCannotObserveThemselfException();
             case 35:
                 throw new UnableToModifyEntryException();
             case 37:
                 throw new UnableToDeleteCommentException();
             case 81:
                 throw new CommentDoesNotExistException();
+            case 102:
+                throw new UserBlockedByAnotherUserException();
             case 506:
                 throw new LimitExceededException();
+            case 515:
+                throw new LinkCommentNotExistException();
+            case 517:
+                throw new CannotReplyOnDeletedObjectsException();
+            case 522:
+                throw new LinkAlreadyExistsException();
+            case 529:
+                throw new CannotEditCommentsWithAnswerException();
+            case 530:
+                throw new InvalidValueException();
             case 552:
                 throw new ActionForbiddenException();
+            case 602:
+                throw new BodyContainsOnlyPmException();
             case 999:
                 throw new NiceTryException();
         }
+        String messageEn = error.get("message_en").asText();
+        String messagePl = error.get("message_pl").asText();
         throw new WykopException(errorCode, messageEn, messagePl);
     }
 
-    private boolean conversationDeleted(String payload) {
+    private String handleNotFoundAsEmptyResponse(String payload) {
+        if (payload.startsWith("{\"data\":null,\"error\":{\"code\":13")
+                || payload.startsWith("{\"data\":null,\"error\":{\"code\":41")) {
+            return "{\"data\":[]}";
+        }
+        return payload;
+    }
+
+    private String handleLinkPrepareImageResponse(String payload) {
+        if (payload.startsWith("{\"data\":[{\"key\":")) {
+            return payload.replace("{\"data\":[{\"key\":", "{\"data\":{\"key\":")
+                    .replace("}]}", "}}");
+        }
+        return payload;
+    }
+
+    private boolean conversationDeletedOrLinksFavoriteToggle(String payload) {
         return payload.equals("{\"data\":[true]}");
     }
 

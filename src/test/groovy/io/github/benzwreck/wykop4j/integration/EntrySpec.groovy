@@ -3,7 +3,7 @@ package io.github.benzwreck.wykop4j.integration
 import io.github.benzwreck.wykop4j.IntegrationWykopClient
 import io.github.benzwreck.wykop4j.WykopClient
 import io.github.benzwreck.wykop4j.entries.Entry
-import io.github.benzwreck.wykop4j.entries.NewComment
+import io.github.benzwreck.wykop4j.entries.NewEntryComment
 import io.github.benzwreck.wykop4j.entries.NewEntry
 import io.github.benzwreck.wykop4j.Page
 import io.github.benzwreck.wykop4j.entries.Period
@@ -28,7 +28,7 @@ class EntrySpec extends Specification {
             .withBody("obraz")
             .withMedia("https://www.wykop.pl/cdn/c3201142/comment_1613001626Mwe2NcUAMJ1yLKZJumQQjC.jpg")
             .build()
-    private def newCommentWithBodyAndUrlMedia = new NewComment.Builder()
+    private def newCommentWithBodyAndUrlMedia = new NewEntryComment.Builder()
             .withBody("obraz")
             .withMedia("https://www.wykop.pl/cdn/c3201142/comment_1613001626Mwe2NcUAMJ1yLKZJumQQjC.jpg")
             .build()
@@ -213,7 +213,7 @@ class EntrySpec extends Specification {
         def conditions = new PollingConditions(timeout: 5, initialDelay: 1)
         def randomId = wykop.entriesStream().execute().get(0).id()
         when:
-        wykop.voteUp(randomId).execute()
+        wykop.entryVoteUp(randomId).execute()
         then:
         conditions.eventually {
             assert wykop.entry(randomId).execute()
@@ -222,7 +222,7 @@ class EntrySpec extends Specification {
                     .isPresent()
         }
         when:
-        wykop.removeVote(randomId).execute()
+        wykop.entryRemoveVote(randomId).execute()
         then:
         conditions.eventually {
             assert wykop.entry(randomId).execute()
@@ -234,14 +234,14 @@ class EntrySpec extends Specification {
 
     def "should throw an exception when try to upvote non-existing entry"() {
         when:
-        wykop.voteUp(nonexistentId).execute()
+        wykop.entryVoteUp(nonexistentId).execute()
         then:
         thrown ArchivalContentException
     }
 
     def "should throw an exception when try to remove vote from non-existing entry"() {
         when:
-        wykop.removeVote(nonexistentId).execute()
+        wykop.entryRemoveVote(nonexistentId).execute()
         then:
         thrown ArchivalContentException
     }
@@ -250,7 +250,7 @@ class EntrySpec extends Specification {
         setup:
         def randomId = wykop.hotEntries().execute().get(0).id()
         when:
-        def votes = wykop.allUpvotes(randomId).execute()
+        def votes = wykop.entryAllUpvotes(randomId).execute()
         then:
         !votes.isEmpty()
     }
@@ -294,7 +294,7 @@ class EntrySpec extends Specification {
     }
 
     def "should edit comment"() {
-        def differentNewComment = new NewComment.Builder()
+        def differentNewComment = new NewEntryComment.Builder()
                 .withBody("lolol")
                 .build()
         when:

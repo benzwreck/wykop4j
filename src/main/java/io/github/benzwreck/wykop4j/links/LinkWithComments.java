@@ -3,9 +3,11 @@ package io.github.benzwreck.wykop4j.links;
 import io.github.benzwreck.wykop4j.profiles.SimpleProfile;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
-public class Link {
+public class LinkWithComments {
     private final Integer id;
     private final String title;
     private final String description;
@@ -22,7 +24,7 @@ public class Link {
     private final String status;
     private final Boolean canVote;
     private final Boolean isHot;
-    private final Boolean archived;
+    private final List<LinkComment> comments;
     private final Boolean userFavorite;
     private final Boolean userObserve;
     private final Boolean isRecommended;
@@ -32,7 +34,7 @@ public class Link {
     private final String url;
     private final String violationUrl;
 
-    public Link(Integer id, String title, String description, String tags, String sourceUrl, Integer voteCount, Integer buryCount, Integer commentsCount, Integer relatedCount, LocalDateTime date, SimpleProfile author, String preview, Boolean plus18, String status, Boolean canVote, Boolean isHot, Boolean archived, Boolean userFavorite, Boolean userObserve, Boolean isRecommended, String app, Boolean hasOwnContent, Info info, String url, String violationUrl) {
+    public LinkWithComments(Integer id, String title, String description, String tags, String sourceUrl, Integer voteCount, Integer buryCount, Integer commentsCount, Integer relatedCount, LocalDateTime date, SimpleProfile author, String preview, Boolean plus18, String status, Boolean canVote, Boolean isHot, List<LinkComment> comments, Boolean userFavorite, Boolean userObserve, Boolean isRecommended, String app, Boolean hasOwnContent, Info info, String url, String violationUrl) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -49,7 +51,7 @@ public class Link {
         this.status = status;
         this.canVote = canVote;
         this.isHot = isHot;
-        this.archived = archived;
+        this.comments = comments;
         this.userFavorite = userFavorite;
         this.userObserve = userObserve;
         this.isRecommended = isRecommended;
@@ -124,39 +126,8 @@ public class Link {
         return isHot;
     }
 
-    @Override
-    public String toString() {
-        return "Link{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", tags='" + tags + '\'' +
-                ", sourceUrl='" + sourceUrl + '\'' +
-                ", voteCount=" + voteCount +
-                ", buryCount=" + buryCount +
-                ", commentsCount=" + commentsCount +
-                ", relatedCount=" + relatedCount +
-                ", date=" + date +
-                ", author=" + author +
-                ", preview='" + preview + '\'' +
-                ", plus18=" + plus18 +
-                ", status='" + status + '\'' +
-                ", canVote=" + canVote +
-                ", isHot=" + isHot +
-                ", archived=" + archived +
-                ", userFavorite=" + userFavorite +
-                ", userObserve=" + userObserve +
-                ", isRecommended=" + isRecommended +
-                ", app='" + app + '\'' +
-                ", hasOwnContent=" + hasOwnContent +
-                ", info=" + info +
-                ", url='" + url + '\'' +
-                ", violationUrl='" + violationUrl + '\'' +
-                '}';
-    }
-
-    public Boolean archived() {
-        return archived;
+    public List<LinkComment> comments() {
+        return Collections.unmodifiableList(comments);
     }
 
     public Boolean userFavorite() {
@@ -189,6 +160,36 @@ public class Link {
 
     public Optional<Info> info() {
         return Optional.ofNullable(info);
+    }
+
+    @Override
+    public String toString() {
+        return "Link{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", tags='" + tags + '\'' +
+                ", sourceUrl='" + sourceUrl + '\'' +
+                ", voteCount=" + voteCount +
+                ", buryCount=" + buryCount +
+                ", commentsCount=" + commentsCount +
+                ", relatedCount=" + relatedCount +
+                ", date=" + date +
+                ", author=" + author +
+                ", preview='" + preview + '\'' +
+                ", plus18=" + plus18 +
+                ", status='" + status + '\'' +
+                ", canVote=" + canVote +
+                ", isHot=" + isHot +
+                ", userFavorite=" + userFavorite +
+                ", userObserve=" + userObserve +
+                ", isRecommended=" + isRecommended +
+                ", app='" + app + '\'' +
+                ", hasOwnContent=" + hasOwnContent +
+                ", info=" + info +
+                ", url='" + url + '\'' +
+                ", violationUrl='" + violationUrl + '\'' +
+                '}';
     }
 
     public static class Info {

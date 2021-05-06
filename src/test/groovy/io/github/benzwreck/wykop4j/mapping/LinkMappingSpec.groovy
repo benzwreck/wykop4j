@@ -4,6 +4,9 @@ import com.fasterxml.jackson.core.type.TypeReference
 import io.github.benzwreck.wykop4j.WykopMappingTestObject
 import io.github.benzwreck.wykop4j.links.Link
 import io.github.benzwreck.wykop4j.links.LinkComment
+import io.github.benzwreck.wykop4j.links.LinkDraft
+import io.github.benzwreck.wykop4j.links.PreparedImage
+import io.github.benzwreck.wykop4j.links.RelatedLinkVoteData
 import io.github.benzwreck.wykop4j.profiles.Color
 import io.github.benzwreck.wykop4j.profiles.Sex
 import io.github.benzwreck.wykop4j.shared.UserVote
@@ -83,42 +86,70 @@ class LinkMappingSpec extends Specification {
             blocked() == false
             favorite() == false
             linkId() == 5750693
-            with link(), {
-                id() == 5750693
-                title() == "Zasady działań moderacyjnych - standardy moderacji"
-                description() == "Wykopowicze, zdajemy sobie sprawę, że podejmowane przez nas działania moderacyjne nie zawsze spotykają się z Waszą aprobatą.  Wiemy też, że zdarza się, iż nie rozumiecie dlaczego zgłoszona przez Was treść została lub nie została przez nas..."
-                tags() == "#wykop #moderacja #zasady #polska"
-                sourceUrl() == "http://www.wykop.pl/artykul/5750693/zasady-dzialan-moderacyjnych-standardy-moderacji/"
-                voteCount() == 1164
-                buryCount() == 0
-                commentsCount() == 945
-                relatedCount() == 5
-                date() == LocalDateTime.of(2020, 10, 19, 16, 23, 02)
-                with author(), {
-                    login() == "wykop"
-                    color() == Color.ADMIN
-                    sex() == Optional.empty()
-                    avatar() == "https://www.wykop.pl/cdn/c3397992/wykop_U5laqyXEOf,q150.jpg"
-                }
-                preview() == "https://www.wykop.pl/cdn/c3397993/link_1603117815m5OxIJrwkSgutxxYYW5P4t,w104h74.jpg"
-                plus18() == false
-                status() == "promoted"
-                canVote() == true
-                isHot() == true
-                userFavorite() == false
-                userObserve() == false
-                with info().get(), {
-                    color() == Link.Info.Color.YELLOW
-                    body() == "Wykopowicze, dziękujemy za Wasze zaangażowanie, liczne komentarze, sugestie i opinie w temacie! \r\nW konsultacji z Wami przygotowaliśmy zbiór zasad oraz wytycznych, w których określiliśmy jakie treści, działania i aktywności w serwisie nie są akceptowane na Wykopie. Standardy moderacji dostępne będą publicznie pod adresem: https://www.wykop.pl/pomoc/standardy-moderacji/"
-                }
-                hasOwnContent() == true
-                url() == "https://www.wykop.pl/link/5750693/zasady-dzialan-moderacyjnych-standardy-moderacji/"
-                violationUrl() == "https://a2.wykop.pl/naruszenia/form/ot/link/od/5750693/ud/5xOL/hs/df5e78196a33ccffe400cd2fa9c05e815b4371a2/rn/79U7l1LE1b/"
-            }
             violationUrl() == "https://a2.wykop.pl/naruszenia/form/ot/comment/od/83090897/ud/5xOL/hs/fadd4e43958a10f0ea4cec36afbf3f5074d44a0c/rn/FyAEGlP498/"
             voteCountMinus() == -20
             original() == "@beconase: bardzo dziekuje :). Na szczescie, Najwazniejsi pamietaja :)"
         }
 
+    }
+
+    def "should map json to related link vote data"() {
+        given:
+        RelatedLinkVoteData relatedLinkVoteData = mapper.map(sampleLinks.relatedLinkVoteData, RelatedLinkVoteData)
+        expect:
+        relatedLinkVoteData.voteCount() == 62
+    }
+
+    def "should map json to link draft"() {
+        given:
+        LinkDraft linkDraft = mapper.map(sampleLinks.linkDraft, LinkDraft)
+        expect:
+        with linkDraft, {
+            key() == "595878775a67414642685578"
+            title().get() == "Best JSON Formatter and JSON Validator: Online JSON Formatter"
+            description().get() == "Online JSON Formatter and JSON Validator will format JSON data, and helps to validate, convert JSON to XML, JSON to CSV. Save and Share JSON"
+            sourceUrl() == "https://jsonformatter.org/"
+            with duplicates().get(0), {
+                id() == 100453
+                title() == "Water Powered Cars - Convert Your Car To Run On Water And Save Money"
+                description() == "Water Powered Cars - Convert Your Car To Run On Water And Save Money"
+                tags() == "#technologia #nowetechnologie #water #powered #cars"
+                sourceUrl() == "http://ezinearticles.com/?Water-Powered-Cars---Convert-Your-Car-To-Run-On-Water-And-Save-Money&amp;id=1081759"
+                voteCount() == 0
+                buryCount() == 0
+                commentsCount() == 0
+                relatedCount() == 0
+                date() == LocalDateTime.of(2008, 10, 07, 07, 03, 00)
+                with author(), {
+                    login() == "biten98"
+                    color() == Color.BANNED
+                    avatar() == "https://www.wykop.pl/cdn/c3397992/avatar_def,q150.png"
+                    sex().isEmpty()
+                }
+                plus18() == false
+                status() == "removed"
+                canVote() == false
+                isHot() == false
+                archived() == true
+                userFavorite() == false
+                userObserve() == false
+                hasOwnContent() == false
+                url() == "https://www.wykop.pl/link/100453/water-powered-cars-convert-your-car-to-run-on-water-and-save-money/"
+                violationUrl() == "https://a2.wykop.pl/naruszenia/form/ot/link/od/100453/ud/9KdP/hs/5dcff10519b9453f52d5faca0e4b9fdb104a0a3c/rn/IAiK7aJ2I0/"
+
+            }
+        }
+    }
+
+    def "should map json to image draft"(){
+        given:
+        PreparedImage preparedImage = mapper.map(sampleLinks.preparedImage, PreparedImage)
+        expect:
+        with preparedImage, {
+            key() == "595878775a67414b43784578"
+            type() == "image/jpeg"
+            previewUrl() == "https://preview.pl/prev.jpg"
+            sourceUrl() == "https://art-madam.pl/zdjecie/nowoczesny-obraz-do-salonu-drukowany-na-plotnie,swsbnckstxdjnwbh.jpg"
+        }
     }
 }

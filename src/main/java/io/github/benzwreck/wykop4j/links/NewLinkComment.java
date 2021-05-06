@@ -1,15 +1,15 @@
-package io.github.benzwreck.wykop4j.entries;
+package io.github.benzwreck.wykop4j.links;
 
 import java.io.File;
 import java.util.Optional;
 
-public class NewComment {
+public class NewLinkComment {
     private final String body;
     private final String urlEmbed;
     private final File fileEmbed;
     private final String shownFileName;
 
-    private NewComment(String body, String urlEmbed, File fileEmbed, String shownFileName) {
+    private NewLinkComment(String body, String urlEmbed, File fileEmbed, String shownFileName) {
         this.body = body;
         this.urlEmbed = urlEmbed;
         this.fileEmbed = fileEmbed;
@@ -40,30 +40,37 @@ public class NewComment {
 
         public Builder() {
         }
-        public Builder withBody(String body){
+
+        public NewLinkComment.Builder withBody(String body) {
             this.body = body;
             return this;
         }
-        public Builder withMedia(String urlEmbed){
+
+        public NewLinkComment.Builder withMedia(String urlEmbed) {
             this.urlEmbed = urlEmbed;
             return this;
         }
-        public Builder withMedia(File fileEmbed){
+
+        public NewLinkComment.Builder withMedia(File fileEmbed) {
             this.fileEmbed = fileEmbed;
             this.shownFileName = fileEmbed.getName();
             return this;
         }
-        public Builder withMedia(File fileEmbed, String shownFileName){
+
+        public NewLinkComment.Builder withMedia(File fileEmbed, String shownFileName) {
             this.fileEmbed = fileEmbed;
             this.shownFileName = shownFileName;
             return this;
         }
 
-        public NewComment build() {
+        public NewLinkComment build() {
             if ((body == null && fileEmbed == null && urlEmbed == null)) {
-                throw new IllegalArgumentException("Between Body or Media, at least one of them should be provided.");
+                throw new IllegalArgumentException("At least one of Body and Media must be provided.");
             }
-            return new NewComment(body, urlEmbed, fileEmbed, shownFileName);
+            if (body != null && body.length() < 5) {
+                throw new IllegalArgumentException("At least 5 characters must be provided to create a body message.");
+            }
+            return new NewLinkComment(body, urlEmbed, fileEmbed, shownFileName);
         }
     }
 }
