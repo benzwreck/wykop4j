@@ -185,8 +185,8 @@ class WykopObjectMapper {
     }
 
     private String handleServerErrorHtmlResponse(String payload) {
-        if (payload.startsWith("<!DOCTYPE HTML>")) {
-            payload = "{\"data\": []}";
+        if (payload.contains("<title>Ups...</title>")) {
+            return "{\"data\": []}";
         }
         return payload;
     }
