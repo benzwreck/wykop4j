@@ -51,9 +51,11 @@ import io.github.benzwreck.wykop4j.suggest.TagSuggestion;
 import io.github.benzwreck.wykop4j.terms.Terms;
 
 import java.io.File;
+import java.net.URL;
 import java.time.DateTimeException;
 import java.time.Month;
 import java.time.Year;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,10 +63,12 @@ public class WykopClient {
     private final static String WYKOP_URL = "https://a2.wykop.pl";
     private final WykopHttpClient client;
     private final WykopObjectMapper wykopObjectMapper;
+    private final ApplicationCredentials applicationCredentials;
 
-    WykopClient(WykopHttpClient wykopHttpClient, WykopObjectMapper wykopObjectMapper) {
+    WykopClient(WykopHttpClient wykopHttpClient, WykopObjectMapper wykopObjectMapper, ApplicationCredentials applicationCredentials) {
         this.client = wykopHttpClient;
         this.wykopObjectMapper = wykopObjectMapper;
+        this.applicationCredentials = applicationCredentials;
     }
 
     //Entries
@@ -2021,6 +2025,24 @@ public class WykopClient {
                 .build(), Boolean.class);
     }
 
+    // Wykop Connect
+
+    /**
+     * Returns a html page of Wykop Connect site.<br>
+     * Use to provide user credentials returned to redirectUrl.
+     *
+     * @param redirectUrl redirection url
+     * @return Wykop Connect html page
+     */
+    public Chain<String> getWykopConnectHtmlPage(URL redirectUrl) {
+        String secure = MD5Decoder.decode(applicationCredentials.secret() + redirectUrl.toString());
+        String encodedRedirectUrl = Base64.getEncoder().encodeToString(redirectUrl.toString().getBytes());
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Login/Connect/secure/string/redirect/string/")
+                .namedParam("secure", secure)
+                .namedParam("redirect", encodedRedirectUrl).build(), String.class);
+    }
+
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;
@@ -2043,7 +2065,7 @@ public class WykopClient {
                 throw new IllegalStateException("Application Credentials must be provided.");
             WykopHttpClient client = new WykopHttpClient(userCredentials, applicationCredentials);
             WykopObjectMapper wykopObjectMapper = new WykopObjectMapper();
-            return new WykopClient(client, wykopObjectMapper);
+            return new WykopClient(client, wykopObjectMapper, applicationCredentials);
         }
     }
 

@@ -71,8 +71,12 @@ class WykopObjectMapper {
                 .registerModule(new LinkDraftMappingModule());
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T map(String payload, Class<T> clazz) {
         try {
+            if (isWykopConnectLoginHtmlPage(payload)) {
+                return (T) objectMapper.writeValueAsString(payload);
+            }
             JsonNode data = handleResponse(payload);
             return objectMapper.readValue(objectMapper.treeAsTokens(data), clazz);
         } catch (IOException e) {
@@ -80,6 +84,7 @@ class WykopObjectMapper {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T map(String payload, TypeReference<T> typeReference) {
         try {
             payload = handleNotFoundAsEmptyResponse(payload);
@@ -162,6 +167,10 @@ class WykopObjectMapper {
         String messageEn = error.get("message_en").asText();
         String messagePl = error.get("message_pl").asText();
         throw new WykopException(errorCode, messageEn, messagePl);
+    }
+
+    private boolean isWykopConnectLoginHtmlPage(String payload) {
+        return payload.contains("<title>Połącz konto z");
     }
 
     private String handleNotFoundAsEmptyResponse(String payload) {
