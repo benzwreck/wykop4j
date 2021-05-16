@@ -2,8 +2,8 @@ package io.github.benzwreck.wykop4j;
 
 import java.security.MessageDigest;
 
-class MD5Decoder {
-    static String decode(String data) {
+class MD5Encoder {
+    static String encode(String data) {
         StringBuilder sb = new StringBuilder();
         try {
             MessageDigest messageDigest = MessageDigest.getInstance("MD5");
