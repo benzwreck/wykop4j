@@ -1,13 +1,6 @@
 package io.github.benzwreck.wykop4j;
 
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -33,40 +26,36 @@ class WykopRequest {
         this.clearOutput = clearOutput;
     }
 
-    public Request toOkHttpRequest() throws IOException {
-        Request.Builder requestBuilder = new Request.Builder();
-        String tempUrl = url;
-        // api params:
-        for (Map.Entry<String, String> entry : apiParams.entrySet()) {
-            tempUrl = tempUrl.replace(entry.getKey(), entry.getValue());
-        }
-        // named params:
-        for (Map.Entry<String, String> entry : namedParams.entrySet()) {
-            tempUrl = tempUrl.replaceFirst(entry.getKey() + "/(\\w*)/", entry.getKey() + "/" + entry.getValue() + "/");
-        }
-        if (clearOutput) tempUrl += "output/clear/";
-        if (fullData) tempUrl += "data/full/";
-        requestBuilder.url(tempUrl);
+    String url() {
+        return url;
+    }
 
-        if (postParams.isEmpty() && file == null) {
-            return requestBuilder.build();
-        }
-        MultipartBody.Builder builder = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM);
-        // post params:
-        for (Map.Entry<String, String> entry : postParams.entrySet()) {
-            builder.addFormDataPart(entry.getKey(), entry.getValue());
-        }
-        if (file != null) {
-            String contentType = Files.probeContentType(file.toPath());
-            builder
-                    .addFormDataPart("embed", shownFileName,
-                            RequestBody.create(file, MediaType.parse(contentType)));
-        }
+    Map<String, String> apiParams() {
+        return apiParams;
+    }
 
-        return requestBuilder
-                .post(builder.build())
-                .build();
+    Map<String, String> namedParams() {
+        return namedParams;
+    }
+
+    Map<String, String> postParams() {
+        return postParams;
+    }
+
+    File file() {
+        return file;
+    }
+
+    String shownFileName() {
+        return shownFileName;
+    }
+
+    boolean fullData() {
+        return fullData;
+    }
+
+    boolean clearOutput() {
+        return clearOutput;
     }
 
     public static final class Builder {
