@@ -82,7 +82,6 @@ class AuthInterceptor implements Interceptor {
     private FormBody prepareAuthBody() {
         return new FormBody.Builder()
                 .add("accountkey", userCredentials.accountKey())
-                .add("login", userCredentials.login())
                 .build();
     }
 
