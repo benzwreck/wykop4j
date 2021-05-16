@@ -71,8 +71,12 @@ class WykopObjectMapper {
                 .registerModule(new LinkDraftMappingModule());
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T map(String payload, Class<T> clazz) {
         try {
+            if (isWykopConnectLoginHtmlPage(payload)) {
+                return (T) objectMapper.writeValueAsString(payload);
+            }
             JsonNode data = handleResponse(payload);
             return objectMapper.readValue(objectMapper.treeAsTokens(data), clazz);
         } catch (IOException e) {
@@ -80,6 +84,7 @@ class WykopObjectMapper {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T map(String payload, TypeReference<T> typeReference) {
         try {
             payload = handleNotFoundAsEmptyResponse(payload);
@@ -97,6 +102,7 @@ class WykopObjectMapper {
 
     private JsonNode handleResponse(String payload) throws JsonProcessingException {
         payload = handleServerErrorHtmlResponse(payload);
+        payload = handleWykopConnectResponse(payload);
         if (conversationDeletedOrLinksFavoriteToggle(payload)) {
             return BooleanNode.valueOf(true);
         }
@@ -164,6 +170,17 @@ class WykopObjectMapper {
         throw new WykopException(errorCode, messageEn, messagePl);
     }
 
+    private String handleWykopConnectResponse(String payload) {
+        if (payload.contains("{\"appkey\":")) {
+            return "{\"data\":" + payload + "}";
+        }
+        return payload;
+    }
+
+    private boolean isWykopConnectLoginHtmlPage(String payload) {
+        return payload.contains("<title>Połącz konto z");
+    }
+
     private String handleNotFoundAsEmptyResponse(String payload) {
         if (payload.startsWith("{\"data\":null,\"error\":{\"code\":13")
                 || payload.startsWith("{\"data\":null,\"error\":{\"code\":41")) {
@@ -185,8 +202,8 @@ class WykopObjectMapper {
     }
 
     private String handleServerErrorHtmlResponse(String payload) {
-        if (payload.startsWith("<!DOCTYPE HTML>")) {
-            payload = "{\"data\": []}";
+        if (payload.contains("<title>Ups...</title>")) {
+            return "{\"data\": []}";
         }
         return payload;
     }

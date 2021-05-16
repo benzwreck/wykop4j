@@ -37,6 +37,7 @@ import io.github.benzwreck.wykop4j.links.PreparedImage;
 import io.github.benzwreck.wykop4j.links.RelatedLink;
 import io.github.benzwreck.wykop4j.links.RelatedLinkVoteData;
 import io.github.benzwreck.wykop4j.links.VoteDownReason;
+import io.github.benzwreck.wykop4j.login.WykopConnectLoginData;
 import io.github.benzwreck.wykop4j.notifications.Notification;
 import io.github.benzwreck.wykop4j.profiles.ActionType;
 import io.github.benzwreck.wykop4j.profiles.Actions;
@@ -51,6 +52,7 @@ import io.github.benzwreck.wykop4j.suggest.TagSuggestion;
 import io.github.benzwreck.wykop4j.terms.Terms;
 
 import java.io.File;
+import java.net.URL;
 import java.time.DateTimeException;
 import java.time.Month;
 import java.time.Year;
@@ -61,10 +63,14 @@ public class WykopClient {
     private final static String WYKOP_URL = "https://a2.wykop.pl";
     private final WykopHttpClient client;
     private final WykopObjectMapper wykopObjectMapper;
+    private final ApplicationCredentials applicationCredentials;
+    private final WykopConnect wykopConnect;
 
-    WykopClient(WykopHttpClient wykopHttpClient, WykopObjectMapper wykopObjectMapper) {
+    WykopClient(WykopHttpClient wykopHttpClient, WykopObjectMapper wykopObjectMapper, ApplicationCredentials applicationCredentials, WykopConnect wykopConnect) {
         this.client = wykopHttpClient;
         this.wykopObjectMapper = wykopObjectMapper;
+        this.applicationCredentials = applicationCredentials;
+        this.wykopConnect = wykopConnect;
     }
 
     //Entries
@@ -2021,6 +2027,47 @@ public class WykopClient {
                 .build(), Boolean.class);
     }
 
+    // Wykop Connect
+
+    /**
+     * Returns a html page of Wykop Connect site.<br>
+     * Use to provide user credentials returned to redirectURL.
+     *
+     * @param redirectURL redirection url
+     * @return Wykop Connect html page
+     */
+    public Chain<String> getWykopConnectHtmlPage(URL redirectURL) {
+        String secure = wykopConnect.getSecureCode(redirectURL);
+        String encodedRedirectUrl = wykopConnect.encodeURL(redirectURL);
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Login/Connect/secure/string/redirect/string/")
+                .namedParam("secure", secure)
+                .namedParam("redirect", encodedRedirectUrl)
+                .build(), String.class);
+    }
+
+    /**
+     * Returns a html page of Wykop Connect site.<br>
+     * Use to provide user credentials returned to https://www.wykop.pl/user/ConnectSuccess/appkey/{APPKEY}/login/{LOGIN}/token/{USERKEY}/.
+     *
+     * @return Wykop Connect html page
+     */
+    public Chain<String> getWykopConnectHtmlPage() {
+        return new Chain<>(new WykopRequest.Builder()
+                .url(WYKOP_URL + "/Login/Connect/")
+                .build(), String.class);
+    }
+
+    /**
+     * Parses Wykop Connect response.
+     *
+     * @param response response from {@link #getWykopConnectHtmlPage(URL redirectUrl)}
+     * @return login data
+     */
+    public WykopConnectLoginData parseWykopConnectLoginResponse(URL response) {
+        return wykopConnect.parseResponse(response);
+    }
+
     public static final class Builder {
         private UserCredentials userCredentials;
         private ApplicationCredentials applicationCredentials;
@@ -2043,7 +2090,8 @@ public class WykopClient {
                 throw new IllegalStateException("Application Credentials must be provided.");
             WykopHttpClient client = new WykopHttpClient(userCredentials, applicationCredentials);
             WykopObjectMapper wykopObjectMapper = new WykopObjectMapper();
-            return new WykopClient(client, wykopObjectMapper);
+            WykopConnect wykopConnect = new WykopConnect(wykopObjectMapper, applicationCredentials);
+            return new WykopClient(client, wykopObjectMapper, applicationCredentials, wykopConnect);
         }
     }
 
