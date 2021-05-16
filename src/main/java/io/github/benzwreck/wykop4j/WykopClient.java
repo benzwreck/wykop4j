@@ -91,7 +91,7 @@ public class WykopClient {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/Stream/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
-                .build(), new TypeReference<List<Entry>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -103,7 +103,7 @@ public class WykopClient {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/Stream/firstid/int/")
                 .namedParam("firstid", String.valueOf(entryId))
-                .build(), new TypeReference<List<Entry>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -115,7 +115,7 @@ public class WykopClient {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/Entry/entry/")
                 .apiParam("entry", String.valueOf(id))
-                .build(), new TypeReference<Optional<Entry>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -156,7 +156,7 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Entries/Hot/page/int/period/int/")
                 .namedParam("page", String.valueOf(page.value()))
                 .namedParam("period", String.valueOf(period.value()))
-                .build(), new TypeReference<List<Entry>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -175,7 +175,7 @@ public class WykopClient {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/Active/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
-                .build(), new TypeReference<List<Entry>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -194,7 +194,7 @@ public class WykopClient {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/Observed/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
-                .build(), new TypeReference<List<Entry>>() {
+                .build(), new TypeReference<>() {
         }
         );
     }
@@ -289,7 +289,7 @@ public class WykopClient {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/Upvoters/entry_id/")
                 .apiParam("entry_id", String.valueOf(entryId))
-                .build(), new TypeReference<List<Vote>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -301,7 +301,7 @@ public class WykopClient {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/Comment/comment_id/")
                 .apiParam("comment_id", String.valueOf(commentId))
-                .build(), new TypeReference<Optional<EntryComment>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -402,7 +402,7 @@ public class WykopClient {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/ObservedComments/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
-                .build(), new TypeReference<List<EntryComment>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -453,7 +453,7 @@ public class WykopClient {
     public Chain<List<Link>> linkHits(HitsOption option) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Hits/" + option.value() + "/")
-                .build(), new TypeReference<List<Link>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -467,7 +467,7 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Hits/Month/year/month")
                 .apiParam("year", Year.now().toString())
                 .apiParam("month", String.valueOf(month.getValue()))
-                .build(), new TypeReference<List<Link>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -479,7 +479,7 @@ public class WykopClient {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Hits/Year/year")
                 .apiParam("year", year.toString())
-                .build(), new TypeReference<List<Link>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -494,7 +494,7 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Hits/Month/year/month/")
                 .apiParam("year", year.toString())
                 .apiParam("month", String.valueOf(month.getValue()))
-                .build(), new TypeReference<List<Link>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -516,7 +516,7 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Notifications/Index/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
                 .fullData(false)        //wykop api crashes otherwise - returns error html page
-                .build(), new TypeReference<List<Notification>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -545,7 +545,7 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Notifications/HashTags/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
                 .fullData(false)
-                .build(), new TypeReference<List<Notification>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -578,7 +578,7 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Notifications/Total/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
                 .fullData(false)
-                .build(), new TypeReference<List<Notification>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -640,7 +640,7 @@ public class WykopClient {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Pm/ConversationsList/")
                 .fullData(false)
-                .build(), new TypeReference<List<ConversationInfo>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -652,7 +652,7 @@ public class WykopClient {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Pm/Conversation/receiver/")
                 .apiParam("receiver", login)
-                .build(), new TypeReference<List<Message>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -702,7 +702,7 @@ public class WykopClient {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/Index/login/")
                 .apiParam("login", login)
-                .build(), new TypeReference<Optional<FullProfile>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -735,7 +735,7 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Profiles/Added/login/page/int/")
                 .apiParam("login", login)
                 .namedParam("page", String.valueOf(page.value()))
-                .build(), new TypeReference<List<Link>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -757,7 +757,7 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Profiles/Commented/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
                 .apiParam("login", login)
-                .build(), new TypeReference<List<Link>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -779,7 +779,7 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Profiles/Comments/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
                 .apiParam("login", login)
-                .build(), new TypeReference<List<LinkComment>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -801,7 +801,7 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Profiles/Published/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
                 .apiParam("login", login)
-                .build(), new TypeReference<List<Link>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -823,7 +823,7 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Profiles/Entries/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
                 .apiParam("login", login)
-                .build(), new TypeReference<List<Entry>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -845,7 +845,7 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Profiles/CommentedEntries/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
                 .apiParam("login", login)
-                .build(), new TypeReference<List<Entry>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -867,7 +867,7 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Profiles/EntriesComments/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
                 .apiParam("login", login)
-                .build(), new TypeReference<List<EntryComment>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -889,7 +889,7 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Profiles/EntriesComments/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
                 .apiParam("login", login)
-                .build(), new TypeReference<List<Link>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -911,7 +911,7 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Profiles/Followers/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
                 .apiParam("login", login)
-                .build(), new TypeReference<List<FullProfile>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -933,7 +933,7 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Profiles/Followed/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
                 .apiParam("login", login)
-                .build(), new TypeReference<List<FullProfile>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -955,7 +955,7 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Profiles/Badges/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
                 .apiParam("login", login)
-                .build(), new TypeReference<List<Badge>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -977,7 +977,7 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Profiles/Digged/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
                 .apiParam("login", login)
-                .build(), new TypeReference<List<Link>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -999,7 +999,7 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Profiles/Buried/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
                 .apiParam("login", login)
-                .build(), new TypeReference<List<Link>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -1018,7 +1018,7 @@ public class WykopClient {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/Rank/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
-                .build(), new TypeReference<List<FullProfile>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -1131,7 +1131,7 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Tags/Links/tag/page/int/")
                 .apiParam("tag", tag)
                 .namedParam("page", String.valueOf(page.value()))
-                .build(), new TypeReference<List<Link>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -1153,7 +1153,7 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Tags/Entries/tag/page/int/")
                 .apiParam("tag", tag)
                 .namedParam("page", String.valueOf(page.value()))
-                .build(), new TypeReference<List<Entry>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -1239,7 +1239,7 @@ public class WykopClient {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Suggest/Tags/tag/")
                 .apiParam("tag", tag)
-                .build(), new TypeReference<List<TagSuggestion>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -1251,7 +1251,7 @@ public class WykopClient {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Suggest/Users/login/")
                 .apiParam("login", login)
-                .build(), new TypeReference<List<SimpleProfile>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -1417,7 +1417,7 @@ public class WykopClient {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Mywykop/Entries/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
-                .build(), new TypeReference<List<Entry>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -1440,7 +1440,7 @@ public class WykopClient {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Mywykop/Links/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
-                .build(), new TypeReference<List<Link>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -1485,7 +1485,7 @@ public class WykopClient {
                 .postParam("when", linkSearchQuery.dateRange().value())
                 .postParam("votes", String.valueOf(linkSearchQuery.minimumVoteCount()));
         linkSearchQuery.phrase().ifPresent(phrase -> builder.postParam("q", phrase));
-        return new Chain<>(builder.build(), new TypeReference<List<Link>>() {
+        return new Chain<>(builder.build(), new TypeReference<>() {
         });
     }
 
@@ -1525,7 +1525,7 @@ public class WykopClient {
                 .namedParam("page", String.valueOf(page.value()))
                 .postParam("q", entrySearchQuery.phrase())
                 .postParam("when", entrySearchQuery.dateRange().value());
-        return new Chain<>(builder.build(), new TypeReference<List<Entry>>() {
+        return new Chain<>(builder.build(), new TypeReference<>() {
         });
     }
 
@@ -1537,7 +1537,7 @@ public class WykopClient {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Search/Profiles/")
                 .postParam("q", login)
-                .build(), new TypeReference<List<SimpleProfile>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -1609,7 +1609,7 @@ public class WykopClient {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Promoted/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
-                .build(), new TypeReference<List<Link>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -1628,7 +1628,7 @@ public class WykopClient {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Upcoming/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
-                .build(), new TypeReference<List<Link>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -1647,7 +1647,7 @@ public class WykopClient {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Observed/page/int/")   //yep, it returns favorite links, not observed ones
                 .namedParam("page", String.valueOf(page.value()))
-                .build(), new TypeReference<List<Link>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -1659,7 +1659,7 @@ public class WykopClient {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Link/id/")
                 .apiParam("id", String.valueOf(linkId))
-                .build(), new TypeReference<Optional<Link>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -1671,7 +1671,7 @@ public class WykopClient {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Link/id/withcomments/true/")
                 .apiParam("id", String.valueOf(linkId))
-                .build(), new TypeReference<Optional<LinkWithComments>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -1726,7 +1726,7 @@ public class WykopClient {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Upvoters/link_id/")
                 .apiParam("link_id", String.valueOf(linkId))
-                .build(), new TypeReference<List<Vote>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -1738,7 +1738,7 @@ public class WykopClient {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Downvoters/link_id/")
                 .apiParam("link_id", String.valueOf(linkId))
-                .build(), new TypeReference<List<Vote>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -1750,7 +1750,7 @@ public class WykopClient {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Top/year/")
                 .apiParam("year", year.toString())
-                .build(), new TypeReference<List<Link>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -1764,7 +1764,7 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Links/Top/year/month/")
                 .apiParam("year", year.toString())
                 .apiParam("month", String.valueOf(month.getValue()))
-                .build(), new TypeReference<List<Link>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -1786,7 +1786,7 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Links/Comments/link/sort/string/")
                 .apiParam("link", String.valueOf(linkId))
                 .namedParam("sort", linkCommentsSorting.value())
-                .build(), new TypeReference<List<LinkComment>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
