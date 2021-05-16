@@ -63,13 +63,11 @@ public class WykopClient {
     private final static String WYKOP_URL = "https://a2.wykop.pl";
     private final WykopHttpClient client;
     private final WykopObjectMapper wykopObjectMapper;
-    private final ApplicationCredentials applicationCredentials;
     private final WykopConnect wykopConnect;
 
-    WykopClient(WykopHttpClient wykopHttpClient, WykopObjectMapper wykopObjectMapper, ApplicationCredentials applicationCredentials, WykopConnect wykopConnect) {
+    WykopClient(WykopHttpClient wykopHttpClient, WykopObjectMapper wykopObjectMapper, WykopConnect wykopConnect) {
         this.client = wykopHttpClient;
         this.wykopObjectMapper = wykopObjectMapper;
-        this.applicationCredentials = applicationCredentials;
         this.wykopConnect = wykopConnect;
     }
 
@@ -2091,7 +2089,7 @@ public class WykopClient {
             WykopHttpClient client = new WykopHttpClient(userCredentials, applicationCredentials);
             WykopObjectMapper wykopObjectMapper = new WykopObjectMapper();
             WykopConnect wykopConnect = new WykopConnect(wykopObjectMapper, applicationCredentials);
-            return new WykopClient(client, wykopObjectMapper, applicationCredentials, wykopConnect);
+            return new WykopClient(client, wykopObjectMapper, wykopConnect);
         }
     }
 
