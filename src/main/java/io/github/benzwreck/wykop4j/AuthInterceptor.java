@@ -19,7 +19,7 @@ class AuthInterceptor implements Interceptor {
 
     private String userKey;
 
-    public AuthInterceptor(UserCredentials userCredentials, ApplicationCredentials applicationCredentials) {
+    AuthInterceptor(UserCredentials userCredentials, ApplicationCredentials applicationCredentials) {
         this.userCredentials = userCredentials;
         this.applicationCredentials = applicationCredentials;
     }

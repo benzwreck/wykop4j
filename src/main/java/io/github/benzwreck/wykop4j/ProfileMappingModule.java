@@ -13,7 +13,7 @@ import java.io.IOException;
 
 class ProfileMappingModule extends SimpleModule {
 
-    public ProfileMappingModule() {
+    ProfileMappingModule() {
         this.addDeserializer(Sex.class, new ProfileSexDeserializer());
         this.addDeserializer(Color.class, new ProfileColorDeserializer());
     }

@@ -12,7 +12,7 @@ import java.io.IOException;
 
 class EntryMappingModule extends SimpleModule {
 
-    public EntryMappingModule(){
+    EntryMappingModule(){
         this.addDeserializer(UserVote.class, new UserVoteDeserializer());
     }
     private class UserVoteDeserializer extends JsonDeserializer<UserVote>{

@@ -49,7 +49,7 @@ import java.util.List;
 class WykopObjectMapper {
     private final ObjectMapper objectMapper;
 
-    public WykopObjectMapper() {
+    WykopObjectMapper() {
         LocalDateTimeDeserializer localDateTimeDeserializer =
                 new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         SimpleModule javaTimeModule = new JavaTimeModule()
