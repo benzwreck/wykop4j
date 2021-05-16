@@ -21,7 +21,7 @@ class ApiSignCalculator {
     public String calculate(Request request) throws IOException {
         String secret = applicationCredentials.secret();
         String url = request.url().toString();
-        if (secret.isEmpty()) return MD5Decoder.decode(url);
+        if (secret.isEmpty()) return MD5Encoder.encode(url);
         StringJoiner post = new StringJoiner(",");
         RequestBody body = request.body();
         if (body instanceof FormBody) {
@@ -42,6 +42,6 @@ class ApiSignCalculator {
             }
         }
         String data = secret + url + post;
-        return MD5Decoder.decode(data);
+        return MD5Encoder.encode(data);
     }
 }

@@ -102,6 +102,7 @@ class WykopObjectMapper {
 
     private JsonNode handleResponse(String payload) throws JsonProcessingException {
         payload = handleServerErrorHtmlResponse(payload);
+        payload = handleWykopConnectResponse(payload);
         if (conversationDeletedOrLinksFavoriteToggle(payload)) {
             return BooleanNode.valueOf(true);
         }
@@ -167,6 +168,13 @@ class WykopObjectMapper {
         String messageEn = error.get("message_en").asText();
         String messagePl = error.get("message_pl").asText();
         throw new WykopException(errorCode, messageEn, messagePl);
+    }
+
+    private String handleWykopConnectResponse(String payload) {
+        if (payload.contains("{\"appkey\":")) {
+            return "{\"data\":" + payload + "}";
+        }
+        return payload;
     }
 
     private boolean isWykopConnectLoginHtmlPage(String payload) {
