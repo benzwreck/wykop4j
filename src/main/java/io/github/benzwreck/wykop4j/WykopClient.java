@@ -19,6 +19,7 @@ import io.github.benzwreck.wykop4j.exceptions.InvalidValueException;
 import io.github.benzwreck.wykop4j.exceptions.LinkAlreadyExistsException;
 import io.github.benzwreck.wykop4j.exceptions.LinkCommentNotExistException;
 import io.github.benzwreck.wykop4j.exceptions.NiceTryException;
+import io.github.benzwreck.wykop4j.exceptions.UnableToDeleteCommentException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException;
 import io.github.benzwreck.wykop4j.exceptions.UserBlockedByAnotherUserException;
 import io.github.benzwreck.wykop4j.exceptions.UserCannotObserveThemselfException;
@@ -74,15 +75,19 @@ public class WykopClient {
     //Entries
 
     /**
-     * @return First page of the latest Microblog's Entries.
+     * Fetches first page of the latest Microblog's Entries.
+     *
+     * @return list of entries.
      */
     public Chain<List<Entry>> entriesStream() {
         return entriesStream(Page.of(1));
     }
 
     /**
+     * Fetches given page of the latest Microblog's Entries.
+     *
      * @param page available pages for Entries' Stream. Has to be 1 or 2.
-     * @return Given page of the latest Microblog's Entries.
+     * @return list of entries.
      * @throws IllegalArgumentException if page is different than 1 or 2.
      */
     public Chain<List<Entry>> entriesStream(Page page) {
@@ -96,8 +101,10 @@ public class WykopClient {
     }
 
     /**
+     * Fetches microblog's Entries where first {@link Entry} id equals first one after entryId.
+     *
      * @param entryId id from where we start counting except entryId
-     * @return Microblog's Entries where first {@link Entry} id equals first one after entryId.
+     * @return list of entries.
      */
     public Chain<List<Entry>> entriesStream(int entryId) {
         return new Chain<>(new WykopRequest.Builder()
@@ -108,6 +115,8 @@ public class WykopClient {
     }
 
     /**
+     * Fetches entry with given id.
+     *
      * @param id id of the {@link Entry} you are looking for.
      * @return possible {@link Entry}
      */
@@ -120,15 +129,19 @@ public class WykopClient {
     }
 
     /**
-     * @return First page of 12 hours hot entries.
+     * Fetches first page of 12 hours hot entries.
+     *
+     * @return list of entries.
      */
     public Chain<List<Entry>> hotEntries() {
         return hotEntries(Page.of(1), Period.TWELVE_HOURS);
     }
 
     /**
+     * Fetches given page of Hot Entries from last 12 hours.
+     *
      * @param page given hot entries page. Has to be from 1 to 20.
-     * @return List of Hot Entries from last 12 hours.
+     * @return list of entries.
      * @throws IllegalArgumentException if page is not from 1 to 20.
      */
     public Chain<List<Entry>> hotEntries(Page page) {
@@ -136,17 +149,21 @@ public class WykopClient {
     }
 
     /**
+     * Fetches first page of the Hot Entries for a given period.
+     *
      * @param period available pages for Entries' Hot
-     * @return First page of the Hot Entries for a given period.
+     * @return list of entries.
      */
     public Chain<List<Entry>> hotEntries(Period period) {
         return hotEntries(Page.of(1), period);
     }
 
     /**
+     * Fetches Hot Entries for a given page and period.
+     *
      * @param page   given hot entries page. Has to be between 1 and 20. Throws exception otherwise.
      * @param period available pages for Entries' Hot
-     * @return List of Hot Entries for a given page and period.
+     * @return list of entries.
      * @throws IllegalArgumentException if page is not from 1 to 20.
      */
     public Chain<List<Entry>> hotEntries(Page page, Period period) {
@@ -161,15 +178,19 @@ public class WykopClient {
     }
 
     /**
-     * @return List of Active Entries from first page.
+     * Fetches first page of Active Entries.
+     *
+     * @return list of entries.
      */
     public Chain<List<Entry>> activeEntries() {
         return activeEntries(Page.of(1));
     }
 
     /**
+     * Fetches Active Entries from given page.
+     *
      * @param page given active entries page.
-     * @return List of Active Entries from given page.
+     * @return list of entries.
      */
     public Chain<List<Entry>> activeEntries(Page page) {
         return new Chain<>(new WykopRequest.Builder()
@@ -180,15 +201,19 @@ public class WykopClient {
     }
 
     /**
-     * @return List of Observed Entries from first page.
+     * Fetches first page of Observed Entries.
+     *
+     * @return list of entries.
      */
     public Chain<List<Entry>> observedEntries() {
         return observedEntries(Page.of(1));
     }
 
     /**
+     * Fetches Observed Entries from given page.
+     *
      * @param page given observed entries page.
-     * @return List of Observed Entries from given page.
+     * @return list of entries.
      */
     public Chain<List<Entry>> observedEntries(Page page) {
         return new Chain<>(new WykopRequest.Builder()
@@ -200,8 +225,10 @@ public class WykopClient {
     }
 
     /**
+     * Deletes {@link Entry} - status changes to "deleted"
+     *
      * @param entryId given entry's id.
-     * @return Deleted {@link Entry} - status changes to "deleted"
+     * @return deleted entry.
      */
     public Chain<Entry> deleteEntry(int entryId) {
         return new Chain<>(new WykopRequest.Builder()
@@ -211,8 +238,10 @@ public class WykopClient {
     }
 
     /**
+     * Adds {@link Entry}
+     *
      * @param newEntry new entry to be added.
-     * @return Added {@link Entry}
+     * @return added {@link Entry}
      */
     public Chain<Entry> addEntry(NewEntry newEntry) {
         WykopRequest.Builder requestBuilder = new WykopRequest.Builder()
@@ -233,6 +262,8 @@ public class WykopClient {
     }
 
     /**
+     * Modifies {@link Entry}
+     *
      * @param entryId  id of modifying entry.
      * @param newEntry new entry body.
      * @return modified {@link Entry}
@@ -258,6 +289,8 @@ public class WykopClient {
     }
 
     /**
+     * Votes up given {@link Entry}
+     *
      * @param entryId entry's id to vote up.
      * @return nothing.
      * @throws ArchivalContentException when non-existing entryId provided.
@@ -270,6 +303,8 @@ public class WykopClient {
     }
 
     /**
+     * Removes vote from given {@link Entry}
+     *
      * @param entryId entry's id to vote remove.
      * @return nothing.
      * @throws ArchivalContentException when non-existing entryId provided.
@@ -282,8 +317,10 @@ public class WykopClient {
     }
 
     /**
+     * Fetches list of all entry {@link Vote}s
+     *
      * @param entryId entry's id to fetch voters from.
-     * @return List of {@link Vote}s.
+     * @return list of votes.
      */
     public Chain<List<Vote>> entryAllUpvotes(int entryId) {
         return new Chain<>(new WykopRequest.Builder()
@@ -294,8 +331,10 @@ public class WykopClient {
     }
 
     /**
+     * Fetches {@link EntryComment}
+     *
      * @param commentId comment's id.
-     * @return possible {@link EntryComment}
+     * @return possible entry's comment.
      */
     public Chain<Optional<EntryComment>> entryComment(int commentId) {
         return new Chain<>(new WykopRequest.Builder()
@@ -306,9 +345,11 @@ public class WykopClient {
     }
 
     /**
+     * Adds {@link NewEntryComment} to given {@link Entry}
+     *
      * @param entryId         entry's id.
      * @param newEntryComment new comment to be added.
-     * @return Added comment.
+     * @return added comment.
      * @throws ArchivalContentException when non-existing id is provided.
      */
     public Chain<EntryComment> addEntryComment(int entryId, NewEntryComment newEntryComment) {
@@ -330,9 +371,11 @@ public class WykopClient {
     }
 
     /**
+     * Edits entry's comment.
+     *
      * @param commentId       comment's id.
      * @param newEntryComment new comment to be changed.
-     * @return Changed comment.
+     * @return changed comment.
      * @throws UnableToModifyEntryException when provided commentId does not belong to user's comment.
      * @throws ArchivalContentException     when provided commentId does not exist.
      */
@@ -355,8 +398,12 @@ public class WykopClient {
     }
 
     /**
+     * Deletes entry's comment.
+     *
      * @param commentId comment's id.
-     * @return Deleted comment.
+     * @return deleted comment.
+     * @throws ArchivalContentException       when provided commentId does not exist.
+     * @throws UnableToDeleteCommentException when provided comment does not belong to user.
      */
     public Chain<EntryComment> deleteEntryComment(int commentId) {
         return new Chain<>(new io.github.benzwreck.wykop4j.WykopRequest.Builder()
@@ -366,8 +413,11 @@ public class WykopClient {
     }
 
     /**
+     * Votes up entry's comment.
+     *
      * @param commentId comment's id.
      * @return nothing.
+     * @throws ArchivalContentException when provided commentId does not exist.
      */
     public Chain<Void> entryCommentVoteUp(int commentId) {
         return new Chain<>(new WykopRequest.Builder()
@@ -377,8 +427,11 @@ public class WykopClient {
     }
 
     /**
+     * Removes entry's comment vote.
+     *
      * @param commentId comment's id.
      * @return nothing.
+     * @throws ArchivalContentException when provided commentId does not exist.
      */
     public Chain<Void> entryCommentVoteRemove(int commentId) {
         return new Chain<>(new WykopRequest.Builder()
@@ -388,15 +441,19 @@ public class WykopClient {
     }
 
     /**
-     * @return First page of observed comments.
+     * Fetches first page of observed comments.
+     *
+     * @return list of entry's comments.
      */
     public Chain<List<EntryComment>> observedComments() {
         return observedComments(Page.of(1));
     }
 
     /**
+     * Fetches observed comments for a given page. When the list is over, returns empty one.
+     *
      * @param page page number.
-     * @return Given page of observed comments. When the list is over, returns empty one.
+     * @return list of entry's comments.
      */
     public Chain<List<EntryComment>> observedComments(Page page) {
         return new Chain<>(new WykopRequest.Builder()
@@ -407,6 +464,8 @@ public class WykopClient {
     }
 
     /**
+     * Toggles on/off entry favorite.
+     *
      * @param entryId entry's id.
      * @return true - entry favorite toggled on; false - entry favorite toggled off.
      */
@@ -418,9 +477,11 @@ public class WykopClient {
     }
 
     /**
+     * Answers a survey.
+     *
      * @param entryId  id of entry with survey.
      * @param answerId answer's id.
-     * @return Survey with answered question.
+     * @return survey with answered question.
      * @throws ArchivalContentException when non-existent entryId is provided.
      * @throws NiceTryException         when non-existent answerId is provided.
      */
@@ -433,6 +494,8 @@ public class WykopClient {
     }
 
     /**
+     * Toggles on/off entry's comment favorite.
+     *
      * @param entryCommentId id of entry's comment.
      * @return true - comment favorite toggled on; false - comment favorite toggled off.
      * @throws CommentDoesNotExistException when such comment does not exist.
@@ -447,6 +510,8 @@ public class WykopClient {
     //Link hits
 
     /**
+     * Fetches link hits with given option.
+     *
      * @param option type of links to retrieve.
      * @return list of chosen links.
      */
@@ -458,6 +523,8 @@ public class WykopClient {
     }
 
     /**
+     * Fetches link hits for a given month.
+     *
      * @param month month of link's date.
      * @return list of chosen links.
      * @throws DateTimeException when illegal {@link Month} value is passed.
@@ -472,6 +539,8 @@ public class WykopClient {
     }
 
     /**
+     * Fetches link hits for a given year.
+     *
      * @param year year of link's date.
      * @return list of chosen links.
      */
@@ -484,6 +553,8 @@ public class WykopClient {
     }
 
     /**
+     * Fetches link hits for a given month and year.
+     *
      * @param month month of link's date.
      * @param year  year of link's date.
      * @return list of chosen links.
@@ -501,15 +572,19 @@ public class WykopClient {
     //Notifications
 
     /**
-     * @return First page of user's directed notifications.
+     * Fetches first page of user's directed notifications.
+     *
+     * @return list of notifications.
      */
     public Chain<List<Notification>> directedNotifications() {
         return directedNotifications(Page.of(1));
     }
 
     /**
+     * Fetches user's directed notifications for a given page.
+     *
      * @param page page you want to fetch.
-     * @return Given page of user's directed notifications.
+     * @return list of norifications.
      */
     public Chain<List<Notification>> directedNotifications(Page page) {
         return new Chain<>(new WykopRequest.Builder()
@@ -521,7 +596,9 @@ public class WykopClient {
     }
 
     /**
-     * @return user's directed notifications count.
+     * Fetches user's directed notifications count.
+     *
+     * @return number of notifications.
      */
     public Chain<Integer> directedNotificationCount() {
         return new Chain<>(new WykopRequest.Builder()
@@ -530,15 +607,19 @@ public class WykopClient {
     }
 
     /**
-     * @return First page of user's tags notifications.
+     * Fetches first page of user's tags notifications.
+     *
+     * @return list of notifications.
      */
     public Chain<List<Notification>> tagsNotifications() {
         return tagsNotifications(Page.of(1));
     }
 
     /**
+     * Fetches user's tags notifications for a given page.
+     *
      * @param page page you want to fetch.
-     * @return Given page of user's tags notifications.
+     * @return list of notifications.
      */
     public Chain<List<Notification>> tagsNotifications(Page page) {
         return new Chain<>(new WykopRequest.Builder()
@@ -550,7 +631,9 @@ public class WykopClient {
     }
 
     /**
-     * @return user's tags notifications count.
+     * Fetches user's tags notifications count.
+     *
+     * @return number of notifications.
      */
     public Chain<Integer> tagsNotificationCount() {
         return new Chain<>(new WykopRequest.Builder()
@@ -559,19 +642,19 @@ public class WykopClient {
     }
 
     /**
-     * Combines direct notifications and tags notifications.
+     * Fetches fist page of combined direct notifications and tags notifications.
      *
-     * @return First page of all user's notifications.
+     * @return list of notifications.
      */
     public Chain<List<Notification>> allNotifications() {
         return allNotifications(Page.of(1));
     }
 
     /**
-     * Combines direct notifications and tags notifications.
+     * Fetches a given page of combined direct notifications and tags notifications.
      *
      * @param page page you want to fetch.
-     * @return Given page of all user's notifications.
+     * @return list of notifications.
      */
     public Chain<List<Notification>> allNotifications(Page page) {
         return new Chain<>(new WykopRequest.Builder()
@@ -583,7 +666,7 @@ public class WykopClient {
     }
 
     /**
-     * Combines direct notifications and tags notifications count.
+     * Fetches combined direct notifications and tags notifications count.
      *
      * @return total notification count.
      */
@@ -594,7 +677,9 @@ public class WykopClient {
     }
 
     /**
-     * @return nothing but reads all user's notifications.
+     * Reads all user's notifications.
+     *
+     * @return nothing.
      */
     public Chain<Void> readAllNotifications() {
         return new Chain<>(new WykopRequest.Builder()
@@ -603,7 +688,9 @@ public class WykopClient {
     }
 
     /**
-     * @return nothing but reads all user's directed notifications.
+     * Reads all user's directed notifications.
+     *
+     * @return nothing.
      */
     public Chain<Void> readAllDirectedNotifications() {
         return new Chain<>(new WykopRequest.Builder()
@@ -612,7 +699,9 @@ public class WykopClient {
     }
 
     /**
-     * @return nothing but reads all user's tags notifications.
+     * Reads all user's tags notifications.
+     *
+     * @return nothing.
      */
     public Chain<Void> readAllTagsNotifications() {
         return new Chain<>(new WykopRequest.Builder()
@@ -621,8 +710,10 @@ public class WykopClient {
     }
 
     /**
-     * @param notificationId notification' id you'd like to mark as read.
-     * @return nothing, but marks a notification as read.
+     * Marks a notification as read.
+     *
+     * @param notificationId notification's id.
+     * @return nothing.
      */
     public Chain<Void> markNotificationAsRead(long notificationId) {
         return new Chain<>(new WykopRequest.Builder()
@@ -634,6 +725,8 @@ public class WykopClient {
     //Pm
 
     /**
+     * Fetches list of conversations.
+     *
      * @return list of conversation's basic information.
      */
     public Chain<List<ConversationInfo>> conversationsList() {
@@ -645,6 +738,8 @@ public class WykopClient {
     }
 
     /**
+     * Fetches a conversation with given user.
+     *
      * @param login user's login.
      * @return list of messages.
      */
@@ -657,6 +752,8 @@ public class WykopClient {
     }
 
     /**
+     * Sends a message to a given user.
+     *
      * @param login      user's login.
      * @param newMessage message you'd like to send.
      * @return sent message.
@@ -682,6 +779,8 @@ public class WykopClient {
     }
 
     /**
+     * Deletes a conversation with a given user.
+     *
      * @param login user's login.
      * @return true - deleted.
      */
@@ -695,8 +794,10 @@ public class WykopClient {
     //Profile
 
     /**
+     * Fetches user's profile.
+     *
      * @param login user's login.
-     * @return user's profile.
+     * @return possible user's profile.
      */
     public Chain<Optional<FullProfile>> profile(String login) {
         return new Chain<>(new WykopRequest.Builder()
@@ -707,6 +808,8 @@ public class WykopClient {
     }
 
     /**
+     * Fetches all user's actions.
+     *
      * @param login user's login.
      * @return user's actions.
      */
@@ -718,17 +821,21 @@ public class WykopClient {
     }
 
     /**
+     * Fetches first page of links added by user.
+     *
      * @param login user's login.
-     * @return first page of links added by user.
+     * @return list of links.
      */
     public Chain<List<Link>> profileAddedLinks(String login) {
         return profileAddedLinks(login, Page.of(1));
     }
 
     /**
+     * Fetches a given page of links added by user.
+     *
      * @param login user's login.
      * @param page  page.
-     * @return given page of links added by user.
+     * @return list of links.
      */
     public Chain<List<Link>> profileAddedLinks(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
@@ -740,17 +847,21 @@ public class WykopClient {
     }
 
     /**
+     * Fetches first page of links commented by user.
+     *
      * @param login user's login.
-     * @return first page of links commented by user.
+     * @return list of links.
      */
     public Chain<List<Link>> profileCommentedLinks(String login) {
         return profileCommentedLinks(login, Page.of(1));
     }
 
     /**
+     * Fetches given page of links commented by user.
+     *
      * @param login user's login.
      * @param page  page.
-     * @return given page of links commented by user.
+     * @return list of links.
      */
     public Chain<List<Link>> profileCommentedLinks(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
@@ -762,17 +873,21 @@ public class WykopClient {
     }
 
     /**
+     * Fetches first page of links' comments added by user.
+     *
      * @param login user's login.
-     * @return first page of links' comments added by user.
+     * @return list of link's comments.
      */
     public Chain<List<LinkComment>> profileLinksComments(String login) {
         return profileLinksComments(login, Page.of(1));
     }
 
     /**
+     * Fetches given page of links' comments added by user.
+     *
      * @param login user's login.
      * @param page  page.
-     * @return given page of links' comments added by user.
+     * @return list of link's comments.
      */
     public Chain<List<LinkComment>> profileLinksComments(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
@@ -784,17 +899,21 @@ public class WykopClient {
     }
 
     /**
+     * Fetches first page of links published by user.
+     *
      * @param login user's login.
-     * @return first page of links published by user.
+     * @return list of links.
      */
     public Chain<List<Link>> profileLinksPublished(String login) {
         return profileLinksPublished(login, Page.of(1));
     }
 
     /**
+     * Fetches a given page of links published by user.
+     *
      * @param login user's login.
      * @param page  page.
-     * @return given page of links published by user.
+     * @return list of links.
      */
     public Chain<List<Link>> profileLinksPublished(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
@@ -806,17 +925,21 @@ public class WykopClient {
     }
 
     /**
+     * Fetches first page of entries added by user.
+     *
      * @param login user's login.
-     * @return first page of entries added by user.
+     * @return list of entries.
      */
     public Chain<List<Entry>> profileEntries(String login) {
         return profileEntries(login, Page.of(1));
     }
 
     /**
+     * Fetches a given page of entries added by user.
+     *
      * @param login user's login.
      * @param page  page.
-     * @return given page of entries added by user.
+     * @return list of entries.
      */
     public Chain<List<Entry>> profileEntries(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
@@ -828,17 +951,21 @@ public class WykopClient {
     }
 
     /**
+     * Fetches first page of entries commented by user.
+     *
      * @param login user's login.
-     * @return first page of entries commented by user.
+     * @return list of entries.
      */
     public Chain<List<Entry>> profileEntriesCommented(String login) {
         return profileEntriesCommented(login, Page.of(1));
     }
 
     /**
+     * Fetches a given page of entries commented by user.
+     *
      * @param login user's login.
      * @param page  page.
-     * @return given page of entries commented by user.
+     * @return list of entries.
      */
     public Chain<List<Entry>> profileEntriesCommented(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
@@ -850,17 +977,21 @@ public class WykopClient {
     }
 
     /**
+     * Fetches first page of entries' comments by user.
+     *
      * @param login user's login.
-     * @return first page of entries' comments by user.
+     * @return list of entry's comments.
      */
     public Chain<List<EntryComment>> profileEntriesComments(String login) {
         return profileEntriesComments(login, Page.of(1));
     }
 
     /**
+     * Fetches a given page of entries' comments by user.
+     *
      * @param login user's login.
      * @param page  page.
-     * @return given page of entries' comments by user.
+     * @return list of entry's comments.
      */
     public Chain<List<EntryComment>> profileEntriesComments(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
@@ -872,17 +1003,21 @@ public class WykopClient {
     }
 
     /**
+     * Fetches first page of related links added by user.
+     *
      * @param login user's login.
-     * @return first page of related links added by user.
+     * @return list of links.
      */
     public Chain<List<Link>> profileRelatedLinks(String login) {
         return profileRelatedLinks(login, Page.of(1));
     }
 
     /**
+     * Fetches a given page of related links added by user.
+     *
      * @param login user's login.
      * @param page  page.
-     * @return given page of related links added by user.
+     * @return list of links.
      */
     public Chain<List<Link>> profileRelatedLinks(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
@@ -894,17 +1029,21 @@ public class WykopClient {
     }
 
     /**
+     * Fetches first page of users following particular user.
+     *
      * @param login user's login.
-     * @return first page of users following particular user.
+     * @return list of profiles.
      */
     public Chain<List<FullProfile>> profileFollowers(String login) {
         return profileFollowers(login, Page.of(1));
     }
 
     /**
+     * Fetches a given page of users following particular user.
+     *
      * @param login user's login.
      * @param page  page.
-     * @return given page of users following particular user.
+     * @return list of profiles.
      */
     public Chain<List<FullProfile>> profileFollowers(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
@@ -916,17 +1055,21 @@ public class WykopClient {
     }
 
     /**
+     * Fetches first page of users being followed by particular user.
+     *
      * @param login user's login.
-     * @return first page of users being followed by particular user.
+     * @return list of profiles.
      */
     public Chain<List<FullProfile>> profileFollowed(String login) {
         return profileFollowed(login, Page.of(1));
     }
 
     /**
+     * Fetches a given page of users being followed by particular user.
+     *
      * @param login user's login.
      * @param page  page.
-     * @return given page of users being followed by particular user.
+     * @return list of profiles.
      */
     public Chain<List<FullProfile>> profileFollowed(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
@@ -938,17 +1081,21 @@ public class WykopClient {
     }
 
     /**
+     * Fetches first page of user's badges.
+     *
      * @param login user's login.
-     * @return first page of user's badges.
+     * @return list of badges.
      */
     public Chain<List<Badge>> profileBadges(String login) {
         return profileBadges(login, Page.of(1));
     }
 
     /**
+     * Fetches a given page of user's badges.
+     *
      * @param login user's login.
      * @param page  page.
-     * @return given page of user's badges.
+     * @return list of badges.
      */
     public Chain<List<Badge>> profileBadges(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
@@ -960,17 +1107,21 @@ public class WykopClient {
     }
 
     /**
+     * Fetches first page of user's digged links.
+     *
      * @param login user's login.
-     * @return first page of user's digged links.
+     * @return list of links.
      */
     public Chain<List<Link>> profileDiggedLinks(String login) {
         return profileDiggedLinks(login, Page.of(1));
     }
 
     /**
+     * Fetches a given page of user's digged links.
+     *
      * @param login user's login.
      * @param page  page.
-     * @return given page of user's digged links.
+     * @return list of links.
      */
     public Chain<List<Link>> profileDiggedLinks(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
@@ -982,17 +1133,21 @@ public class WykopClient {
     }
 
     /**
+     * Fetches first page of user's buried links.
+     *
      * @param login user's login.
-     * @return first page of user's buried links.
+     * @return list of links.
      */
     public Chain<List<Link>> profileBuriedLinks(String login) {
         return profileBuriedLinks(login, Page.of(1));
     }
 
     /**
+     * Fetches a given page of user's buried links.
+     *
      * @param login user's login.
      * @param page  page.
-     * @return given page of user's buried links.
+     * @return list of links.
      */
     public Chain<List<Link>> profileBuriedLinks(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
@@ -1004,15 +1159,19 @@ public class WykopClient {
     }
 
     /**
-     * @return first page of profiles from user rank.
+     * Fetches first page of profiles from user rank.
+     *
+     * @return list of profiles.
      */
     public Chain<List<FullProfile>> profileRanking() {
         return profileRanking(Page.of(1));
     }
 
     /**
+     * Fetches a given page of profiles from user rank.
+     *
      * @param page page.
-     * @return given page of profiles from user rank.
+     * @return list of profiles.
      */
     public Chain<List<FullProfile>> profileRanking(Page page) {
         return new Chain<>(new WykopRequest.Builder()
@@ -1023,6 +1182,8 @@ public class WykopClient {
     }
 
     /**
+     * Starts observing a user.
+     *
      * @param login user's login.
      * @return interaction status - being observed or blocked.
      * @throws UserCannotObserveThemselfException when you try to observe yourself.
@@ -1035,6 +1196,8 @@ public class WykopClient {
     }
 
     /**
+     * Stops observing a user.
+     *
      * @param login user's login.
      * @return interaction status - being observed or blocked.
      * @throws UserCannotObserveThemselfException when you try to observe yourself.
@@ -1047,6 +1210,8 @@ public class WykopClient {
     }
 
     /**
+     * Starts blocking a user.
+     *
      * @param login user's login.
      * @return interaction status - being observed or blocked.
      * @throws UserCannotObserveThemselfException when you try to observe yourself.
@@ -1059,6 +1224,8 @@ public class WykopClient {
     }
 
     /**
+     * Stops blocking a user.
+     *
      * @param login user's login.
      * @return interaction status - being observed or blocked.
      * @throws UserCannotObserveThemselfException when you try to observe yourself.
@@ -1073,6 +1240,8 @@ public class WykopClient {
     // Terms
 
     /**
+     * Fetches Wykop Terms of Use.
+     *
      * @return terms of use.
      */
     public Chain<Terms> terms() {
@@ -1082,6 +1251,8 @@ public class WykopClient {
     }
 
     /**
+     * Confirms Wykop Terms of Use.
+     *
      * @return confirmation terms status.
      */
     public Chain<Boolean> confirmTerms() {
@@ -1093,17 +1264,21 @@ public class WykopClient {
     // Tags
 
     /**
+     * Fetches first page of actions.
+     *
      * @param tag name of the tag, either with or without '#'.
-     * @return first page of actions.
+     * @return actions.
      */
     public Chain<Actions> tagActions(String tag) {
         return tagActions(tag, Page.of(1));
     }
 
     /**
+     * Fetches a given page of actions.
+     *
      * @param tag  name of the tag, either with or without '#'.
      * @param page page.
-     * @return given page of actions.
+     * @return actions.
      */
     public Chain<Actions> tagActions(String tag, Page page) {
         return new Chain<>(new WykopRequest.Builder()
@@ -1114,17 +1289,21 @@ public class WykopClient {
     }
 
     /**
+     * Fetches a first page of list of links.
+     *
      * @param tag name of the tag, either with or without '#'.
-     * @return first page of list of links.
+     * @return list of links.
      */
     public Chain<List<Link>> tagLinks(String tag) {
         return tagLinks(tag, Page.of(1));
     }
 
     /**
+     * Fetches a given page of list of links.
+     *
      * @param tag  name of the tag, either with or without '#'.
      * @param page page.
-     * @return given page of list of links.
+     * @return list of links.
      */
     public Chain<List<Link>> tagLinks(String tag, Page page) {
         return new Chain<>(new WykopRequest.Builder()
@@ -1136,17 +1315,21 @@ public class WykopClient {
     }
 
     /**
+     * Fetches first page of list of entries.
+     *
      * @param tag name of the tag, either with or without '#'.
-     * @return first page of list of entries.
+     * @return list of entries.
      */
     public Chain<List<Entry>> tagEntries(String tag) {
         return tagEntries(tag, Page.of(1));
     }
 
     /**
+     * Fetches a given page of list of entries.
+     *
      * @param tag  name of the tag, either with or without '#'.
      * @param page page.
-     * @return given page of list of entries.
+     * @return list of entries.
      */
     public Chain<List<Entry>> tagEntries(String tag, Page page) {
         return new Chain<>(new WykopRequest.Builder()
@@ -1158,6 +1341,8 @@ public class WykopClient {
     }
 
     /**
+     * Starts observing a tag.
+     *
      * @param tag tag's name.
      * @return interaction status - being observed or blocked.
      */
@@ -1169,6 +1354,8 @@ public class WykopClient {
     }
 
     /**
+     * Stops observing a tag.
+     *
      * @param tag tag's name.
      * @return interaction status - being observed or blocked.
      */
@@ -1180,6 +1367,8 @@ public class WykopClient {
     }
 
     /**
+     * Starts blocking a tag.
+     *
      * @param tag tag's name.
      * @return interaction status - being observed or blocked.
      */
@@ -1191,6 +1380,8 @@ public class WykopClient {
     }
 
     /**
+     * Stops blocking a tag.
+     *
      * @param tag tag's name.
      * @return interaction status - being observed or blocked.
      */
@@ -1202,7 +1393,7 @@ public class WykopClient {
     }
 
     /**
-     * Enable tag notifications.
+     * Enables tag notifications.
      *
      * @param tag tag's name.
      * @return nothing.
@@ -1216,7 +1407,7 @@ public class WykopClient {
     }
 
     /**
-     * Disable tag notifications.
+     * Disables tag notifications.
      *
      * @param tag tag's name.
      * @return nothing.
@@ -1232,6 +1423,8 @@ public class WykopClient {
     // Suggest
 
     /**
+     * Fetches a tag suggestions.
+     *
      * @param tag tag's name.
      * @return list of tag suggestions.
      */
@@ -1244,6 +1437,8 @@ public class WykopClient {
     }
 
     /**
+     * Fetches a user suggestions.
+     *
      * @param login user's login.
      * @return list of user suggestions.
      */
@@ -1258,19 +1453,19 @@ public class WykopClient {
     // Mywykop
 
     /**
-     * Actions from observed users and tags from MyWykop.
+     * Fetches first page of actions from observed users and tags from MyWykop.
      *
-     * @return first page of list of all actions.
+     * @return actions.
      */
     public Chain<Actions> myWykopIndexActions() {
         return myWykopIndexActions(Page.of(1));
     }
 
     /**
-     * Actions from observed users and tags from MyWykop.
+     * Fetches a given page of actions from observed users and tags from MyWykop.
      *
      * @param page page.
-     * @return given page of list of all actions.
+     * @return actions.
      */
     public Chain<Actions> myWykopIndexActions(Page page) {
         return new Chain<>(new WykopRequest.Builder()
@@ -1280,21 +1475,21 @@ public class WykopClient {
     }
 
     /**
-     * Actions from observed users and tags from MyWykop.
+     * Fetches first page of actions with {@link ActionType} from observed users and tags from MyWykop.
      *
      * @param type type of returning value.
-     * @return first page of list of {@link ActionType} actions.
+     * @return actions.
      */
     public Chain<Actions> myWykopIndexActions(ActionType type) {
         return myWykopIndexActions(type, Page.of(1));
     }
 
     /**
-     * Actions from observed users and tags from MyWykop.
+     * Fetches a given page of actions with {@link ActionType} from observed users and tags from MyWykop.
      *
      * @param type type of returning value.
      * @param page page.
-     * @return given page of list of {@link ActionType} actions.
+     * @return actions.
      */
     public Chain<Actions> myWykopIndexActions(ActionType type, Page page) {
         return new Chain<>(new WykopRequest.Builder()
@@ -1305,19 +1500,19 @@ public class WykopClient {
     }
 
     /**
-     * Actions from MyWykop's observed tags.
+     * Fetches first page of actions from MyWykop's observed tags.
      *
-     * @return first page of list of all actions.
+     * @return actions.
      */
     public Chain<Actions> myWykopTagsActions() {
         return myWykopTagsActions(Page.of(1));
     }
 
     /**
-     * Actions from MyWykop's observed tags.
+     * Fetches a given page of actions from MyWykop's observed tags.
      *
      * @param page page.
-     * @return given page of list of all actions.
+     * @return actions.
      */
     public Chain<Actions> myWykopTagsActions(Page page) {
         return new Chain<>(new WykopRequest.Builder()
@@ -1327,21 +1522,21 @@ public class WykopClient {
     }
 
     /**
-     * Actions from MyWykop's observed tags.
+     * Fetches first page of actions with {@link ActionType} from MyWykop's observed tags.
      *
      * @param type type of returning value.
-     * @return first page of list of {@link ActionType} actions.
+     * @return actions.
      */
     public Chain<Actions> myWykopTagsActions(ActionType type) {
         return myWykopIndexActions(type, Page.of(1));
     }
 
     /**
-     * Actions from MyWykop's observed tags.
+     * Fetches a given page of actions with {@link ActionType} from MyWykop's observed tags.
      *
      * @param type type of returning value.
      * @param page page.
-     * @return given page of list of {@link ActionType} actions.
+     * @return actions.
      */
     public Chain<Actions> myWykopTagsActions(ActionType type, Page page) {
         return new Chain<>(new WykopRequest.Builder()
@@ -1352,19 +1547,19 @@ public class WykopClient {
     }
 
     /**
-     * Actions from MyWykop's observed users.
+     * Fetches first page of actions from MyWykop's observed users.
      *
-     * @return first page of list of all actions.
+     * @return actions.
      */
     public Chain<Actions> myWykopUsersActions() {
         return myWykopUsersActions(Page.of(1));
     }
 
     /**
-     * Actions from MyWykop's observed users.
+     * Fetches a given page of actions from MyWykop's observed users.
      *
      * @param page page.
-     * @return given page of list of all actions.
+     * @return actions.
      */
     public Chain<Actions> myWykopUsersActions(Page page) {
         return new Chain<>(new WykopRequest.Builder()
@@ -1374,21 +1569,21 @@ public class WykopClient {
     }
 
     /**
-     * Actions from MyWykop's observed users.
+     * Fetches first page of actions with {@link ActionType} from MyWykop's observed users.
      *
      * @param type type of returning value.
-     * @return first page of list of {@link ActionType} actions.
+     * @return actions.
      */
     public Chain<Actions> myWykopUsersActions(ActionType type) {
         return myWykopUsersActions(type, Page.of(1));
     }
 
     /**
-     * Actions from MyWykop's observed users.
+     * Fetches a given page of actions with {@link ActionType} from MyWykop's observed users.
      *
      * @param type type of returning value.
      * @param page page.
-     * @return given page of list of {@link ActionType} actions.
+     * @return actions.
      */
     public Chain<Actions> myWykopUsersActions(ActionType type, Page page) {
         return new Chain<>(new WykopRequest.Builder()
@@ -1399,7 +1594,7 @@ public class WykopClient {
     }
 
     /**
-     * Entries from observed users and tags.
+     * Fetches entries from observed users and tags.
      *
      * @return list of entries.
      */
@@ -1408,7 +1603,7 @@ public class WykopClient {
     }
 
     /**
-     * Entries from observed users and tags.
+     * Fetches entries from observed users and tags.
      *
      * @param page page.
      * @return list of entries.
@@ -1422,7 +1617,7 @@ public class WykopClient {
     }
 
     /**
-     * Links from observed users and tags.
+     * Fetches links from observed users and tags.
      *
      * @return list of links.
      */
@@ -1431,7 +1626,7 @@ public class WykopClient {
     }
 
     /**
-     * Links from observed users and tags.
+     * Fetches links from observed users and tags.
      *
      * @param page page.
      * @return list of links.
@@ -1447,34 +1642,42 @@ public class WykopClient {
     // Search
 
     /**
+     * Fetches first page of search results for a given phrase.
+     *
      * @param phrase search phrase.
-     * @return first page of list of links
+     * @return list of links
      */
     public Chain<List<Link>> searchLinks(String phrase) {
         return searchLinks(phrase, Page.of(1));
     }
 
     /**
+     * Fetches a given page of search results for a given phrase.
+     *
      * @param phrase search phrase.
      * @param page   page.
-     * @return given page of list of links.
+     * @return list of links.
      */
     public Chain<List<Link>> searchLinks(String phrase, Page page) {
         return searchLinks(new LinkSearchQuery.Builder().phrase(phrase).build(), page);
     }
 
     /**
+     * Fetches first page of search results for a given query.
+     *
      * @param linkSearchQuery search query.
-     * @return first page of list of links.
+     * @return list of links.
      */
     public Chain<List<Link>> searchLinks(LinkSearchQuery linkSearchQuery) {
         return searchLinks(linkSearchQuery, Page.of(1));
     }
 
     /**
+     * Fetches a given page of search results for a given query.
+     *
      * @param linkSearchQuery search query.
      * @param page            page.
-     * @return given page of list of links.
+     * @return list of links.
      */
     public Chain<List<Link>> searchLinks(LinkSearchQuery linkSearchQuery, Page page) {
         WykopRequest.Builder builder = new WykopRequest.Builder()
@@ -1490,34 +1693,42 @@ public class WykopClient {
     }
 
     /**
+     * Fetches first page of entry search results for a given phrase.
+     *
      * @param phrase search phrase.
-     * @return first page of list of entries.
+     * @return list of entries.
      */
     public Chain<List<Entry>> searchEntries(String phrase) {
         return searchEntries(phrase, Page.of(1));
     }
 
     /**
+     * Fetches a given page of entry search results for a given phrase.
+     *
      * @param phrase search phrase.
      * @param page   page.
-     * @return given page of list of entries.
+     * @return list of entries.
      */
     public Chain<List<Entry>> searchEntries(String phrase, Page page) {
         return searchEntries(new EntrySearchQuery.Builder().phrase(phrase).build(), page);
     }
 
     /**
+     * Fetches first page of entry search results for a given query.
+     *
      * @param entrySearchQuery search query.
-     * @return first page of list of entries.
+     * @return list of entries.
      */
     public Chain<List<Entry>> searchEntries(EntrySearchQuery entrySearchQuery) {
         return searchEntries(entrySearchQuery, Page.of(1));
     }
 
     /**
+     * Fetches a given page of entry search results for a given query.
+     *
      * @param entrySearchQuery search query.
      * @param page             page.
-     * @return given page of list of entries.
+     * @return list of entries.
      */
     public Chain<List<Entry>> searchEntries(EntrySearchQuery entrySearchQuery, Page page) {
         WykopRequest.Builder builder = new WykopRequest.Builder()
@@ -1530,8 +1741,10 @@ public class WykopClient {
     }
 
     /**
+     * Fetches first page of profile search results for a given user.
+     *
      * @param login login.
-     * @return list of searched profiles.
+     * @return list of profiles.
      */
     public Chain<List<SimpleProfile>> searchProfiles(String login) {
         return new Chain<>(new WykopRequest.Builder()
@@ -1558,6 +1771,8 @@ public class WykopClient {
     }
 
     /**
+     * Prepares an image for a link.
+     *
      * @param key {@link LinkDraft}'s key.
      * @return possible {@link PreparedImage}.
      */
@@ -1595,15 +1810,19 @@ public class WykopClient {
     // Links
 
     /**
-     * @return first page of promoted links.
+     * Fetches first page of promoted links.
+     *
+     * @return list of links.
      */
     public Chain<List<Link>> promotedLinks() {
         return promotedLinks(Page.of(1));
     }
 
     /**
+     * Fetches a given page of promoted links.
+     *
      * @param page page.
-     * @return given page of promoted links.
+     * @return list of links.
      */
     public Chain<List<Link>> promotedLinks(Page page) {
         return new Chain<>(new WykopRequest.Builder()
@@ -1614,15 +1833,19 @@ public class WykopClient {
     }
 
     /**
-     * @return first page of upcoming links.
+     * Fetches first page of upcoming links.
+     *
+     * @return list of links.
      */
     public Chain<List<Link>> upcomingLinks() {
         return upcomingLinks(Page.of(1));
     }
 
     /**
+     * Fetches a given page of upcoming links.
+     *
      * @param page page.
-     * @return given page of upcoming links.
+     * @return list of links.
      */
     public Chain<List<Link>> upcomingLinks(Page page) {
         return new Chain<>(new WykopRequest.Builder()
@@ -1633,15 +1856,19 @@ public class WykopClient {
     }
 
     /**
-     * @return first page of favorite links.
+     * Fetches first page of favorite links.
+     *
+     * @return list of links.
      */
     public Chain<List<Link>> favoriteLinks() {
         return favoriteLinks(Page.of(1));
     }
 
     /**
+     * Fetches a given page of favorite links.
+     *
      * @param page page.
-     * @return given page of favorite links.
+     * @return list of links
      */
     public Chain<List<Link>> favoriteLinks(Page page) {
         return new Chain<>(new WykopRequest.Builder()
@@ -1652,6 +1879,8 @@ public class WykopClient {
     }
 
     /**
+     * Fetches a link without comments.
+     *
      * @param linkId link's id.
      * @return possible link without comments.
      */
@@ -1664,6 +1893,8 @@ public class WykopClient {
     }
 
     /**
+     * Fetches a link with comments.
+     *
      * @param linkId link's id.
      * @return possible link with comments.
      */
@@ -1719,8 +1950,10 @@ public class WykopClient {
     }
 
     /**
+     * Fetches all upvotes for a given link.
+     *
      * @param linkId link's id.
-     * @return list of upvotes for a given link.
+     * @return list of upvotes.
      */
     public Chain<List<Vote>> linkAllUpvotes(int linkId) {
         return new Chain<>(new WykopRequest.Builder()
@@ -1731,8 +1964,10 @@ public class WykopClient {
     }
 
     /**
+     * Fetches all downvotes for a given link.
+     *
      * @param linkId link's id.
-     * @return list of downvotes for a given link.
+     * @return list of downvotes.
      */
     public Chain<List<Vote>> linkAllDownvotes(int linkId) {
         return new Chain<>(new WykopRequest.Builder()
@@ -1743,8 +1978,10 @@ public class WykopClient {
     }
 
     /**
+     * Fetches top links from a given year.
+     *
      * @param year year.
-     * @return list of top links from given year.
+     * @return list of links.
      */
     public Chain<List<Link>> linkTop(Year year) {
         return new Chain<>(new WykopRequest.Builder()
@@ -1755,9 +1992,11 @@ public class WykopClient {
     }
 
     /**
+     * Fetches top links from a given year and month.
+     *
      * @param year  year.
      * @param month month.
-     * @return list of top links from a given year and month.
+     * @return list of links.
      */
     public Chain<List<Link>> linkTop(Year year, Month month) {
         return new Chain<>(new WykopRequest.Builder()
@@ -1769,6 +2008,8 @@ public class WykopClient {
     }
 
     /**
+     * Fetches link's comments sorted by the best.
+     *
      * @param linkId link's id.
      * @return list of link's comments
      */
@@ -1777,6 +2018,8 @@ public class WykopClient {
     }
 
     /**
+     * Fetches link's comments with a given sorting.
+     *
      * @param linkId              link's id.
      * @param linkCommentsSorting type of sorting.
      * @return list of link's comments
