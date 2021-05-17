@@ -2085,7 +2085,7 @@ public class WykopClient {
 
         public WykopClient build() {
             if (applicationCredentials == null)
-                throw new IllegalStateException("Application Credentials must be provided.");
+                throw new IllegalArgumentException("Application Credentials must be provided.");
             WykopHttpClient client = new WykopHttpClient(userCredentials, applicationCredentials);
             WykopObjectMapper wykopObjectMapper = new WykopObjectMapper();
             WykopConnect wykopConnect = new WykopConnect(wykopObjectMapper, applicationCredentials);

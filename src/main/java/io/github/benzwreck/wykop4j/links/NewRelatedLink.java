@@ -59,7 +59,7 @@ public class NewRelatedLink {
 
         public NewRelatedLink build() {
             if (title == null || url == null)
-                throw new IllegalStateException("Title and url must be provided.");
+                throw new IllegalArgumentException("Title and url must be provided.");
             return new NewRelatedLink(title, url, isAdultOnly);
         }
     }
