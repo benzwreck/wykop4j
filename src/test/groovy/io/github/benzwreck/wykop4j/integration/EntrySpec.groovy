@@ -371,6 +371,20 @@ class EntrySpec extends Specification {
         }
     }
 
+    def "should throw an exception when trying to vote up entry where comment id does not exist"(){
+        when:
+        wykop.entryCommentVoteUp(nonexistentId).execute()
+        then:
+        thrown ArchivalContentException
+    }
+
+    def "should throw an exception when trying to remove entry's vote where comment id does not exist"(){
+        when:
+        wykop.entryCommentVoteRemove(nonexistentId).execute()
+        then:
+        thrown ArchivalContentException
+    }
+
     def "should return observed comments"() {
         when:
         def observedComments = wykop.observedComments().execute()
