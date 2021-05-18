@@ -3,6 +3,10 @@ package io.github.benzwreck.wykop4j.conversations;
 import java.io.File;
 import java.util.Optional;
 
+/**
+ * This class contains a recipe for a message that will be sent to a user.<br>
+ * To create a new class use {@link NewMessage.Builder}.
+ */
 public class NewMessage {
     private final String body;
     private final String urlEmbed;
@@ -18,22 +22,37 @@ public class NewMessage {
         this.adultOnly = adultOnly;
     }
 
+    /**
+     * Gets possible body.
+     */
     public Optional<String> body() {
         return Optional.ofNullable(body);
     }
 
+    /**
+     * Gets possible url to embed media.
+     */
     public Optional<String> urlEmbed() {
         return Optional.ofNullable(urlEmbed);
     }
 
+    /**
+     * Gets possible file of embed media.
+     */
     public Optional<File> fileEmbed() {
         return Optional.ofNullable(fileEmbed);
     }
 
+    /**
+     * Gets possible shown file name of embed media.
+     */
     public Optional<String> shownFileName() {
         return Optional.ofNullable(shownFileName);
     }
 
+    /**
+     * Gets the value if embed media is adult only.
+     */
     public boolean adultOnly() {
         return adultOnly;
     }
