@@ -1,5 +1,8 @@
 package io.github.benzwreck.wykop4j.login;
 
+/**
+ * This class contains login data provided from Wykop Connect.
+ */
 public class WykopConnectLoginData {
     private final String appkey;
     private final String login;
@@ -13,18 +16,30 @@ public class WykopConnectLoginData {
         this.sign = sign;
     }
 
+    /**
+     * Gets application key.
+     */
     public String appkey() {
         return appkey;
     }
 
+    /**
+     * Gets user's login.
+     */
     public String login() {
         return login;
     }
 
+    /**
+     * Gets user's token.
+     */
     public String token() {
         return token;
     }
 
+    /**
+     * Gets response sign.
+     */
     public String sign() {
         return sign;
     }
