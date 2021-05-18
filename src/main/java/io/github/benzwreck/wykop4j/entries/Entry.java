@@ -9,6 +9,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * This class represents Microblog's single entry.
+ */
 public class Entry {
     private final Integer id;
     private final LocalDateTime date;
@@ -52,129 +55,132 @@ public class Entry {
     }
 
     /**
-     * @return id
+     * Gets entry's id.
      */
     public Integer id() {
         return id;
     }
 
     /**
-     * @return creation date.
+     * Gets entry's creation date.
      */
     public LocalDateTime date() {
         return date;
     }
 
     /**
-     * @return possible body.
+     * Gets possible entry's body.
      */
     public Optional<String> body() {
         return Optional.ofNullable(body);
     }
 
     /**
-     * @return is blocked by logged in user.
+     * Returns if entry is blocked by logged in user.
      */
     public Boolean blocked() {
         return blocked;
     }
 
     /**
-     * @return is favorited by logged in user.
+     * Returns if entry is favorited by logged in user.
      */
     public Boolean favorite() {
         return favorite;
     }
 
     /**
-     * @return number of votes.
+     * Gets entry's vote count.
      */
     public Integer voteCount() {
         return voteCount;
     }
 
     /**
-     * @return number of comments.
+     * Get entry's comments count.
      */
     public Integer commentsCount() {
         return commentsCount;
     }
 
+
+    // TODO: Entry -> EntryWithComments and Entry
+
     /**
+     * Gets list of entry's comments.<br>
+     * <p>
      * If {@code Entry::commentsCount} > 0, you should use {@code WykopClient::entry}
      * with this entry's id to get those comments.
-     *
-     * @return possible list of comments.
      */
     public Optional<List<EntryComment>> comments() {
-        return Optional.ofNullable(Collections.unmodifiableList(comments));
+        return Optional.of(Collections.unmodifiableList(comments));
     }
 
     /**
-     * @return status.
+     * Gets entry's status.
      */
     public String status() {
         return status;
     }
 
     /**
-     * @return possible {@link Embed} file.
+     * Gets possible entry's {@link Embed} media.
      */
     public Optional<Embed> embed() {
         return Optional.ofNullable(embed);
     }
 
     /**
-     * @return current user's vote.
+     * Gets entry's current user's vote.
      */
     public UserVote userVote() {
         return userVote;
     }
 
     /**
-     * @return possible application name via which entry was sent.
+     * Gets possible application name used to create this entry.
      */
     public Optional<String> app() {
         return Optional.ofNullable(app);
     }
 
     /**
-     * @return author's {@link SimpleProfile}.
+     * Gets entry's author's {@link SimpleProfile}.
      */
     public SimpleProfile author() {
         return author;
     }
 
     /**
-     * @return url to violation form.
+     * Gets possible entry's url to violation form.
      */
     public Optional<String> violationUrl() {
         return Optional.ofNullable(violationUrl);
     }
 
     /**
-     * @return original body.
+     * Gets entry's original body.
      */
     public String original() {
         return original;
     }
 
     /**
-     * @return url.
+     * Gets entry's url.
      */
     public String url() {
         return url;
     }
 
     /**
-     * @return possible {@link Survey}
+     * Gets possible entry's {@link Survey}
      */
     public Optional<Survey> survey() {
         return Optional.ofNullable(survey);
     }
 
     /**
-     * @return if user can comment this entry.
+     * Returns if user can comment this entry.
      */
     public Boolean canComment() {
         return canComment;

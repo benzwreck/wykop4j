@@ -3,6 +3,10 @@ package io.github.benzwreck.wykop4j.entries;
 import java.io.File;
 import java.util.Optional;
 
+/**
+ * This class contains a recipe far a new entry that will be posted on microblog.<br>
+ * To create a new class use {@link NewEntry.Builder}.
+ */
 public class NewEntry {
     private final String body;
     private final String urlEmbed;
@@ -18,22 +22,37 @@ public class NewEntry {
         this.isAdult = isAdult;
     }
 
+    /**
+     * Gets possible new entry's body.
+     */
     public Optional<String> body() {
         return Optional.ofNullable(body);
     }
 
+    /**
+     * Gets possible new entry's embed's url.
+     */
     public Optional<String> urlEmbed() {
         return Optional.ofNullable(urlEmbed);
     }
 
+    /**
+     * Gets possible new entry's embed's file.
+     */
     public Optional<File> fileEmbed() {
         return Optional.ofNullable(fileEmbed);
     }
 
+    /**
+     * Gets possible new entry's embed's shown file name.
+     */
     public Optional<String> shownFileName() {
         return Optional.ofNullable(shownFileName);
     }
 
+    /**
+     * Returns if new entry's embed is adult only.
+     */
     public boolean adultOnly() {
         return isAdult;
     }

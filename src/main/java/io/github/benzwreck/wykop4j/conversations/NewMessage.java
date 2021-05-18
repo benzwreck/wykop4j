@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.Optional;
 
 /**
- * This class contains a recipe for a message that will be sent to a user.<br>
+ * This class contains a recipe for a new message that will be sent to a user.<br>
  * To create a new class use {@link NewMessage.Builder}.
  */
 public class NewMessage {
@@ -51,7 +51,7 @@ public class NewMessage {
     }
 
     /**
-     * Gets the value if embed media is adult only.
+     * Returns if embed is adult only.
      */
     public boolean adultOnly() {
         return adultOnly;
