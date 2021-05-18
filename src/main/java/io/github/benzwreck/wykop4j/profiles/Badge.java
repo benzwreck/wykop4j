@@ -2,6 +2,9 @@ package io.github.benzwreck.wykop4j.profiles;
 
 import java.time.LocalDateTime;
 
+/**
+ * This class represents a badge which can be obtained by user.
+ */
 public class Badge {
     private final String name;
     private final int level;
@@ -18,35 +21,35 @@ public class Badge {
     }
 
     /**
-     * @return badge's name.
+     * Gets badge's name.
      */
     public String name() {
         return name;
     }
 
     /**
-     * @return badge's level.
+     * Gets badge's level.
      */
     public int level() {
         return level;
     }
 
     /**
-     * @return badge's assign date.
+     * Gets badge's assign date and time.
      */
     public LocalDateTime date() {
         return date;
     }
 
     /**
-     * @return url to badge's icon.
+     * Gets url to badge's icon.
      */
     public String icon() {
         return icon;
     }
 
     /**
-     * @return badge's description.
+     * Gets badge's description.
      */
     public String description() {
         return description;

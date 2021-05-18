@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 /**
- * Extended information about profile.
+ * This class contains extended information about profile.
  */
 public class FullProfile {
     private final String login;
@@ -72,210 +72,210 @@ public class FullProfile {
     }
 
     /**
-     * @return user's login.
+     * Gets user's login.
      */
     public String login() {
         return login;
     }
 
     /**
-     * @return user's color.
+     * Gets user's color.
      */
     public Color color() {
         return color;
     }
 
     /**
-     * @return possible user's sex. Sometimes it's not defined - no stripe under user's avatar.
+     * Gets possible user's sex. Sometimes it's not defined - no stripe under user's avatar.
      */
     public Optional<Sex> sex() {
         return Optional.ofNullable(sex);
     }
 
     /**
-     * @return url to user's avatar.
+     * Gets url to user's avatar.
      */
     public String avatar() {
         return avatar;
     }
 
     /**
-     * @return amount of user's followers.
+     * Gets amount of user's followers.
      */
     public int followers() {
         return followers;
     }
 
     /**
-     * @return possible user's name.
+     * Gets possible user's name.
      */
     public Optional<String> name() {
         return Optional.ofNullable(name);
     }
 
     /**
-     * @return possible user's city.
+     * Gets possible user's city.
      */
     public Optional<String> city() {
         return Optional.ofNullable(city);
     }
 
     /**
-     * @return user's sign up date.
+     * Gets user's sign up date and time.
      */
     public LocalDateTime signupAt() {
         return signupAt;
     }
 
     /**
-     * @return possible url to user's background image.
+     * Gets possible url to user's background image.
      */
     public Optional<String> background() {
         return Optional.ofNullable(background);
     }
 
     /**
-     * @return true - verified, false - not verified.
+     * Returns if profile is verified.
      */
     public boolean isVerified() {
         return isVerified;
     }
 
     /**
-     * @return true - observed by current user, false - not observed.
+     * Returns if profile is observed by current user.
      */
     public boolean isObserved() {
         return isObserved;
     }
 
     /**
-     * @return true - blocked by current user, false - not blocked.
+     * Returns if profile is blocked by current user.
      */
     public boolean isBlocked() {
         return isBlocked;
     }
 
     /**
-     * @return possible user's email.
+     * Gets possible user's email.
      */
     public Optional<String> email() {
         return Optional.ofNullable(publicEmail);
     }
 
     /**
-     * @return possible user's about note.
+     * Gets possible user's about note.
      */
     public Optional<String> about() {
         return Optional.ofNullable(about);
     }
 
     /**
-     * @return possible user's website.
+     * Gets possible user's website.
      */
     public Optional<String> www() {
         return Optional.ofNullable(www);
     }
 
     /**
-     * @return possible user's jabber.
+     * Gets possible user's jabber.
      */
     public Optional<String> jabber() {
         return Optional.ofNullable(jabber);
     }
 
     /**
-     * @return possible user's gg number.
+     * Gets possible user's gg number.
      */
     public Optional<String> gg() {
         return Optional.ofNullable(gg);
     }
 
     /**
-     * @return possible user's facebook account url.
+     * Gets possible user's facebook account url.
      */
     public Optional<String> facebook() {
         return Optional.ofNullable(facebook);
     }
 
     /**
-     * @return possible user's twitter account url.
+     * Gets possible user's twitter account url.
      */
     public Optional<String> twitter() {
         return Optional.ofNullable(twitter);
     }
 
     /**
-     * @return possible user's instagram url.
+     * Gets possible user's instagram url.
      */
     public Optional<String> instagram() {
         return Optional.ofNullable(instagram);
     }
 
     /**
-     * @return amount of links added by user.
+     * Gets amount of links added by user.
      */
     public int linksAddedCount() {
         return linksAddedCount;
     }
 
     /**
-     * @return amount of links published by user.
+     * Gets amount of links published by user.
      */
     public int linksPublishedCount() {
         return linksPublishedCount;
     }
 
     /**
-     * @return amount of user's comments.
+     * Gets amount of user's comments.
      */
     public int commentsCount() {
         return commentsCount;
     }
 
     /**
-     * @return user's rank.
+     * Gets user's rank.
      */
     public int rank() {
         return rank;
     }
 
     /**
-     * @return amount of people following user.
+     * Gets amount of people following user.
      */
     public int following() {
         return following;
     }
 
     /**
-     * @return amount of user's entries.
+     * Gets amount of user's entries.
      */
     public int entries() {
         return entries;
     }
 
     /**
-     * @return amount of user's entries' comments
+     * Gets amount of user's entries' comments
      */
     public int entriesComments() {
         return entriesComments;
     }
 
     /**
-     * @return amount of user's digged links.
+     * Gets amount of user's digged links.
      */
     public int diggs() {
         return diggs;
     }
 
     /**
-     * @return amount of user's buried links.
+     * Gets amount of user's buried links.
      */
     public int buries() {
         return buries;
     }
 
     /**
-     * @return user's violation url.
+     * Gets user's violation url.
      */
     public String violationUrl() {
         return violationUrl;
