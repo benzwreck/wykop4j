@@ -1,5 +1,8 @@
 package io.github.benzwreck.wykop4j.media;
 
+/**
+ * This class represents an embed media. Holds data for images, videos, gifs etc.
+ */
 public class Embed {
     private final String type;
     private final String url;
@@ -22,56 +25,56 @@ public class Embed {
     }
 
     /**
-     * @return type of file. E.g. "image", "video"
+     * Gets type of file. E.g. "image", "video"
      */
     public String type() {
         return type;
     }
 
     /**
-     * @return url to media source.
+     * Gets url to media source.
      */
     public String url() {
         return url;
     }
 
     /**
-     * @return original source content.
+     * Gets original source content.
      */
     public String source() {
         return source;
     }
 
     /**
-     * @return url to media preview.
+     * Gets url to media preview.
      */
     public String preview() {
         return preview;
     }
 
     /**
-     * @return is adult only.
+     * Returns if content is adult only.
      */
     public Boolean plus18() {
         return plus18;
     }
 
     /**
-     * @return size of image.
+     * Gets size of posted media.
      */
     public String size() {
         return size;
     }
 
     /**
-     * @return is animated.
+     * Returns if content is animated.
      */
     public Boolean animated() {
         return animated;
     }
 
     /**
-     * @return image height to width ratio.
+     * Gets image height to width ratio.
      */
     public Float ratio() {
         return ratio;
