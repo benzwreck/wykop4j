@@ -52,7 +52,6 @@ import io.github.benzwreck.wykop4j.shared.Vote;
 import io.github.benzwreck.wykop4j.suggest.TagSuggestion;
 import io.github.benzwreck.wykop4j.terms.Terms;
 
-import java.io.File;
 import java.net.URL;
 import java.time.DateTimeException;
 import java.time.Month;
@@ -249,15 +248,10 @@ public class WykopClient {
                 .postParam("adultmedia", String.valueOf(newEntry.adultOnly()));
         newEntry.body().ifPresent(body -> requestBuilder.postParam("body", body));
         newEntry.urlEmbed().ifPresent(url -> requestBuilder.postParam("embed", url));
-        Optional<File> fileEmbed = newEntry.fileEmbed();
-        if (fileEmbed.isPresent()) {
-            Optional<String> shownFileName = newEntry.shownFileName();
-            if (shownFileName.isPresent()) {
-                requestBuilder.file(fileEmbed.get(), shownFileName.get());
-            } else {
-                requestBuilder.file(fileEmbed.get());
-            }
-        }
+        newEntry.fileEmbed().ifPresent(file ->
+                newEntry.shownFileName().ifPresentOrElse(shownFileName ->
+                                requestBuilder.file(file, shownFileName),
+                        () -> requestBuilder.file(file)));
         return new Chain<>(requestBuilder.build(), Entry.class);
     }
 
@@ -276,15 +270,10 @@ public class WykopClient {
                 .postParam("adultmedia", String.valueOf(newEntry.adultOnly()));
         newEntry.body().ifPresent(body -> requestBuilder.postParam("body", body));
         newEntry.urlEmbed().ifPresent(url -> requestBuilder.postParam("embed", url));
-        Optional<File> fileEmbed = newEntry.fileEmbed();
-        if (fileEmbed.isPresent()) {
-            Optional<String> shownFileName = newEntry.shownFileName();
-            if (shownFileName.isPresent()) {
-                requestBuilder.file(fileEmbed.get(), shownFileName.get());
-            } else {
-                requestBuilder.file(fileEmbed.get());
-            }
-        }
+        newEntry.fileEmbed().ifPresent(file ->
+                newEntry.shownFileName().ifPresentOrElse(shownFileName ->
+                                requestBuilder.file(file, shownFileName),
+                        () -> requestBuilder.file(file)));
         return new Chain<>(requestBuilder.build(), Entry.class);
     }
 
@@ -358,15 +347,10 @@ public class WykopClient {
                 .apiParam("entry_id", String.valueOf(entryId));
         newEntryComment.body().ifPresent(body -> requestBuilder.postParam("body", body));
         newEntryComment.urlEmbed().ifPresent(url -> requestBuilder.postParam("embed", url));
-        Optional<File> fileEmbed = newEntryComment.fileEmbed();
-        if (fileEmbed.isPresent()) {
-            Optional<String> shownFileName = newEntryComment.shownFileName();
-            if (shownFileName.isPresent()) {
-                requestBuilder.file(fileEmbed.get(), shownFileName.get());
-            } else {
-                requestBuilder.file(fileEmbed.get());
-            }
-        }
+        newEntryComment.fileEmbed().ifPresent(file ->
+                newEntryComment.shownFileName().ifPresentOrElse(shownFileName ->
+                                requestBuilder.file(file, shownFileName),
+                        () -> requestBuilder.file(file)));
         return new Chain<>(requestBuilder.build(), EntryComment.class);
     }
 
@@ -385,15 +369,10 @@ public class WykopClient {
                 .apiParam("comment_id", String.valueOf(commentId));
         newEntryComment.body().ifPresent(body -> requestBuilder.postParam("body", body));
         newEntryComment.urlEmbed().ifPresent(url -> requestBuilder.postParam("embed", url));
-        Optional<File> fileEmbed = newEntryComment.fileEmbed();
-        if (fileEmbed.isPresent()) {
-            Optional<String> shownFileName = newEntryComment.shownFileName();
-            if (shownFileName.isPresent()) {
-                requestBuilder.file(fileEmbed.get(), shownFileName.get());
-            } else {
-                requestBuilder.file(fileEmbed.get());
-            }
-        }
+        newEntryComment.fileEmbed().ifPresent(file ->
+                newEntryComment.shownFileName().ifPresentOrElse(shownFileName ->
+                                requestBuilder.file(file, shownFileName),
+                        () -> requestBuilder.file(file)));
         return new Chain<>(requestBuilder.build(), EntryComment.class);
     }
 
@@ -766,15 +745,10 @@ public class WykopClient {
                 .apiParam("receiver", login);
         newMessage.body().ifPresent(body -> builder.postParam("body", body));
         newMessage.urlEmbed().ifPresent(urlEmbed -> builder.postParam("embed", urlEmbed));
-        Optional<File> fileEmbed = newMessage.fileEmbed();
-        if (fileEmbed.isPresent()) {
-            Optional<String> shownFileName = newMessage.shownFileName();
-            if (shownFileName.isPresent()) {
-                builder.file(fileEmbed.get(), shownFileName.get());
-            } else {
-                builder.file(fileEmbed.get());
-            }
-        }
+        newMessage.fileEmbed().ifPresent(file ->
+                newMessage.shownFileName().ifPresentOrElse(shownFileName ->
+                                builder.file(file, shownFileName),
+                        () -> builder.file(file)));
         return new Chain<>(builder.build(), Message.class);
     }
 
@@ -2094,9 +2068,10 @@ public class WykopClient {
                 .apiParam("link", String.valueOf(linkId));
         newLinkComment.body().ifPresent(body -> builder.postParam("body", body));
         newLinkComment.urlEmbed().ifPresent(urlEmbed -> builder.postParam("embed", urlEmbed));
-        newLinkComment.shownFileName().ifPresentOrElse(shownFileName ->
-                        newLinkComment.fileEmbed().ifPresent(file -> builder.file(file, shownFileName)),
-                () -> newLinkComment.fileEmbed().ifPresent(builder::file));
+        newLinkComment.fileEmbed().ifPresent(file ->
+                newLinkComment.shownFileName().ifPresentOrElse(shownFileName ->
+                                builder.file(file, shownFileName),
+                        () -> builder.file(file)));
         return new Chain<>(builder.build(), LinkComment.class);
     }
 
@@ -2115,10 +2090,10 @@ public class WykopClient {
                 .apiParam("link", String.valueOf(linkId));
         newLinkComment.body().ifPresent(body -> builder.postParam("body", body));
         newLinkComment.urlEmbed().ifPresent(urlEmbed -> builder.postParam("embed", urlEmbed));
-        newLinkComment.shownFileName().ifPresentOrElse(shownFileName ->
-                        newLinkComment.fileEmbed().ifPresent(file -> builder.file(file, shownFileName)),
-                () -> newLinkComment.fileEmbed().ifPresent(builder::file));
-
+        newLinkComment.fileEmbed().ifPresent(file ->
+                newLinkComment.shownFileName().ifPresentOrElse(shownFileName ->
+                                builder.file(file, shownFileName),
+                        () -> builder.file(file)));
         return new Chain<>(builder.build(), LinkComment.class);
     }
 
@@ -2140,9 +2115,10 @@ public class WykopClient {
                 .apiParam("comment_id", String.valueOf(linkCommentId));
         newLinkComment.body().ifPresent(body -> builder.postParam("body", body));
         newLinkComment.urlEmbed().ifPresent(urlEmbed -> builder.postParam("embed", urlEmbed));
-        newLinkComment.shownFileName().ifPresentOrElse(shownFileName ->
-                        newLinkComment.fileEmbed().ifPresent(file -> builder.file(file, shownFileName)),
-                () -> newLinkComment.fileEmbed().ifPresent(builder::file));
+        newLinkComment.fileEmbed().ifPresent(file ->
+                newLinkComment.shownFileName().ifPresentOrElse(shownFileName ->
+                                builder.file(file, shownFileName),
+                        () -> builder.file(file)));
         return new Chain<>(builder.build(), LinkComment.class);
     }
 
