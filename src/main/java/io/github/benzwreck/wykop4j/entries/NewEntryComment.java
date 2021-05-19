@@ -3,6 +3,10 @@ package io.github.benzwreck.wykop4j.entries;
 import java.io.File;
 import java.util.Optional;
 
+/**
+ * This class contains a recipe for a new entry comment.<br>
+ * To create a new class use {@link NewEntryComment.Builder}.
+ */
 public class NewEntryComment {
     private final String body;
     private final String urlEmbed;

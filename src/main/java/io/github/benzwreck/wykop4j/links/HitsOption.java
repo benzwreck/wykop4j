@@ -1,5 +1,8 @@
 package io.github.benzwreck.wykop4j.links;
 
+/**
+ * This class contains available Hit options.
+ */
 public enum HitsOption {
     POPULAR("Popular"),
     DAY("Day"),

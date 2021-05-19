@@ -1,5 +1,8 @@
 package io.github.benzwreck.wykop4j.links;
 
+/**
+ * This class represents an image of new link.
+ */
 public class PreparedImage {
     private final String key;
     private final String type;
@@ -13,18 +16,30 @@ public class PreparedImage {
         this.sourceUrl = sourceUrl;
     }
 
+    /**
+     * Gets image's key.
+     */
     public String key() {
         return key;
     }
 
+    /**
+     * Gets image's type.
+     */
     public String type() {
         return type;
     }
 
+    /**
+     * Gets image's preview url.
+     */
     public String previewUrl() {
         return previewUrl;
     }
 
+    /**
+     * Gets image's source url.
+     */
     public String sourceUrl() {
         return sourceUrl;
     }

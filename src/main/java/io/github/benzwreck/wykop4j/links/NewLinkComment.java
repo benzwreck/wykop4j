@@ -3,6 +3,11 @@ package io.github.benzwreck.wykop4j.links;
 import java.io.File;
 import java.util.Optional;
 
+/**
+ * This class contains a recipe for a new link comment.<br>
+ * All fields except photoKey must be given to create {@link NewLinkComment}.
+ * To create a new class use {@link NewLinkComment.Builder}.
+ */
 public class NewLinkComment {
     private final String body;
     private final String urlEmbed;
@@ -16,18 +21,30 @@ public class NewLinkComment {
         this.shownFileName = shownFileName;
     }
 
+    /**
+     * Gets possible new link's body.
+     */
     public Optional<String> body() {
         return Optional.ofNullable(body);
     }
 
+    /**
+     * Gets possible new link's urls to embed media.
+     */
     public Optional<String> urlEmbed() {
         return Optional.ofNullable(urlEmbed);
     }
 
+    /**
+     * Gets possible new link's file of embed media.
+     */
     public Optional<File> fileEmbed() {
         return Optional.ofNullable(fileEmbed);
     }
 
+    /**
+     * Gets possible new link's shown file name of embed media.
+     */
     public Optional<String> shownFileName() {
         return Optional.ofNullable(shownFileName);
     }

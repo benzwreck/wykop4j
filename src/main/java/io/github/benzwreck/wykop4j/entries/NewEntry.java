@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.Optional;
 
 /**
- * This class contains a recipe far a new entry that will be posted on microblog.<br>
+ * This class contains a recipe for a new entry.<br>
  * To create a new class use {@link NewEntry.Builder}.
  */
 public class NewEntry {
