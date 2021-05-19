@@ -1,19 +1,19 @@
 package io.github.benzwreck.wykop4j.integration
 
 import io.github.benzwreck.wykop4j.IntegrationWykopClient
+import io.github.benzwreck.wykop4j.Page
 import io.github.benzwreck.wykop4j.WykopClient
 import io.github.benzwreck.wykop4j.entries.Entry
-import io.github.benzwreck.wykop4j.entries.NewEntryComment
 import io.github.benzwreck.wykop4j.entries.NewEntry
-import io.github.benzwreck.wykop4j.Page
+import io.github.benzwreck.wykop4j.entries.NewEntryComment
 import io.github.benzwreck.wykop4j.entries.Period
-import io.github.benzwreck.wykop4j.shared.UserVote
 import io.github.benzwreck.wykop4j.exceptions.ActionForbiddenException
 import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException
 import io.github.benzwreck.wykop4j.exceptions.CommentDoesNotExistException
 import io.github.benzwreck.wykop4j.exceptions.NiceTryException
 import io.github.benzwreck.wykop4j.exceptions.UnableToDeleteCommentException
 import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException
+import io.github.benzwreck.wykop4j.shared.UserVote
 import spock.lang.Specification
 import spock.lang.Unroll
 import spock.util.concurrent.PollingConditions
@@ -208,7 +208,7 @@ class EntrySpec extends Specification {
         then:
         thrown UnableToModifyEntryException
     }
-
+    
     def "should upvote entry and then remove vote"() {
         def conditions = new PollingConditions(timeout: 5, initialDelay: 1)
         def randomId = wykop.entriesStream().execute().get(0).id()
@@ -371,14 +371,14 @@ class EntrySpec extends Specification {
         }
     }
 
-    def "should throw an exception when trying to vote up entry where comment id does not exist"(){
+    def "should throw an exception when trying to vote up entry where comment id does not exist"() {
         when:
         wykop.entryCommentVoteUp(nonexistentId).execute()
         then:
         thrown ArchivalContentException
     }
 
-    def "should throw an exception when trying to remove entry's vote where comment id does not exist"(){
+    def "should throw an exception when trying to remove entry's vote where comment id does not exist"() {
         when:
         wykop.entryCommentVoteRemove(nonexistentId).execute()
         then:
