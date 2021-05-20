@@ -2312,7 +2312,7 @@ public class WykopClient {
         }
     }
 
-    public class Chain<T> {
+    class Chain<T> {
         private final WykopRequest wykopRequest;
         private Class<T> clazz;
         private TypeReference<T> typeReference;
