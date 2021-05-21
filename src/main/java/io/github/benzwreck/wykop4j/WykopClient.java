@@ -29,12 +29,12 @@ import io.github.benzwreck.wykop4j.links.LinkComment;
 import io.github.benzwreck.wykop4j.links.LinkCommentVoteData;
 import io.github.benzwreck.wykop4j.links.LinkCommentsSorting;
 import io.github.benzwreck.wykop4j.links.LinkDraft;
+import io.github.benzwreck.wykop4j.links.LinkImage;
 import io.github.benzwreck.wykop4j.links.LinkVoteData;
 import io.github.benzwreck.wykop4j.links.LinkWithComments;
 import io.github.benzwreck.wykop4j.links.NewLink;
 import io.github.benzwreck.wykop4j.links.NewLinkComment;
 import io.github.benzwreck.wykop4j.links.NewRelatedLink;
-import io.github.benzwreck.wykop4j.links.PreparedImage;
 import io.github.benzwreck.wykop4j.links.RelatedLink;
 import io.github.benzwreck.wykop4j.links.RelatedLinkVoteData;
 import io.github.benzwreck.wykop4j.links.VoteDownReason;
@@ -78,8 +78,8 @@ public class WykopClient {
      *
      * @return list of entries.
      */
-    public Chain<List<Entry>> entriesStream() {
-        return entriesStream(Page.of(1));
+    public Chain<List<Entry>> getEntriesStream() {
+        return getEntriesStream(Page.of(1));
     }
 
     /**
@@ -89,7 +89,7 @@ public class WykopClient {
      * @return list of entries.
      * @throws IllegalArgumentException if page is different than 1 or 2.
      */
-    public Chain<List<Entry>> entriesStream(Page page) {
+    public Chain<List<Entry>> getEntriesStream(Page page) {
         if (page.value() < 0 || page.value() > 2)
             throw new IllegalArgumentException("Page" + page + "is forbidden. Only page 1 and page 2 are possible to fetch.");
         return new Chain<>(new WykopRequest.Builder()
@@ -105,7 +105,7 @@ public class WykopClient {
      * @param entryId id from where we start counting except entryId
      * @return list of entries.
      */
-    public Chain<List<Entry>> entriesStream(int entryId) {
+    public Chain<List<Entry>> getEntriesStream(int entryId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/Stream/firstid/int/")
                 .namedParam("firstid", String.valueOf(entryId))
@@ -119,7 +119,7 @@ public class WykopClient {
      * @param id id of the {@link Entry} you are looking for.
      * @return possible {@link Entry}
      */
-    public Chain<Optional<Entry>> entry(int id) {
+    public Chain<Optional<Entry>> getEntry(int id) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/Entry/entry/")
                 .apiParam("entry", String.valueOf(id))
@@ -132,8 +132,8 @@ public class WykopClient {
      *
      * @return list of entries.
      */
-    public Chain<List<Entry>> hotEntries() {
-        return hotEntries(Page.of(1), Period.TWELVE_HOURS);
+    public Chain<List<Entry>> getHotEntries() {
+        return getHotEntries(Page.of(1), Period.TWELVE_HOURS);
     }
 
     /**
@@ -143,8 +143,8 @@ public class WykopClient {
      * @return list of entries.
      * @throws IllegalArgumentException if page is not from 1 to 20.
      */
-    public Chain<List<Entry>> hotEntries(Page page) {
-        return hotEntries(page, Period.TWELVE_HOURS);
+    public Chain<List<Entry>> getHotEntries(Page page) {
+        return getHotEntries(page, Period.TWELVE_HOURS);
     }
 
     /**
@@ -153,8 +153,8 @@ public class WykopClient {
      * @param period available pages for Entries' Hot
      * @return list of entries.
      */
-    public Chain<List<Entry>> hotEntries(Period period) {
-        return hotEntries(Page.of(1), period);
+    public Chain<List<Entry>> getHotEntries(Period period) {
+        return getHotEntries(Page.of(1), period);
     }
 
     /**
@@ -165,7 +165,7 @@ public class WykopClient {
      * @return list of entries.
      * @throws IllegalArgumentException if page is not from 1 to 20.
      */
-    public Chain<List<Entry>> hotEntries(Page page, Period period) {
+    public Chain<List<Entry>> getHotEntries(Page page, Period period) {
         if (page.value() < 0 || page.value() > 20)
             throw new IllegalArgumentException("Page" + page + "is forbidden. Only pages from 1 to 20 are possible to fetch.");
         return new Chain<>(new WykopRequest.Builder()
@@ -181,8 +181,8 @@ public class WykopClient {
      *
      * @return list of entries.
      */
-    public Chain<List<Entry>> activeEntries() {
-        return activeEntries(Page.of(1));
+    public Chain<List<Entry>> getActiveEntries() {
+        return getActiveEntries(Page.of(1));
     }
 
     /**
@@ -191,7 +191,7 @@ public class WykopClient {
      * @param page given active entries page.
      * @return list of entries.
      */
-    public Chain<List<Entry>> activeEntries(Page page) {
+    public Chain<List<Entry>> getActiveEntries(Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/Active/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
@@ -204,8 +204,8 @@ public class WykopClient {
      *
      * @return list of entries.
      */
-    public Chain<List<Entry>> observedEntries() {
-        return observedEntries(Page.of(1));
+    public Chain<List<Entry>> getObservedEntries() {
+        return getObservedEntries(Page.of(1));
     }
 
     /**
@@ -214,7 +214,7 @@ public class WykopClient {
      * @param page given observed entries page.
      * @return list of entries.
      */
-    public Chain<List<Entry>> observedEntries(Page page) {
+    public Chain<List<Entry>> getObservedEntries(Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/Observed/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
@@ -284,7 +284,7 @@ public class WykopClient {
      * @return nothing.
      * @throws ArchivalContentException when non-existing entryId provided.
      */
-    public Chain<Void> entryVoteUp(int entryId) {
+    public Chain<Void> voteUpEntry(int entryId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/VoteUp/id/")
                 .apiParam("id", String.valueOf(entryId))
@@ -298,7 +298,7 @@ public class WykopClient {
      * @return nothing.
      * @throws ArchivalContentException when non-existing entryId provided.
      */
-    public Chain<Void> entryRemoveVote(int entryId) {
+    public Chain<Void> voteRemoveFromEntry(int entryId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/VoteRemove/id/")
                 .apiParam("id", String.valueOf(entryId))
@@ -311,7 +311,7 @@ public class WykopClient {
      * @param entryId entry's id to fetch voters from.
      * @return list of votes.
      */
-    public Chain<List<Vote>> entryAllUpvotes(int entryId) {
+    public Chain<List<Vote>> getAllUpvotesFromEntry(int entryId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/Upvoters/entry_id/")
                 .apiParam("entry_id", String.valueOf(entryId))
@@ -325,7 +325,7 @@ public class WykopClient {
      * @param commentId comment's id.
      * @return possible entry's comment.
      */
-    public Chain<Optional<EntryComment>> entryComment(int commentId) {
+    public Chain<Optional<EntryComment>> getEntryComment(int commentId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/Comment/comment_id/")
                 .apiParam("comment_id", String.valueOf(commentId))
@@ -398,7 +398,7 @@ public class WykopClient {
      * @return nothing.
      * @throws ArchivalContentException when provided commentId does not exist.
      */
-    public Chain<Void> entryCommentVoteUp(int commentId) {
+    public Chain<Void> voteUpEntryComment(int commentId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/CommentVoteUp/id/")
                 .apiParam("id", String.valueOf(commentId))
@@ -412,7 +412,7 @@ public class WykopClient {
      * @return nothing.
      * @throws ArchivalContentException when provided commentId does not exist.
      */
-    public Chain<Void> entryCommentVoteRemove(int commentId) {
+    public Chain<Void> removeVoteFromEntryComment(int commentId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/CommentVoteRemove/id/")
                 .apiParam("id", String.valueOf(commentId))
@@ -424,8 +424,8 @@ public class WykopClient {
      *
      * @return list of entry's comments.
      */
-    public Chain<List<EntryComment>> observedComments() {
-        return observedComments(Page.of(1));
+    public Chain<List<EntryComment>> getObservedEntryComments() {
+        return getObservedEntryComments(Page.of(1));
     }
 
     /**
@@ -434,7 +434,7 @@ public class WykopClient {
      * @param page page number.
      * @return list of entry's comments.
      */
-    public Chain<List<EntryComment>> observedComments(Page page) {
+    public Chain<List<EntryComment>> getObservedEntryComments(Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/ObservedComments/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
@@ -494,7 +494,7 @@ public class WykopClient {
      * @param option type of links to retrieve.
      * @return list of chosen links.
      */
-    public Chain<List<Link>> linkHits(HitsOption option) {
+    public Chain<List<Link>> getHitLinks(HitsOption option) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Hits/" + option.value() + "/")
                 .build(), new TypeReference<>() {
@@ -508,7 +508,7 @@ public class WykopClient {
      * @return list of chosen links.
      * @throws DateTimeException when illegal {@link Month} value is passed.
      */
-    public Chain<List<Link>> linkHits(Month month) {
+    public Chain<List<Link>> getHitLinks(Month month) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Hits/Month/year/month")
                 .apiParam("year", Year.now().toString())
@@ -523,7 +523,7 @@ public class WykopClient {
      * @param year year of link's date.
      * @return list of chosen links.
      */
-    public Chain<List<Link>> linkHits(Year year) {
+    public Chain<List<Link>> getHitLinks(Year year) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Hits/Year/year")
                 .apiParam("year", year.toString())
@@ -539,7 +539,7 @@ public class WykopClient {
      * @return list of chosen links.
      * @throws DateTimeException when illegal {@link Month} value is passed.
      */
-    public Chain<List<Link>> linkHits(Month month, Year year) {
+    public Chain<List<Link>> getHitLinks(Month month, Year year) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Hits/Month/year/month/")
                 .apiParam("year", year.toString())
@@ -555,8 +555,8 @@ public class WykopClient {
      *
      * @return list of notifications.
      */
-    public Chain<List<Notification>> directedNotifications() {
-        return directedNotifications(Page.of(1));
+    public Chain<List<Notification>> getDirectedNotifications() {
+        return getDirectedNotifications(Page.of(1));
     }
 
     /**
@@ -565,7 +565,7 @@ public class WykopClient {
      * @param page page you want to fetch.
      * @return list of norifications.
      */
-    public Chain<List<Notification>> directedNotifications(Page page) {
+    public Chain<List<Notification>> getDirectedNotifications(Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Notifications/Index/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
@@ -579,7 +579,7 @@ public class WykopClient {
      *
      * @return number of notifications.
      */
-    public Chain<Integer> directedNotificationCount() {
+    public Chain<Integer> getDirectedNotificationCount() {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Notifications/Count/")
                 .build(), Integer.class);
@@ -590,8 +590,8 @@ public class WykopClient {
      *
      * @return list of notifications.
      */
-    public Chain<List<Notification>> tagsNotifications() {
-        return tagsNotifications(Page.of(1));
+    public Chain<List<Notification>> getTagsNotifications() {
+        return getTagsNotifications(Page.of(1));
     }
 
     /**
@@ -600,7 +600,7 @@ public class WykopClient {
      * @param page page you want to fetch.
      * @return list of notifications.
      */
-    public Chain<List<Notification>> tagsNotifications(Page page) {
+    public Chain<List<Notification>> getTagsNotifications(Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Notifications/HashTags/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
@@ -614,7 +614,7 @@ public class WykopClient {
      *
      * @return number of notifications.
      */
-    public Chain<Integer> tagsNotificationCount() {
+    public Chain<Integer> getTagsNotificationCount() {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Notifications/HashTagsCount/")
                 .build(), Integer.class);
@@ -625,8 +625,8 @@ public class WykopClient {
      *
      * @return list of notifications.
      */
-    public Chain<List<Notification>> allNotifications() {
-        return allNotifications(Page.of(1));
+    public Chain<List<Notification>> getAllNotifications() {
+        return getAllNotifications(Page.of(1));
     }
 
     /**
@@ -635,7 +635,7 @@ public class WykopClient {
      * @param page page you want to fetch.
      * @return list of notifications.
      */
-    public Chain<List<Notification>> allNotifications(Page page) {
+    public Chain<List<Notification>> getAllNotifications(Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Notifications/Total/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
@@ -649,7 +649,7 @@ public class WykopClient {
      *
      * @return total notification count.
      */
-    public Chain<Integer> allNotificationCount() {
+    public Chain<Integer> getAllNotificationCount() {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Notifications/TotalCount/")
                 .build(), Integer.class);
@@ -708,7 +708,7 @@ public class WykopClient {
      *
      * @return list of conversation's basic information.
      */
-    public Chain<List<ConversationInfo>> conversationsList() {
+    public Chain<List<ConversationInfo>> getConversationsList() {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Pm/ConversationsList/")
                 .fullData(false)
@@ -722,7 +722,7 @@ public class WykopClient {
      * @param login user's login.
      * @return list of messages.
      */
-    public Chain<List<Message>> conversation(String login) {
+    public Chain<List<Message>> getConversation(String login) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Pm/Conversation/receiver/")
                 .apiParam("receiver", login)
@@ -773,7 +773,7 @@ public class WykopClient {
      * @param login user's login.
      * @return possible user's profile.
      */
-    public Chain<Optional<FullProfile>> profile(String login) {
+    public Chain<Optional<FullProfile>> getProfile(String login) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/Index/login/")
                 .apiParam("login", login)
@@ -787,7 +787,7 @@ public class WykopClient {
      * @param login user's login.
      * @return user's actions.
      */
-    public Chain<Actions> profileActions(String login) {
+    public Chain<Actions> getProfileActions(String login) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/Actions/login/")
                 .apiParam("login", login)
@@ -800,8 +800,8 @@ public class WykopClient {
      * @param login user's login.
      * @return list of links.
      */
-    public Chain<List<Link>> profileAddedLinks(String login) {
-        return profileAddedLinks(login, Page.of(1));
+    public Chain<List<Link>> getProfileAddedLinks(String login) {
+        return getProfileAddedLinks(login, Page.of(1));
     }
 
     /**
@@ -811,7 +811,7 @@ public class WykopClient {
      * @param page  page.
      * @return list of links.
      */
-    public Chain<List<Link>> profileAddedLinks(String login, Page page) {
+    public Chain<List<Link>> getProfileAddedLinks(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/Added/login/page/int/")
                 .apiParam("login", login)
@@ -826,8 +826,8 @@ public class WykopClient {
      * @param login user's login.
      * @return list of links.
      */
-    public Chain<List<Link>> profileCommentedLinks(String login) {
-        return profileCommentedLinks(login, Page.of(1));
+    public Chain<List<Link>> getProfileCommentedLinks(String login) {
+        return getProfileCommentedLinks(login, Page.of(1));
     }
 
     /**
@@ -837,7 +837,7 @@ public class WykopClient {
      * @param page  page.
      * @return list of links.
      */
-    public Chain<List<Link>> profileCommentedLinks(String login, Page page) {
+    public Chain<List<Link>> getProfileCommentedLinks(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/Commented/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
@@ -852,8 +852,8 @@ public class WykopClient {
      * @param login user's login.
      * @return list of link's comments.
      */
-    public Chain<List<LinkComment>> profileLinksComments(String login) {
-        return profileLinksComments(login, Page.of(1));
+    public Chain<List<LinkComment>> getProfileLinksComments(String login) {
+        return getProfileLinksComments(login, Page.of(1));
     }
 
     /**
@@ -863,7 +863,7 @@ public class WykopClient {
      * @param page  page.
      * @return list of link's comments.
      */
-    public Chain<List<LinkComment>> profileLinksComments(String login, Page page) {
+    public Chain<List<LinkComment>> getProfileLinksComments(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/Comments/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
@@ -878,8 +878,8 @@ public class WykopClient {
      * @param login user's login.
      * @return list of links.
      */
-    public Chain<List<Link>> profileLinksPublished(String login) {
-        return profileLinksPublished(login, Page.of(1));
+    public Chain<List<Link>> getProfilePublishedLinks(String login) {
+        return getProfilePublishedLinks(login, Page.of(1));
     }
 
     /**
@@ -889,7 +889,7 @@ public class WykopClient {
      * @param page  page.
      * @return list of links.
      */
-    public Chain<List<Link>> profileLinksPublished(String login, Page page) {
+    public Chain<List<Link>> getProfilePublishedLinks(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/Published/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
@@ -904,8 +904,8 @@ public class WykopClient {
      * @param login user's login.
      * @return list of entries.
      */
-    public Chain<List<Entry>> profileEntries(String login) {
-        return profileEntries(login, Page.of(1));
+    public Chain<List<Entry>> getProfileEntries(String login) {
+        return getProfileEntries(login, Page.of(1));
     }
 
     /**
@@ -915,7 +915,7 @@ public class WykopClient {
      * @param page  page.
      * @return list of entries.
      */
-    public Chain<List<Entry>> profileEntries(String login, Page page) {
+    public Chain<List<Entry>> getProfileEntries(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/Entries/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
@@ -930,8 +930,8 @@ public class WykopClient {
      * @param login user's login.
      * @return list of entries.
      */
-    public Chain<List<Entry>> profileEntriesCommented(String login) {
-        return profileEntriesCommented(login, Page.of(1));
+    public Chain<List<Entry>> getProfileCommentedEntries(String login) {
+        return getProfileCommentedEntries(login, Page.of(1));
     }
 
     /**
@@ -941,7 +941,7 @@ public class WykopClient {
      * @param page  page.
      * @return list of entries.
      */
-    public Chain<List<Entry>> profileEntriesCommented(String login, Page page) {
+    public Chain<List<Entry>> getProfileCommentedEntries(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/CommentedEntries/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
@@ -956,8 +956,8 @@ public class WykopClient {
      * @param login user's login.
      * @return list of entry's comments.
      */
-    public Chain<List<EntryComment>> profileEntriesComments(String login) {
-        return profileEntriesComments(login, Page.of(1));
+    public Chain<List<EntryComment>> getProfileEntriesComments(String login) {
+        return getProfileEntriesComments(login, Page.of(1));
     }
 
     /**
@@ -967,7 +967,7 @@ public class WykopClient {
      * @param page  page.
      * @return list of entry's comments.
      */
-    public Chain<List<EntryComment>> profileEntriesComments(String login, Page page) {
+    public Chain<List<EntryComment>> getProfileEntriesComments(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/EntriesComments/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
@@ -982,8 +982,8 @@ public class WykopClient {
      * @param login user's login.
      * @return list of links.
      */
-    public Chain<List<Link>> profileRelatedLinks(String login) {
-        return profileRelatedLinks(login, Page.of(1));
+    public Chain<List<Link>> getProfileRelatedLinks(String login) {
+        return getProfileRelatedLinks(login, Page.of(1));
     }
 
     /**
@@ -993,7 +993,7 @@ public class WykopClient {
      * @param page  page.
      * @return list of links.
      */
-    public Chain<List<Link>> profileRelatedLinks(String login, Page page) {
+    public Chain<List<Link>> getProfileRelatedLinks(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/EntriesComments/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
@@ -1008,8 +1008,8 @@ public class WykopClient {
      * @param login user's login.
      * @return list of profiles.
      */
-    public Chain<List<FullProfile>> profileFollowers(String login) {
-        return profileFollowers(login, Page.of(1));
+    public Chain<List<FullProfile>> getProfileFollowers(String login) {
+        return getProfileFollowers(login, Page.of(1));
     }
 
     /**
@@ -1019,7 +1019,7 @@ public class WykopClient {
      * @param page  page.
      * @return list of profiles.
      */
-    public Chain<List<FullProfile>> profileFollowers(String login, Page page) {
+    public Chain<List<FullProfile>> getProfileFollowers(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/Followers/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
@@ -1034,8 +1034,8 @@ public class WykopClient {
      * @param login user's login.
      * @return list of profiles.
      */
-    public Chain<List<FullProfile>> profileFollowed(String login) {
-        return profileFollowed(login, Page.of(1));
+    public Chain<List<FullProfile>> getProfileFollowed(String login) {
+        return getProfileFollowed(login, Page.of(1));
     }
 
     /**
@@ -1045,7 +1045,7 @@ public class WykopClient {
      * @param page  page.
      * @return list of profiles.
      */
-    public Chain<List<FullProfile>> profileFollowed(String login, Page page) {
+    public Chain<List<FullProfile>> getProfileFollowed(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/Followed/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
@@ -1060,8 +1060,8 @@ public class WykopClient {
      * @param login user's login.
      * @return list of badges.
      */
-    public Chain<List<Badge>> profileBadges(String login) {
-        return profileBadges(login, Page.of(1));
+    public Chain<List<Badge>> getProfileBadges(String login) {
+        return getProfileBadges(login, Page.of(1));
     }
 
     /**
@@ -1071,7 +1071,7 @@ public class WykopClient {
      * @param page  page.
      * @return list of badges.
      */
-    public Chain<List<Badge>> profileBadges(String login, Page page) {
+    public Chain<List<Badge>> getProfileBadges(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/Badges/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
@@ -1086,8 +1086,8 @@ public class WykopClient {
      * @param login user's login.
      * @return list of links.
      */
-    public Chain<List<Link>> profileDiggedLinks(String login) {
-        return profileDiggedLinks(login, Page.of(1));
+    public Chain<List<Link>> getProfileDiggedLinks(String login) {
+        return getProfileDiggedLinks(login, Page.of(1));
     }
 
     /**
@@ -1097,7 +1097,7 @@ public class WykopClient {
      * @param page  page.
      * @return list of links.
      */
-    public Chain<List<Link>> profileDiggedLinks(String login, Page page) {
+    public Chain<List<Link>> getProfileDiggedLinks(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/Digged/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
@@ -1112,8 +1112,8 @@ public class WykopClient {
      * @param login user's login.
      * @return list of links.
      */
-    public Chain<List<Link>> profileBuriedLinks(String login) {
-        return profileBuriedLinks(login, Page.of(1));
+    public Chain<List<Link>> getProfileBuriedLinks(String login) {
+        return getProfileBuriedLinks(login, Page.of(1));
     }
 
     /**
@@ -1123,7 +1123,7 @@ public class WykopClient {
      * @param page  page.
      * @return list of links.
      */
-    public Chain<List<Link>> profileBuriedLinks(String login, Page page) {
+    public Chain<List<Link>> getProfileBuriedLinks(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/Buried/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
@@ -1137,8 +1137,8 @@ public class WykopClient {
      *
      * @return list of profiles.
      */
-    public Chain<List<FullProfile>> profileRanking() {
-        return profileRanking(Page.of(1));
+    public Chain<List<FullProfile>> getProfileRanking() {
+        return getProfileRanking(Page.of(1));
     }
 
     /**
@@ -1147,7 +1147,7 @@ public class WykopClient {
      * @param page page.
      * @return list of profiles.
      */
-    public Chain<List<FullProfile>> profileRanking(Page page) {
+    public Chain<List<FullProfile>> getProfileRanking(Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/Rank/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
@@ -1218,7 +1218,7 @@ public class WykopClient {
      *
      * @return terms of use.
      */
-    public Chain<Terms> terms() {
+    public Chain<Terms> getTerms() {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Terms/Index/")
                 .build(), Terms.class);
@@ -1243,8 +1243,8 @@ public class WykopClient {
      * @param tag name of the tag, either with or without '#'.
      * @return actions.
      */
-    public Chain<Actions> tagActions(String tag) {
-        return tagActions(tag, Page.of(1));
+    public Chain<Actions> getTagActions(String tag) {
+        return getTagActions(tag, Page.of(1));
     }
 
     /**
@@ -1254,7 +1254,7 @@ public class WykopClient {
      * @param page page.
      * @return actions.
      */
-    public Chain<Actions> tagActions(String tag, Page page) {
+    public Chain<Actions> getTagActions(String tag, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Tags/Index/tag/page/int/")
                 .apiParam("tag", tag)
@@ -1268,8 +1268,8 @@ public class WykopClient {
      * @param tag name of the tag, either with or without '#'.
      * @return list of links.
      */
-    public Chain<List<Link>> tagLinks(String tag) {
-        return tagLinks(tag, Page.of(1));
+    public Chain<List<Link>> getTagLinks(String tag) {
+        return getTagLinks(tag, Page.of(1));
     }
 
     /**
@@ -1279,7 +1279,7 @@ public class WykopClient {
      * @param page page.
      * @return list of links.
      */
-    public Chain<List<Link>> tagLinks(String tag, Page page) {
+    public Chain<List<Link>> getTagLinks(String tag, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Tags/Links/tag/page/int/")
                 .apiParam("tag", tag)
@@ -1294,8 +1294,8 @@ public class WykopClient {
      * @param tag name of the tag, either with or without '#'.
      * @return list of entries.
      */
-    public Chain<List<Entry>> tagEntries(String tag) {
-        return tagEntries(tag, Page.of(1));
+    public Chain<List<Entry>> getTagEntries(String tag) {
+        return getTagEntries(tag, Page.of(1));
     }
 
     /**
@@ -1305,7 +1305,7 @@ public class WykopClient {
      * @param page page.
      * @return list of entries.
      */
-    public Chain<List<Entry>> tagEntries(String tag, Page page) {
+    public Chain<List<Entry>> getTagEntries(String tag, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Tags/Entries/tag/page/int/")
                 .apiParam("tag", tag)
@@ -1431,8 +1431,8 @@ public class WykopClient {
      *
      * @return actions.
      */
-    public Chain<Actions> myWykopIndexActions() {
-        return myWykopIndexActions(Page.of(1));
+    public Chain<Actions> getMyWykopIndexActions() {
+        return getMyWykopIndexActions(Page.of(1));
     }
 
     /**
@@ -1441,7 +1441,7 @@ public class WykopClient {
      * @param page page.
      * @return actions.
      */
-    public Chain<Actions> myWykopIndexActions(Page page) {
+    public Chain<Actions> getMyWykopIndexActions(Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Mywykop/Index/type/string/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
@@ -1454,8 +1454,8 @@ public class WykopClient {
      * @param type type of returning value.
      * @return actions.
      */
-    public Chain<Actions> myWykopIndexActions(ActionType type) {
-        return myWykopIndexActions(type, Page.of(1));
+    public Chain<Actions> getMyWykopIndexActions(ActionType type) {
+        return getMyWykopIndexActions(type, Page.of(1));
     }
 
     /**
@@ -1465,7 +1465,7 @@ public class WykopClient {
      * @param page page.
      * @return actions.
      */
-    public Chain<Actions> myWykopIndexActions(ActionType type, Page page) {
+    public Chain<Actions> getMyWykopIndexActions(ActionType type, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Mywykop/Index/type/string/page/int/")
                 .namedParam("type", type.value())
@@ -1478,8 +1478,8 @@ public class WykopClient {
      *
      * @return actions.
      */
-    public Chain<Actions> myWykopTagsActions() {
-        return myWykopTagsActions(Page.of(1));
+    public Chain<Actions> getMyWykopTagsActions() {
+        return getMyWykopTagsActions(Page.of(1));
     }
 
     /**
@@ -1488,7 +1488,7 @@ public class WykopClient {
      * @param page page.
      * @return actions.
      */
-    public Chain<Actions> myWykopTagsActions(Page page) {
+    public Chain<Actions> getMyWykopTagsActions(Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Mywykop/Tags/type/string/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
@@ -1501,8 +1501,8 @@ public class WykopClient {
      * @param type type of returning value.
      * @return actions.
      */
-    public Chain<Actions> myWykopTagsActions(ActionType type) {
-        return myWykopIndexActions(type, Page.of(1));
+    public Chain<Actions> getMyWykopTagsActions(ActionType type) {
+        return getMyWykopIndexActions(type, Page.of(1));
     }
 
     /**
@@ -1512,7 +1512,7 @@ public class WykopClient {
      * @param page page.
      * @return actions.
      */
-    public Chain<Actions> myWykopTagsActions(ActionType type, Page page) {
+    public Chain<Actions> getMyWykopTagsActions(ActionType type, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Mywykop/Tags/type/string/page/int/")
                 .namedParam("type", type.value())
@@ -1525,8 +1525,8 @@ public class WykopClient {
      *
      * @return actions.
      */
-    public Chain<Actions> myWykopUsersActions() {
-        return myWykopUsersActions(Page.of(1));
+    public Chain<Actions> getMyWykopUsersActions() {
+        return getMyWykopUsersActions(Page.of(1));
     }
 
     /**
@@ -1535,7 +1535,7 @@ public class WykopClient {
      * @param page page.
      * @return actions.
      */
-    public Chain<Actions> myWykopUsersActions(Page page) {
+    public Chain<Actions> getMyWykopUsersActions(Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Mywykop/Users/type/string/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
@@ -1548,8 +1548,8 @@ public class WykopClient {
      * @param type type of returning value.
      * @return actions.
      */
-    public Chain<Actions> myWykopUsersActions(ActionType type) {
-        return myWykopUsersActions(type, Page.of(1));
+    public Chain<Actions> getMyWykopUsersActions(ActionType type) {
+        return getMyWykopUsersActions(type, Page.of(1));
     }
 
     /**
@@ -1559,7 +1559,7 @@ public class WykopClient {
      * @param page page.
      * @return actions.
      */
-    public Chain<Actions> myWykopUsersActions(ActionType type, Page page) {
+    public Chain<Actions> getMyWykopUsersActions(ActionType type, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Mywykop/Users/type/string/page/int/")
                 .namedParam("type", type.value())
@@ -1572,8 +1572,8 @@ public class WykopClient {
      *
      * @return list of entries.
      */
-    public Chain<List<Entry>> myWykopEntries() {
-        return myWykopEntries(Page.of(1));
+    public Chain<List<Entry>> getMyWykopEntries() {
+        return getMyWykopEntries(Page.of(1));
     }
 
     /**
@@ -1582,7 +1582,7 @@ public class WykopClient {
      * @param page page.
      * @return list of entries.
      */
-    public Chain<List<Entry>> myWykopEntries(Page page) {
+    public Chain<List<Entry>> getMyWykopEntries(Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Mywykop/Entries/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
@@ -1595,8 +1595,8 @@ public class WykopClient {
      *
      * @return list of links.
      */
-    public Chain<List<Link>> myWykopLinks() {
-        return myWykopLinks(Page.of(1));
+    public Chain<List<Link>> getMyWykopLinks() {
+        return getMyWykopLinks(Page.of(1));
     }
 
     /**
@@ -1605,7 +1605,7 @@ public class WykopClient {
      * @param page page.
      * @return list of links.
      */
-    public Chain<List<Link>> myWykopLinks(Page page) {
+    public Chain<List<Link>> getMyWykopLinks(Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Mywykop/Links/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
@@ -1737,7 +1737,7 @@ public class WykopClient {
      * @return draft of the link
      * @throws LinkAlreadyExistsException when trying to create a draft and link already exists
      */
-    public Chain<LinkDraft> linkPrepareDraft(String url) {
+    public Chain<LinkDraft> prepareLinkDraft(String url) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Addlink/Draft/")
                 .postParam("url", url)
@@ -1748,9 +1748,9 @@ public class WykopClient {
      * Prepares an image for a link.
      *
      * @param key {@link LinkDraft}'s key.
-     * @return possible {@link PreparedImage}.
+     * @return possible {@link LinkImage}.
      */
-    public Chain<Optional<PreparedImage>> linkPrepareImage(String key) {
+    public Chain<Optional<LinkImage>> prepareLinkImage(String key) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Addlink/Images/key/string/")
                 .namedParam("key", key)
@@ -1768,7 +1768,7 @@ public class WykopClient {
      * @return added link.
      * @throws InvalidValueException when some of the fields are missing.
      */
-    public Chain<Link> linkAdd(NewLink newLink) {
+    public Chain<Link> addLink(NewLink newLink) {
         WykopRequest.Builder linkRequest = new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Addlink/Add/key/string/")
                 .namedParam("key", newLink.key())
@@ -1788,8 +1788,8 @@ public class WykopClient {
      *
      * @return list of links.
      */
-    public Chain<List<Link>> promotedLinks() {
-        return promotedLinks(Page.of(1));
+    public Chain<List<Link>> getPromotedLinks() {
+        return getPromotedLinks(Page.of(1));
     }
 
     /**
@@ -1798,7 +1798,7 @@ public class WykopClient {
      * @param page page.
      * @return list of links.
      */
-    public Chain<List<Link>> promotedLinks(Page page) {
+    public Chain<List<Link>> getPromotedLinks(Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Promoted/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
@@ -1811,8 +1811,8 @@ public class WykopClient {
      *
      * @return list of links.
      */
-    public Chain<List<Link>> upcomingLinks() {
-        return upcomingLinks(Page.of(1));
+    public Chain<List<Link>> getUpcomingLinks() {
+        return getUpcomingLinks(Page.of(1));
     }
 
     /**
@@ -1821,7 +1821,7 @@ public class WykopClient {
      * @param page page.
      * @return list of links.
      */
-    public Chain<List<Link>> upcomingLinks(Page page) {
+    public Chain<List<Link>> getUpcomingLinks(Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Upcoming/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
@@ -1834,8 +1834,8 @@ public class WykopClient {
      *
      * @return list of links.
      */
-    public Chain<List<Link>> favoriteLinks() {
-        return favoriteLinks(Page.of(1));
+    public Chain<List<Link>> getFavoriteLinks() {
+        return getFavoriteLinks(Page.of(1));
     }
 
     /**
@@ -1844,7 +1844,7 @@ public class WykopClient {
      * @param page page.
      * @return list of links
      */
-    public Chain<List<Link>> favoriteLinks(Page page) {
+    public Chain<List<Link>> getFavoriteLinks(Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Observed/page/int/")   //yep, it returns favorite links, not observed ones
                 .namedParam("page", String.valueOf(page.value()))
@@ -1858,7 +1858,7 @@ public class WykopClient {
      * @param linkId link's id.
      * @return possible link without comments.
      */
-    public Chain<Optional<Link>> link(int linkId) {
+    public Chain<Optional<Link>> getLink(int linkId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Link/id/")
                 .apiParam("id", String.valueOf(linkId))
@@ -1872,7 +1872,7 @@ public class WykopClient {
      * @param linkId link's id.
      * @return possible link with comments.
      */
-    public Chain<Optional<LinkWithComments>> linkWithComments(int linkId) {
+    public Chain<Optional<LinkWithComments>> getLinkWithComments(int linkId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Link/id/withcomments/true/")
                 .apiParam("id", String.valueOf(linkId))
@@ -1887,7 +1887,7 @@ public class WykopClient {
      * @return link's vote data.
      * @throws ArchivalContentException when id is invalid.
      */
-    public Chain<LinkVoteData> linkVoteUp(int linkId) {
+    public Chain<LinkVoteData> voteUpLink(int linkId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/VoteUp/id/")
                 .apiParam("id", String.valueOf(linkId))
@@ -1901,7 +1901,7 @@ public class WykopClient {
      * @return link's vote data.
      * @throws ArchivalContentException when id is invalid.
      */
-    public Chain<LinkVoteData> linkVoteRemove(int linkId) {
+    public Chain<LinkVoteData> voteRemoveFromLink(int linkId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/VoteRemove/id/")
                 .apiParam("id", String.valueOf(linkId))
@@ -1915,7 +1915,7 @@ public class WykopClient {
      * @return link's vote data.
      * @throws ArchivalContentException when id is invalid.
      */
-    public Chain<LinkVoteData> linkVoteDown(int linkId, VoteDownReason voteDownReason) {
+    public Chain<LinkVoteData> voteDownLink(int linkId, VoteDownReason voteDownReason) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/VoteDown/id/voteType/")
                 .apiParam("id", String.valueOf(linkId))
@@ -1929,7 +1929,7 @@ public class WykopClient {
      * @param linkId link's id.
      * @return list of upvotes.
      */
-    public Chain<List<Vote>> linkAllUpvotes(int linkId) {
+    public Chain<List<Vote>> getAllUpvotesFromLink(int linkId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Upvoters/link_id/")
                 .apiParam("link_id", String.valueOf(linkId))
@@ -1943,7 +1943,7 @@ public class WykopClient {
      * @param linkId link's id.
      * @return list of downvotes.
      */
-    public Chain<List<Vote>> linkAllDownvotes(int linkId) {
+    public Chain<List<Vote>> getAllDownvotesFromLink(int linkId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Downvoters/link_id/")
                 .apiParam("link_id", String.valueOf(linkId))
@@ -1957,7 +1957,7 @@ public class WykopClient {
      * @param year year.
      * @return list of links.
      */
-    public Chain<List<Link>> linkTop(Year year) {
+    public Chain<List<Link>> getTopLinks(Year year) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Top/year/")
                 .apiParam("year", year.toString())
@@ -1972,7 +1972,7 @@ public class WykopClient {
      * @param month month.
      * @return list of links.
      */
-    public Chain<List<Link>> linkTop(Year year, Month month) {
+    public Chain<List<Link>> getTopLinks(Year year, Month month) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Top/year/month/")
                 .apiParam("year", year.toString())
@@ -1987,8 +1987,8 @@ public class WykopClient {
      * @param linkId link's id.
      * @return list of link's comments
      */
-    public Chain<List<LinkComment>> linkComments(int linkId) {
-        return linkComments(linkId, LinkCommentsSorting.BEST);
+    public Chain<List<LinkComment>> getLinkComments(int linkId) {
+        return getLinkComments(linkId, LinkCommentsSorting.BEST);
     }
 
     /**
@@ -1998,7 +1998,7 @@ public class WykopClient {
      * @param linkCommentsSorting type of sorting.
      * @return list of link's comments
      */
-    public Chain<List<LinkComment>> linkComments(int linkId, LinkCommentsSorting linkCommentsSorting) {
+    public Chain<List<LinkComment>> getLinkComments(int linkId, LinkCommentsSorting linkCommentsSorting) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Comments/link/sort/string/")
                 .apiParam("link", String.valueOf(linkId))
@@ -2015,7 +2015,7 @@ public class WykopClient {
      * @return vote data.
      * @throws LinkCommentNotExistException when link's comment does not exist.
      */
-    public Chain<LinkCommentVoteData> linkCommentVoteUp(int linkId, int linkCommentId) {
+    public Chain<LinkCommentVoteData> voteUpLinkComment(int linkId, int linkCommentId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/CommentVoteUp/link/comment/")
                 .apiParam("link", String.valueOf(linkId))
@@ -2031,7 +2031,7 @@ public class WykopClient {
      * @return vote data.
      * @throws LinkCommentNotExistException when link's comment does not exist.
      */
-    public Chain<LinkCommentVoteData> linkCommentVoteDown(int linkId, int linkCommentId) {
+    public Chain<LinkCommentVoteData> voteDownLinkComment(int linkId, int linkCommentId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/CommentVoteDown/link/comment/")
                 .apiParam("link", String.valueOf(linkId))
@@ -2047,7 +2047,7 @@ public class WykopClient {
      * @return vote data.
      * @throws LinkCommentNotExistException when link's comment does not exist.
      */
-    public Chain<LinkCommentVoteData> linkCommentVoteRemove(int linkId, int linkCommentId) {
+    public Chain<LinkCommentVoteData> removeVoteFromLinkComment(int linkId, int linkCommentId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/CommentVoteCancel/link/comment/")
                 .apiParam("link", String.valueOf(linkId))
@@ -2062,7 +2062,7 @@ public class WykopClient {
      * @param newLinkComment comment to be added to link.
      * @return link's comment.
      */
-    public Chain<LinkComment> linkAddComment(int linkId, NewLinkComment newLinkComment) {
+    public Chain<LinkComment> addLinkComment(int linkId, NewLinkComment newLinkComment) {
         WykopRequest.Builder builder = new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/CommentAdd/link/")
                 .apiParam("link", String.valueOf(linkId));
@@ -2083,7 +2083,7 @@ public class WykopClient {
      * @param newLinkComment comment to be added to link's comment.
      * @return link's comment.
      */
-    public Chain<LinkComment> linkAddComment(int linkId, int linkCommentId, NewLinkComment newLinkComment) {
+    public Chain<LinkComment> addLinkComment(int linkId, int linkCommentId, NewLinkComment newLinkComment) {
         WykopRequest.Builder builder = new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/CommentAdd/link/comment_id/")
                 .apiParam("comment_id", String.valueOf(linkCommentId))
@@ -2109,7 +2109,7 @@ public class WykopClient {
      * @return edited link's comment.
      * @throws CannotEditCommentsWithAnswerException when you try to edit comment when somebody has already answered it.
      */
-    public Chain<LinkComment> linkEditComment(int linkCommentId, NewLinkComment newLinkComment) {
+    public Chain<LinkComment> editLinkComment(int linkCommentId, NewLinkComment newLinkComment) {
         WykopRequest.Builder builder = new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/CommentEdit/comment_id/")
                 .apiParam("comment_id", String.valueOf(linkCommentId));
@@ -2134,7 +2134,7 @@ public class WykopClient {
      * @throws CannotReplyOnDeletedObjectsException when link does not exist or somebody has already answered to this comment.
      * @throws BodyContainsOnlyPmException          when you're trying to change a comment which aren't yours.
      */
-    public Chain<LinkComment> linkDeleteComment(int linkCommentId) {
+    public Chain<LinkComment> deleteLinkComment(int linkCommentId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/CommentDelete/comment_id/")
                 .apiParam("comment_id", String.valueOf(linkCommentId))
@@ -2147,7 +2147,7 @@ public class WykopClient {
      * @param id comment's id.
      * @return possible {@link LinkComment}.
      */
-    public Chain<Optional<LinkComment>> linkComment(int id) {
+    public Chain<Optional<LinkComment>> getLinkComment(int id) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Comment/comment/")
                 .apiParam("comment", String.valueOf(id))
@@ -2161,7 +2161,7 @@ public class WykopClient {
      * @param linkId link's id.
      * @return List of related links.
      */
-    public Chain<List<RelatedLink>> relatedLinks(int linkId) {
+    public Chain<List<RelatedLink>> getRelatedLinks(int linkId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Related/link/")
                 .apiParam("link", String.valueOf(linkId))
@@ -2180,7 +2180,7 @@ public class WykopClient {
      * @param newRelatedLink link you'd like to add to related links.
      * @return related link.
      */
-    public Chain<RelatedLink> addRelatedLinks(int linkId, NewRelatedLink newRelatedLink) {
+    public Chain<RelatedLink> addRelatedLink(int linkId, NewRelatedLink newRelatedLink) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/RelatedAdd/link/")
                 .apiParam("link", String.valueOf(linkId))
@@ -2202,7 +2202,7 @@ public class WykopClient {
      * @param relatedLinkId related link's id.
      * @return vote data with vote count.
      */
-    public Chain<RelatedLinkVoteData> linkRelatedVoteUp(int linkId, int relatedLinkId) {
+    public Chain<RelatedLinkVoteData> voteUpRelatedLink(int linkId, int relatedLinkId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/RelatedVoteUp/link_id/related_link_id/")
                 .apiParam("link_id", String.valueOf(linkId))
@@ -2222,7 +2222,7 @@ public class WykopClient {
      * @param relatedLinkId related link's id.
      * @return vote data with vote count.
      */
-    public Chain<RelatedLinkVoteData> linkRelatedVoteDown(int linkId, int relatedLinkId) {
+    public Chain<RelatedLinkVoteData> voteDownRelatedLink(int linkId, int relatedLinkId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/RelatedVoteDown/link_id/related_link_id/")
                 .apiParam("link_id", String.valueOf(linkId))
@@ -2237,7 +2237,7 @@ public class WykopClient {
      * @param linkId link's id.
      * @return mostly true, but what it does? No idea.
      */
-    public Chain<Boolean> linkFavorite(int linkId) {
+    public Chain<Boolean> toggleLinkFavorite(int linkId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Favorite/id/int/")
                 .namedParam("int", String.valueOf(linkId))

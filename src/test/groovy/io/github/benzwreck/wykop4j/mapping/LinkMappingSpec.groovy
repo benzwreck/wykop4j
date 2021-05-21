@@ -5,7 +5,7 @@ import io.github.benzwreck.wykop4j.WykopMappingTestObject
 import io.github.benzwreck.wykop4j.links.Link
 import io.github.benzwreck.wykop4j.links.LinkComment
 import io.github.benzwreck.wykop4j.links.LinkDraft
-import io.github.benzwreck.wykop4j.links.PreparedImage
+import io.github.benzwreck.wykop4j.links.LinkImage
 import io.github.benzwreck.wykop4j.links.RelatedLinkVoteData
 import io.github.benzwreck.wykop4j.profiles.Color
 import io.github.benzwreck.wykop4j.profiles.Sex
@@ -141,9 +141,9 @@ class LinkMappingSpec extends Specification {
         }
     }
 
-    def "should map json to image draft"(){
+    def "should map json to image draft"() {
         given:
-        PreparedImage preparedImage = mapper.map(sampleLinks.preparedImage, PreparedImage)
+        LinkImage preparedImage = mapper.map(sampleLinks.preparedImage, LinkImage)
         expect:
         with preparedImage, {
             key() == "595878775a67414b43784578"

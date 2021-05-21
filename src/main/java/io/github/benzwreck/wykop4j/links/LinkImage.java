@@ -3,13 +3,13 @@ package io.github.benzwreck.wykop4j.links;
 /**
  * This class represents an image of new link.
  */
-public class PreparedImage {
+public class LinkImage {
     private final String key;
     private final String type;
     private final String previewUrl;
     private final String sourceUrl;
 
-    public PreparedImage(String key, String type, String previewUrl, String sourceUrl) {
+    public LinkImage(String key, String type, String previewUrl, String sourceUrl) {
         this.key = key;
         this.type = type;
         this.previewUrl = previewUrl;
@@ -46,7 +46,7 @@ public class PreparedImage {
 
     @Override
     public String toString() {
-        return "PreparedImage{" +
+        return "LinkImage{" +
                 "key='" + key + '\'' +
                 ", type='" + type + '\'' +
                 ", previewUrl='" + previewUrl + '\'' +

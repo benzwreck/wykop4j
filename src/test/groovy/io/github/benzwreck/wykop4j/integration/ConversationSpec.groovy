@@ -26,14 +26,14 @@ class ConversationSpec extends Specification {
         then:
         noExceptionThrown()
         where:
-        result                                                 | _
-        wykop.conversationsList()                              | _
-        wykop.conversation(IntegrationData.secondAccountLogin) | _
+        result                                                    | _
+        wykop.getConversationsList()                              | _
+        wykop.getConversation(IntegrationData.secondAccountLogin) | _
     }
 
     def "should return empty list"() {
         when:
-        def execute = wykop.conversation(nonexistentLogin).execute()
+        def execute = wykop.getConversation(nonexistentLogin).execute()
         then:
         execute.isEmpty()
     }

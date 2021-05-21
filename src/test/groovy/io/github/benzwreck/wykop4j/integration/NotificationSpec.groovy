@@ -18,13 +18,13 @@ class NotificationSpec extends Specification {
         then:
         noExceptionThrown()
         where:
-        result                            | _
-        wykop.directedNotificationCount() | _
-        wykop.directedNotifications()     | _
-        wykop.tagsNotifications()         | _
-        wykop.tagsNotificationCount()     | _
-        wykop.allNotifications()          | _
-        wykop.allNotificationCount()      | _
+        result                               | _
+        wykop.getDirectedNotificationCount() | _
+        wykop.getDirectedNotifications()     | _
+        wykop.getTagsNotifications()         | _
+        wykop.getTagsNotificationCount()     | _
+        wykop.getAllNotifications()          | _
+        wykop.getAllNotificationCount()      | _
     }
 
     @Unroll
@@ -38,10 +38,10 @@ class NotificationSpec extends Specification {
             assert after.execute() == 0
         }
         where:
-        before                               | after                             | name
-        wykop.readAllNotifications()         | wykop.allNotificationCount()      | "all"
-        wykop.readAllDirectedNotifications() | wykop.directedNotificationCount() | "all directed"
-        wykop.readAllTagsNotifications()     | wykop.tagsNotificationCount()     | "all tags"
+        before                               | after                                | name
+        wykop.readAllNotifications()         | wykop.getAllNotificationCount()      | "all"
+        wykop.readAllDirectedNotifications() | wykop.getDirectedNotificationCount() | "all directed"
+        wykop.readAllTagsNotifications()     | wykop.getTagsNotificationCount()     | "all tags"
 
     }
 }
