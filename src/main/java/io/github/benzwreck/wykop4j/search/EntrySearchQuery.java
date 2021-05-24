@@ -33,6 +33,11 @@ public class EntrySearchQuery {
         public Builder() {
         }
 
+        public Builder(EntrySearchQuery entrySearchQuery) {
+            this.phrase = entrySearchQuery.phrase;
+            this.dateRange = entrySearchQuery.dateRange;
+        }
+
         public Builder phrase(String phrase) {
             this.phrase = phrase;
             return this;

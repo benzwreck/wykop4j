@@ -67,6 +67,14 @@ public class NewMessage {
         public Builder() {
         }
 
+        public Builder(NewMessage newMessage) {
+            this.body = newMessage.body;
+            this.urlEmbed = newMessage.urlEmbed;
+            this.fileEmbed = newMessage.fileEmbed;
+            this.shownFileName = newMessage.shownFileName;
+            this.adultOnly = newMessage.adultOnly;
+        }
+
         public Builder withBody(String body) {
             this.body = body;
             return this;

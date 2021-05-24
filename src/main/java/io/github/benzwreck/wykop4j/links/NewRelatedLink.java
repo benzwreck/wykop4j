@@ -56,6 +56,12 @@ public class NewRelatedLink {
         public Builder() {
         }
 
+        public Builder(NewRelatedLink newRelatedLink) {
+            this.title = newRelatedLink.title;
+            this.url = newRelatedLink.url;
+            this.isAdultOnly = newRelatedLink.isAdultOnly;
+        }
+
         public Builder withTitle(String title) {
             this.title = title;
             return this;

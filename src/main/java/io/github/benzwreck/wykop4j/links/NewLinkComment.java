@@ -58,6 +58,13 @@ public class NewLinkComment {
         public Builder() {
         }
 
+        public Builder(NewLinkComment newLinkComment) {
+            this.body = newLinkComment.body;
+            this.urlEmbed = newLinkComment.urlEmbed;
+            this.fileEmbed = newLinkComment.fileEmbed;
+            this.shownFileName = newLinkComment.shownFileName;
+        }
+
         public NewLinkComment.Builder withBody(String body) {
             this.body = body;
             return this;

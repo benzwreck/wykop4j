@@ -97,6 +97,14 @@ public class LinkSearchQuery {
         public Builder() {
         }
 
+        public Builder(LinkSearchQuery linkSearchQuery) {
+            this.phrase = linkSearchQuery.phrase;
+            this.type = linkSearchQuery.type;
+            this.sorting = linkSearchQuery.sorting;
+            this.dateRange = linkSearchQuery.dateRange;
+            this.minimumVoteCount = linkSearchQuery.minimumVoteCount;
+        }
+
         public Builder phrase(String phrase) {
             this.phrase = phrase;
             return this;

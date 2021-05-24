@@ -87,14 +87,14 @@ public class NewLink {
         public Builder() {
         }
 
-        public Builder(Builder builder) {
-            this.key = builder.key;
-            this.title = builder.title;
-            this.description = builder.description;
-            this.tags = builder.tags;
-            this.photoKey = builder.photoKey;
-            this.url = builder.url;
-            this.isAdult = builder.isAdult;
+        public Builder(NewLink newLink) {
+            this.key = newLink.key;
+            this.title = newLink.title;
+            this.description = newLink.description;
+            this.tags = newLink.tags;
+            this.photoKey = newLink.photoKey;
+            this.url = newLink.url;
+            this.isAdult = newLink.isAdult;
         }
 
         public Builder withKey(String key) {

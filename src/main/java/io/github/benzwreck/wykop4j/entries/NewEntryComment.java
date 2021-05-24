@@ -57,6 +57,13 @@ public class NewEntryComment {
         public Builder() {
         }
 
+        public Builder(NewEntryComment newEntryComment) {
+            this.body = newEntryComment.body;
+            this.urlEmbed = newEntryComment.urlEmbed;
+            this.fileEmbed = newEntryComment.fileEmbed;
+            this.shownFileName = newEntryComment.shownFileName;
+        }
+
         public Builder withBody(String body) {
             this.body = body;
             return this;
