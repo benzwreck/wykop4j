@@ -58,6 +58,7 @@ class EntrySpec extends Specification {
         def randomEntryId = wykop.getHotEntries().execute().get(0).id()
         def entry = wykop.getEntry(randomEntryId).execute()
         then:
+        println(entry.get().commentsCount())
         randomEntryId == entry.get().id()
     }
 
@@ -259,7 +260,7 @@ class EntrySpec extends Specification {
         setup:
         def hotEntries = wykop.getHotEntries().execute()
         def entry = wykop.getEntry(hotEntries.get(0).id()).execute()
-        def id = entry.get().comments().get().get(0).id()
+        def id = entry.get().comments().get(0).id()
         when:
         def comment = wykop.getEntryComment(id).execute()
         then:
@@ -279,8 +280,8 @@ class EntrySpec extends Specification {
         def comment = wykop.addEntryComment(addEntryId, newCommentWithBodyAndUrlMedia).execute()
         then:
         wykop.getEntry(addEntryId).execute()
-                .flatMap(e -> e.comments())
-                .flatMap(list -> list.stream().filter(c -> c.id() == comment.id()).findFirst())
+                .map(e -> e.comments())
+                .map(list -> list.stream().filter(c -> c.id() == comment.id()).findFirst())
                 .isPresent()
         cleanup:
         wykop.deleteEntry(addEntryId).execute()
@@ -313,7 +314,7 @@ class EntrySpec extends Specification {
     def "should throw an exception when given commentId does not belong to user's entry"() {
         when:
         def randomId = wykop.getActiveEntries().execute().get(0).id()
-        def randomEntryCommentId = wykop.getEntry(randomId).execute().get().comments().get().get(0).id()
+        def randomEntryCommentId = wykop.getEntry(randomId).execute().get().comments().get(0).id()
         wykop.editEntryComment(randomEntryCommentId, newCommentWithBodyAndUrlMedia).execute()
         then:
         thrown UnableToModifyEntryException
@@ -347,7 +348,7 @@ class EntrySpec extends Specification {
     def "should throw an exception when try to delete a comment which does not belong to user"() {
         when:
         def randomEntryId = wykop.getActiveEntries().execute().get(0).id()
-        def randomCommentId = wykop.getEntry(randomEntryId).execute().get().comments().get().get(0).id()
+        def randomCommentId = wykop.getEntry(randomEntryId).execute().get().comments().get(0).id()
         wykop.deleteEntryComment(randomCommentId).execute()
         then:
         thrown UnableToDeleteCommentException
@@ -357,7 +358,7 @@ class EntrySpec extends Specification {
         def conditions = new PollingConditions(timeout: 5, initialDelay: 1)
         when:
         def activeEntryId = wykop.getActiveEntries().execute().get(0).id()
-        def entryCommentId = wykop.getEntry(activeEntryId).execute().get().comments().get().get(0).id()
+        def entryCommentId = wykop.getEntry(activeEntryId).execute().get().comments().get(0).id()
         wykop.voteUpEntryComment(entryCommentId).execute()
         then:
         conditions.eventually {
@@ -442,7 +443,7 @@ class EntrySpec extends Specification {
     def "should toggle on and off entry's comment favorite"() {
         def activeEntry = wykop.getActiveEntries().execute().get(0)
         def fullEntry = wykop.getEntry(activeEntry.id()).execute()
-        def activeEntryComment = fullEntry.get().comments().get().get(0)
+        def activeEntryComment = fullEntry.get().comments().get(0)
         def favorite = activeEntryComment.favorite()
         when:
         def toggle = wykop.toggleEntryCommentFavorite(activeEntryComment.id()).execute()

@@ -6,6 +6,7 @@ import io.github.benzwreck.wykop4j.conversations.Message;
 import io.github.benzwreck.wykop4j.conversations.NewMessage;
 import io.github.benzwreck.wykop4j.entries.Entry;
 import io.github.benzwreck.wykop4j.entries.EntryComment;
+import io.github.benzwreck.wykop4j.entries.EntryWithComments;
 import io.github.benzwreck.wykop4j.entries.NewEntry;
 import io.github.benzwreck.wykop4j.entries.NewEntryComment;
 import io.github.benzwreck.wykop4j.entries.Period;
@@ -119,7 +120,7 @@ public class WykopClient {
      * @param id id of the {@link Entry} you are looking for.
      * @return possible {@link Entry}
      */
-    public Chain<Optional<Entry>> getEntry(int id) {
+    public Chain<Optional<EntryWithComments>> getEntry(int id) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/Entry/entry/")
                 .apiParam("entry", String.valueOf(id))
