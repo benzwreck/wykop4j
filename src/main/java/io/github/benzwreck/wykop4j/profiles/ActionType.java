@@ -1,5 +1,8 @@
 package io.github.benzwreck.wykop4j.profiles;
 
+/**
+ * This class contains available types of actions.
+ */
 public enum ActionType {
     LINKS("links"),
     ENTRIES("entries");

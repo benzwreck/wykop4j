@@ -18,17 +18,17 @@ class MyWykopSpec extends Specification {
         then:
         noExceptionThrown()
         where:
-        action                                        | _
-        wykop.myWykopIndexActions()                   | _
-        wykop.myWykopIndexActions(ActionType.ENTRIES) | _
-        wykop.myWykopIndexActions(ActionType.LINKS)   | _
-        wykop.myWykopTagsActions()                    | _
-        wykop.myWykopTagsActions(ActionType.ENTRIES)  | _
-        wykop.myWykopTagsActions(ActionType.LINKS)    | _
-        wykop.myWykopUsersActions()                   | _
-        wykop.myWykopUsersActions(ActionType.ENTRIES) | _
-        wykop.myWykopUsersActions(ActionType.LINKS)   | _
-        wykop.myWykopEntries()                        | _
-        wykop.myWykopLinks()                          | _
+        action                                           | _
+        wykop.getMyWykopIndexActions()                   | _
+        wykop.getMyWykopIndexActions(ActionType.ENTRIES) | _
+        wykop.getMyWykopIndexActions(ActionType.LINKS)   | _
+        wykop.getMyWykopTagsActions()                    | _
+        wykop.getMyWykopTagsActions(ActionType.ENTRIES)  | _
+        wykop.getMyWykopTagsActions(ActionType.LINKS)    | _
+        wykop.getMyWykopUsersActions()                   | _
+        wykop.getMyWykopUsersActions(ActionType.ENTRIES) | _
+        wykop.getMyWykopUsersActions(ActionType.LINKS)   | _
+        wykop.getMyWykopEntries()                        | _
+        wykop.getMyWykopLinks()                          | _
     }
 }

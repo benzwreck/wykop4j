@@ -1,7 +1,7 @@
 package io.github.benzwreck.wykop4j.profiles;
 
 /**
- * Profile's color.
+ * This class contains available profile's colors.
  */
 public enum Color {
     GREEN("#339933", RGB.GREEN),
@@ -23,10 +23,16 @@ public enum Color {
         this.rgb = rgb;
     }
 
+    /**
+     * Gets the hex value of the color.
+     */
     public String hex() {
         return hex;
     }
 
+    /**
+     * This class contains RGB values for available colors.
+     */
     public enum RGB {
         GREEN(51, 153, 51),
         ORANGE(255, 89, 23),
@@ -48,14 +54,23 @@ public enum Color {
             this.blue = blue;
         }
 
+        /**
+         * Gets red value.
+         */
         public int red() {
             return red;
         }
 
+        /**
+         * Gets green value.
+         */
         public int green() {
             return green;
         }
 
+        /**
+         * Gets blue value.
+         */
         public int blue() {
             return blue;
         }

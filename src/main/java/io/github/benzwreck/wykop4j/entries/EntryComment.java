@@ -7,6 +7,9 @@ import io.github.benzwreck.wykop4j.shared.UserVote;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+/**
+ * This class represents Microblog's entry's comment.
+ */
 public class EntryComment {
     private final Integer id;
     private final SimpleProfile author;
@@ -41,98 +44,98 @@ public class EntryComment {
     }
 
     /**
-     * @return id.
+     * Gets comment's id.
      */
     public Integer id() {
         return id;
     }
 
     /**
-     * @return author's {@link SimpleProfile}
+     * Gets comment's author's {@link SimpleProfile}.
      */
     public SimpleProfile author() {
         return author;
     }
 
     /**
-     * @return creation date.
+     * Gets comment's creation date.
      */
     public LocalDateTime date() {
         return date;
     }
 
     /**
-     * @return comment's body.
+     * Gets comment's body.
      */
     public String body() {
         return body;
     }
 
     /**
-     * @return is blocked by logged in user.
+     * Returns if comment is blocked by logged in user.
      */
     public Boolean blocked() {
         return blocked;
     }
 
     /**
-     * @return is favorited by logged in user.
+     * Returns if comment is favorited by logged in user.
      */
     public Boolean favorite() {
         return favorite;
     }
 
     /**
-     * @return number of votes.
+     * Gets comment's vote count.
      */
     public Integer voteCount() {
         return voteCount;
     }
 
     /**
-     * @return possible {@link Embed} file.
+     * Gets comment's possible {@link Embed} media.
      */
     public Optional<Embed> embed() {
         return Optional.ofNullable(embed);
     }
 
     /**
-     * @return status.
+     * Gets comment's status.
      */
     public String status() {
         return status;
     }
 
     /**
-     * @return current user's vote.
+     * Gets comment's current user's vote.
      */
     public UserVote userVote() {
         return userVote;
     }
 
     /**
-     * @return possible application name via which entry was sent.
+     * Gets comment's possible application name used to create this comment.
      */
     public Optional<String> app() {
         return Optional.ofNullable(app);
     }
 
     /**
-     * @return url to violation form.
+     * Gets comment's url to violation form.
      */
     public String violationUrl() {
         return violationUrl;
     }
 
     /**
-     * @return original body.
+     * Gets comment's original body.
      */
     public String original() {
         return original;
     }
 
     /**
-     * @return id of commented entry.
+     * Gets comment's id of commented entry.
      */
     public Integer entryId() {
         return entryId;

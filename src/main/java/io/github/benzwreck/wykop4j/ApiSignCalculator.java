@@ -14,11 +14,11 @@ import java.util.StringJoiner;
 class ApiSignCalculator {
     private final ApplicationCredentials applicationCredentials;
 
-    public ApiSignCalculator(ApplicationCredentials applicationCredentials) {
+    ApiSignCalculator(ApplicationCredentials applicationCredentials) {
         this.applicationCredentials = applicationCredentials;
     }
 
-    public String calculate(Request request) throws IOException {
+    String calculate(Request request) throws IOException {
         String secret = applicationCredentials.secret();
         String url = request.url().toString();
         if (secret.isEmpty()) return MD5Encoder.encode(url);

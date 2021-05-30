@@ -43,13 +43,15 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 class WykopObjectMapper {
     private final ObjectMapper objectMapper;
 
-    public WykopObjectMapper() {
+    WykopObjectMapper() {
         LocalDateTimeDeserializer localDateTimeDeserializer =
                 new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         SimpleModule javaTimeModule = new JavaTimeModule()
@@ -77,7 +79,8 @@ class WykopObjectMapper {
             if (isWykopConnectLoginHtmlPage(payload)) {
                 return (T) objectMapper.writeValueAsString(payload);
             }
-            JsonNode data = handleResponse(payload);
+            String properResponse = parseToProperResponse(payload);
+            JsonNode data = handleResponse(properResponse);
             return objectMapper.readValue(objectMapper.treeAsTokens(data), clazz);
         } catch (IOException e) {
             throw new WykopException(0, e.getMessage(), e.getMessage()); //todo magic numbers
@@ -87,9 +90,9 @@ class WykopObjectMapper {
     @SuppressWarnings("unchecked")
     public <T> T map(String payload, TypeReference<T> typeReference) {
         try {
-            payload = handleNotFoundAsEmptyResponse(payload);
-            payload = handleLinkPrepareImageResponse(payload);
-            JsonNode node = handleResponse(payload);
+            String typeReferenceResponse = parseToTypeReferenceResponse(payload);
+            String properResponse = parseToProperResponse(typeReferenceResponse);
+            JsonNode node = handleResponse(properResponse);
             T t = objectMapper.readValue(objectMapper.treeAsTokens(node), typeReference);
             if (t instanceof List) {
                 return (T) Collections.unmodifiableList((List<T>) t);
@@ -100,9 +103,19 @@ class WykopObjectMapper {
         }
     }
 
+    private String parseToProperResponse(String typeReferenceResponse) {
+        typeReferenceResponse = handleServerErrorHtmlResponse(typeReferenceResponse);
+        typeReferenceResponse = handleWykopConnectResponse(typeReferenceResponse);
+        return typeReferenceResponse;
+    }
+
+    private String parseToTypeReferenceResponse(String payload) {
+        payload = handleNotFoundAsEmptyResponse(payload);
+        payload = handleLinkPrepareImageResponse(payload);
+        return payload;
+    }
+
     private JsonNode handleResponse(String payload) throws JsonProcessingException {
-        payload = handleServerErrorHtmlResponse(payload);
-        payload = handleWykopConnectResponse(payload);
         if (conversationDeletedOrLinksFavoriteToggle(payload)) {
             return BooleanNode.valueOf(true);
         }
@@ -123,6 +136,14 @@ class WykopObjectMapper {
         }
         JsonNode error = node.get("error");
         int errorCode = error.get("code").intValue();
+        handleKnownErrors(errorCode);
+
+        String messageEn = error.get("message_en").asText();
+        String messagePl = error.get("message_pl").asText();
+        throw new WykopException(errorCode, messageEn, messagePl);
+    }
+
+    private void handleKnownErrors(int errorCode) {
         switch (errorCode) {
             case 1:
                 throw new InvalidAPIKeyException();
@@ -165,9 +186,6 @@ class WykopObjectMapper {
             case 999:
                 throw new NiceTryException();
         }
-        String messageEn = error.get("message_en").asText();
-        String messagePl = error.get("message_pl").asText();
-        throw new WykopException(errorCode, messageEn, messagePl);
     }
 
     private String handleWykopConnectResponse(String payload) {
@@ -210,12 +228,10 @@ class WykopObjectMapper {
 
     private JsonNode handleNotificationCount(JsonNode data) {
         if (data.hasNonNull("count")) {
-            int value = 0;
-            if (data.hasNonNull("hastagcount")) {
-                value += data.get("hastagcount").intValue();
-            }
-            value += data.get("count").intValue();
-            data = IntNode.valueOf(value);
+            int value = data.hasNonNull("hastagcount")
+                    ? data.get("hastagcount").intValue() + data.get("count").intValue()
+                    : data.get("count").intValue();
+            return IntNode.valueOf(value);
         }
         return data;
     }
@@ -236,7 +252,7 @@ class WykopObjectMapper {
 
     private JsonNode handleUserFavorite(JsonNode data) {
         if (data.hasNonNull("user_favorite") && data.size() == 1) {
-            data = BooleanNode.valueOf(data.get("user_favorite").booleanValue());
+            return BooleanNode.valueOf(data.get("user_favorite").booleanValue());
         }
         return data;
     }

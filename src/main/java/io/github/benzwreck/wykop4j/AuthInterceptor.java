@@ -19,7 +19,7 @@ class AuthInterceptor implements Interceptor {
 
     private String userKey;
 
-    public AuthInterceptor(UserCredentials userCredentials, ApplicationCredentials applicationCredentials) {
+    AuthInterceptor(UserCredentials userCredentials, ApplicationCredentials applicationCredentials) {
         this.userCredentials = userCredentials;
         this.applicationCredentials = applicationCredentials;
     }
@@ -82,7 +82,6 @@ class AuthInterceptor implements Interceptor {
     private FormBody prepareAuthBody() {
         return new FormBody.Builder()
                 .add("accountkey", userCredentials.accountKey())
-                .add("login", userCredentials.login())
                 .build();
     }
 

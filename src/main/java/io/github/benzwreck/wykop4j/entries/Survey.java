@@ -4,6 +4,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * This class represents a survey added to an entry.
+ */
 public class Survey {
     private final String question;
     private final List<Answer> answers;
@@ -17,21 +20,21 @@ public class Survey {
     }
 
     /**
-     * @return question.
+     * Gets asked question.
      */
     public String question() {
         return question;
     }
 
     /**
-     * @return list of answers.
+     * Gets list of available answers.
      */
     public List<Answer> answers() {
         return Collections.unmodifiableList(answers);
     }
 
     /**
-     * @return possible user's answer id. If it is your own survey, that option won't be enabled.
+     * Gets possible user's answer id. If it is your own survey, that option won't be enabled.
      */
     public Optional<Integer> userAnswer() {
         return Optional.ofNullable(userAnswer);

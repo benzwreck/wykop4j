@@ -1,5 +1,8 @@
 package io.github.benzwreck.wykop4j.search;
 
+/**
+ * This class represents a single entry search query.
+ */
 public class EntrySearchQuery {
     private final String phrase;
     private final DateRange dateRange;
@@ -9,10 +12,16 @@ public class EntrySearchQuery {
         this.dateRange = dateRange;
     }
 
+    /**
+     * Gets query's searching phrase.
+     */
     public String phrase() {
         return phrase;
     }
 
+    /**
+     * Gets query's searching data range.
+     */
     public DateRange dateRange() {
         return dateRange;
     }
@@ -22,6 +31,11 @@ public class EntrySearchQuery {
         private DateRange dateRange = DateRange.ALL;
 
         public Builder() {
+        }
+
+        public Builder(EntrySearchQuery entrySearchQuery) {
+            this.phrase = entrySearchQuery.phrase;
+            this.dateRange = entrySearchQuery.dateRange;
         }
 
         public Builder phrase(String phrase) {

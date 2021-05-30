@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * User's actions - both entries and links.
+ * This class contains user's actions - both entries and links.
  */
 public class Actions {
     private final List<Entry> entries;
@@ -19,14 +19,14 @@ public class Actions {
     }
 
     /**
-     * @return list of entries added by user.
+     * Gets entries added by user.
      */
     public List<Entry> entries() {
         return Collections.unmodifiableList(entries);
     }
 
     /**
-     * @return list of links added by user.
+     * Gets links added by user.
      */
     public List<Link> links() {
         return Collections.unmodifiableList(links);

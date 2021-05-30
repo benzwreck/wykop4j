@@ -6,6 +6,7 @@ import io.github.benzwreck.wykop4j.conversations.Message;
 import io.github.benzwreck.wykop4j.conversations.NewMessage;
 import io.github.benzwreck.wykop4j.entries.Entry;
 import io.github.benzwreck.wykop4j.entries.EntryComment;
+import io.github.benzwreck.wykop4j.entries.EntryWithComments;
 import io.github.benzwreck.wykop4j.entries.NewEntry;
 import io.github.benzwreck.wykop4j.entries.NewEntryComment;
 import io.github.benzwreck.wykop4j.entries.Period;
@@ -19,6 +20,7 @@ import io.github.benzwreck.wykop4j.exceptions.InvalidValueException;
 import io.github.benzwreck.wykop4j.exceptions.LinkAlreadyExistsException;
 import io.github.benzwreck.wykop4j.exceptions.LinkCommentNotExistException;
 import io.github.benzwreck.wykop4j.exceptions.NiceTryException;
+import io.github.benzwreck.wykop4j.exceptions.UnableToDeleteCommentException;
 import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException;
 import io.github.benzwreck.wykop4j.exceptions.UserBlockedByAnotherUserException;
 import io.github.benzwreck.wykop4j.exceptions.UserCannotObserveThemselfException;
@@ -28,12 +30,12 @@ import io.github.benzwreck.wykop4j.links.LinkComment;
 import io.github.benzwreck.wykop4j.links.LinkCommentVoteData;
 import io.github.benzwreck.wykop4j.links.LinkCommentsSorting;
 import io.github.benzwreck.wykop4j.links.LinkDraft;
+import io.github.benzwreck.wykop4j.links.LinkImage;
 import io.github.benzwreck.wykop4j.links.LinkVoteData;
 import io.github.benzwreck.wykop4j.links.LinkWithComments;
 import io.github.benzwreck.wykop4j.links.NewLink;
 import io.github.benzwreck.wykop4j.links.NewLinkComment;
 import io.github.benzwreck.wykop4j.links.NewRelatedLink;
-import io.github.benzwreck.wykop4j.links.PreparedImage;
 import io.github.benzwreck.wykop4j.links.RelatedLink;
 import io.github.benzwreck.wykop4j.links.RelatedLinkVoteData;
 import io.github.benzwreck.wykop4j.links.VoteDownReason;
@@ -51,7 +53,6 @@ import io.github.benzwreck.wykop4j.shared.Vote;
 import io.github.benzwreck.wykop4j.suggest.TagSuggestion;
 import io.github.benzwreck.wykop4j.terms.Terms;
 
-import java.io.File;
 import java.net.URL;
 import java.time.DateTimeException;
 import java.time.Month;
@@ -63,147 +64,171 @@ public class WykopClient {
     private final static String WYKOP_URL = "https://a2.wykop.pl";
     private final WykopHttpClient client;
     private final WykopObjectMapper wykopObjectMapper;
-    private final ApplicationCredentials applicationCredentials;
     private final WykopConnect wykopConnect;
 
-    WykopClient(WykopHttpClient wykopHttpClient, WykopObjectMapper wykopObjectMapper, ApplicationCredentials applicationCredentials, WykopConnect wykopConnect) {
+    WykopClient(WykopHttpClient wykopHttpClient, WykopObjectMapper wykopObjectMapper, WykopConnect wykopConnect) {
         this.client = wykopHttpClient;
         this.wykopObjectMapper = wykopObjectMapper;
-        this.applicationCredentials = applicationCredentials;
         this.wykopConnect = wykopConnect;
     }
 
     //Entries
 
     /**
-     * @return First page of the latest Microblog's Entries.
+     * Fetches first page of the latest Microblog's Entries.
+     *
+     * @return list of entries.
      */
-    public Chain<List<Entry>> entriesStream() {
-        return entriesStream(Page.of(1));
+    public Chain<List<Entry>> getEntriesStream() {
+        return getEntriesStream(Page.of(1));
     }
 
     /**
+     * Fetches given page of the latest Microblog's Entries.
+     *
      * @param page available pages for Entries' Stream. Has to be 1 or 2.
-     * @return Given page of the latest Microblog's Entries.
+     * @return list of entries.
      * @throws IllegalArgumentException if page is different than 1 or 2.
      */
-    public Chain<List<Entry>> entriesStream(Page page) {
+    public Chain<List<Entry>> getEntriesStream(Page page) {
         if (page.value() < 0 || page.value() > 2)
             throw new IllegalArgumentException("Page" + page + "is forbidden. Only page 1 and page 2 are possible to fetch.");
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/Stream/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
-                .build(), new TypeReference<List<Entry>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
+     * Fetches microblog's Entries where first {@link Entry} id equals first one after entryId.
+     *
      * @param entryId id from where we start counting except entryId
-     * @return Microblog's Entries where first {@link Entry} id equals first one after entryId.
+     * @return list of entries.
      */
-    public Chain<List<Entry>> entriesStream(int entryId) {
+    public Chain<List<Entry>> getEntriesStream(int entryId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/Stream/firstid/int/")
                 .namedParam("firstid", String.valueOf(entryId))
-                .build(), new TypeReference<List<Entry>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
+     * Fetches entry with given id.
+     *
      * @param id id of the {@link Entry} you are looking for.
      * @return possible {@link Entry}
      */
-    public Chain<Optional<Entry>> entry(int id) {
+    public Chain<Optional<EntryWithComments>> getEntry(int id) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/Entry/entry/")
                 .apiParam("entry", String.valueOf(id))
-                .build(), new TypeReference<Optional<Entry>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
-     * @return First page of 12 hours hot entries.
+     * Fetches first page of 12 hours hot entries.
+     *
+     * @return list of entries.
      */
-    public Chain<List<Entry>> hotEntries() {
-        return hotEntries(Page.of(1), Period.TWELVE_HOURS);
+    public Chain<List<Entry>> getHotEntries() {
+        return getHotEntries(Page.of(1), Period.TWELVE_HOURS);
     }
 
     /**
+     * Fetches given page of Hot Entries from last 12 hours.
+     *
      * @param page given hot entries page. Has to be from 1 to 20.
-     * @return List of Hot Entries from last 12 hours.
+     * @return list of entries.
      * @throws IllegalArgumentException if page is not from 1 to 20.
      */
-    public Chain<List<Entry>> hotEntries(Page page) {
-        return hotEntries(page, Period.TWELVE_HOURS);
+    public Chain<List<Entry>> getHotEntries(Page page) {
+        return getHotEntries(page, Period.TWELVE_HOURS);
     }
 
     /**
+     * Fetches first page of the Hot Entries for a given period.
+     *
      * @param period available pages for Entries' Hot
-     * @return First page of the Hot Entries for a given period.
+     * @return list of entries.
      */
-    public Chain<List<Entry>> hotEntries(Period period) {
-        return hotEntries(Page.of(1), period);
+    public Chain<List<Entry>> getHotEntries(Period period) {
+        return getHotEntries(Page.of(1), period);
     }
 
     /**
+     * Fetches Hot Entries for a given page and period.
+     *
      * @param page   given hot entries page. Has to be between 1 and 20. Throws exception otherwise.
      * @param period available pages for Entries' Hot
-     * @return List of Hot Entries for a given page and period.
+     * @return list of entries.
      * @throws IllegalArgumentException if page is not from 1 to 20.
      */
-    public Chain<List<Entry>> hotEntries(Page page, Period period) {
+    public Chain<List<Entry>> getHotEntries(Page page, Period period) {
         if (page.value() < 0 || page.value() > 20)
             throw new IllegalArgumentException("Page" + page + "is forbidden. Only pages from 1 to 20 are possible to fetch.");
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/Hot/page/int/period/int/")
                 .namedParam("page", String.valueOf(page.value()))
                 .namedParam("period", String.valueOf(period.value()))
-                .build(), new TypeReference<List<Entry>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
-     * @return List of Active Entries from first page.
+     * Fetches first page of Active Entries.
+     *
+     * @return list of entries.
      */
-    public Chain<List<Entry>> activeEntries() {
-        return activeEntries(Page.of(1));
+    public Chain<List<Entry>> getActiveEntries() {
+        return getActiveEntries(Page.of(1));
     }
 
     /**
+     * Fetches Active Entries from given page.
+     *
      * @param page given active entries page.
-     * @return List of Active Entries from given page.
+     * @return list of entries.
      */
-    public Chain<List<Entry>> activeEntries(Page page) {
+    public Chain<List<Entry>> getActiveEntries(Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/Active/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
-                .build(), new TypeReference<List<Entry>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
-     * @return List of Observed Entries from first page.
+     * Fetches first page of Observed Entries.
+     *
+     * @return list of entries.
      */
-    public Chain<List<Entry>> observedEntries() {
-        return observedEntries(Page.of(1));
+    public Chain<List<Entry>> getObservedEntries() {
+        return getObservedEntries(Page.of(1));
     }
 
     /**
+     * Fetches Observed Entries from given page.
+     *
      * @param page given observed entries page.
-     * @return List of Observed Entries from given page.
+     * @return list of entries.
      */
-    public Chain<List<Entry>> observedEntries(Page page) {
+    public Chain<List<Entry>> getObservedEntries(Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/Observed/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
-                .build(), new TypeReference<List<Entry>>() {
+                .build(), new TypeReference<>() {
         }
         );
     }
 
     /**
+     * Deletes {@link Entry} - status changes to "deleted"
+     *
      * @param entryId given entry's id.
-     * @return Deleted {@link Entry} - status changes to "deleted"
+     * @return deleted entry.
      */
     public Chain<Entry> deleteEntry(int entryId) {
         return new Chain<>(new WykopRequest.Builder()
@@ -213,8 +238,10 @@ public class WykopClient {
     }
 
     /**
+     * Adds {@link Entry}
+     *
      * @param newEntry new entry to be added.
-     * @return Added {@link Entry}
+     * @return added {@link Entry}
      */
     public Chain<Entry> addEntry(NewEntry newEntry) {
         WykopRequest.Builder requestBuilder = new WykopRequest.Builder()
@@ -222,19 +249,16 @@ public class WykopClient {
                 .postParam("adultmedia", String.valueOf(newEntry.adultOnly()));
         newEntry.body().ifPresent(body -> requestBuilder.postParam("body", body));
         newEntry.urlEmbed().ifPresent(url -> requestBuilder.postParam("embed", url));
-        Optional<File> fileEmbed = newEntry.fileEmbed();
-        if (fileEmbed.isPresent()) {
-            Optional<String> shownFileName = newEntry.shownFileName();
-            if (shownFileName.isPresent()) {
-                requestBuilder.file(fileEmbed.get(), shownFileName.get());
-            } else {
-                requestBuilder.file(fileEmbed.get());
-            }
-        }
+        newEntry.fileEmbed().ifPresent(file ->
+                newEntry.shownFileName().ifPresentOrElse(shownFileName ->
+                                requestBuilder.file(file, shownFileName),
+                        () -> requestBuilder.file(file)));
         return new Chain<>(requestBuilder.build(), Entry.class);
     }
 
     /**
+     * Modifies {@link Entry}
+     *
      * @param entryId  id of modifying entry.
      * @param newEntry new entry body.
      * @return modified {@link Entry}
@@ -247,24 +271,21 @@ public class WykopClient {
                 .postParam("adultmedia", String.valueOf(newEntry.adultOnly()));
         newEntry.body().ifPresent(body -> requestBuilder.postParam("body", body));
         newEntry.urlEmbed().ifPresent(url -> requestBuilder.postParam("embed", url));
-        Optional<File> fileEmbed = newEntry.fileEmbed();
-        if (fileEmbed.isPresent()) {
-            Optional<String> shownFileName = newEntry.shownFileName();
-            if (shownFileName.isPresent()) {
-                requestBuilder.file(fileEmbed.get(), shownFileName.get());
-            } else {
-                requestBuilder.file(fileEmbed.get());
-            }
-        }
+        newEntry.fileEmbed().ifPresent(file ->
+                newEntry.shownFileName().ifPresentOrElse(shownFileName ->
+                                requestBuilder.file(file, shownFileName),
+                        () -> requestBuilder.file(file)));
         return new Chain<>(requestBuilder.build(), Entry.class);
     }
 
     /**
+     * Votes up given {@link Entry}
+     *
      * @param entryId entry's id to vote up.
      * @return nothing.
      * @throws ArchivalContentException when non-existing entryId provided.
      */
-    public Chain<Void> entryVoteUp(int entryId) {
+    public Chain<Void> voteUpEntry(int entryId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/VoteUp/id/")
                 .apiParam("id", String.valueOf(entryId))
@@ -272,11 +293,13 @@ public class WykopClient {
     }
 
     /**
+     * Removes vote from given {@link Entry}
+     *
      * @param entryId entry's id to vote remove.
      * @return nothing.
      * @throws ArchivalContentException when non-existing entryId provided.
      */
-    public Chain<Void> entryRemoveVote(int entryId) {
+    public Chain<Void> voteRemoveFromEntry(int entryId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/VoteRemove/id/")
                 .apiParam("id", String.valueOf(entryId))
@@ -284,33 +307,39 @@ public class WykopClient {
     }
 
     /**
+     * Fetches list of all entry {@link Vote}s
+     *
      * @param entryId entry's id to fetch voters from.
-     * @return List of {@link Vote}s.
+     * @return list of votes.
      */
-    public Chain<List<Vote>> entryAllUpvotes(int entryId) {
+    public Chain<List<Vote>> getAllUpvotesFromEntry(int entryId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/Upvoters/entry_id/")
                 .apiParam("entry_id", String.valueOf(entryId))
-                .build(), new TypeReference<List<Vote>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
+     * Fetches {@link EntryComment}
+     *
      * @param commentId comment's id.
-     * @return possible {@link EntryComment}
+     * @return possible entry's comment.
      */
-    public Chain<Optional<EntryComment>> entryComment(int commentId) {
+    public Chain<Optional<EntryComment>> getEntryComment(int commentId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/Comment/comment_id/")
                 .apiParam("comment_id", String.valueOf(commentId))
-                .build(), new TypeReference<Optional<EntryComment>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
+     * Adds {@link NewEntryComment} to given {@link Entry}
+     *
      * @param entryId         entry's id.
      * @param newEntryComment new comment to be added.
-     * @return Added comment.
+     * @return added comment.
      * @throws ArchivalContentException when non-existing id is provided.
      */
     public Chain<EntryComment> addEntryComment(int entryId, NewEntryComment newEntryComment) {
@@ -319,22 +348,19 @@ public class WykopClient {
                 .apiParam("entry_id", String.valueOf(entryId));
         newEntryComment.body().ifPresent(body -> requestBuilder.postParam("body", body));
         newEntryComment.urlEmbed().ifPresent(url -> requestBuilder.postParam("embed", url));
-        Optional<File> fileEmbed = newEntryComment.fileEmbed();
-        if (fileEmbed.isPresent()) {
-            Optional<String> shownFileName = newEntryComment.shownFileName();
-            if (shownFileName.isPresent()) {
-                requestBuilder.file(fileEmbed.get(), shownFileName.get());
-            } else {
-                requestBuilder.file(fileEmbed.get());
-            }
-        }
+        newEntryComment.fileEmbed().ifPresent(file ->
+                newEntryComment.shownFileName().ifPresentOrElse(shownFileName ->
+                                requestBuilder.file(file, shownFileName),
+                        () -> requestBuilder.file(file)));
         return new Chain<>(requestBuilder.build(), EntryComment.class);
     }
 
     /**
+     * Edits entry's comment.
+     *
      * @param commentId       comment's id.
      * @param newEntryComment new comment to be changed.
-     * @return Changed comment.
+     * @return changed comment.
      * @throws UnableToModifyEntryException when provided commentId does not belong to user's comment.
      * @throws ArchivalContentException     when provided commentId does not exist.
      */
@@ -344,21 +370,20 @@ public class WykopClient {
                 .apiParam("comment_id", String.valueOf(commentId));
         newEntryComment.body().ifPresent(body -> requestBuilder.postParam("body", body));
         newEntryComment.urlEmbed().ifPresent(url -> requestBuilder.postParam("embed", url));
-        Optional<File> fileEmbed = newEntryComment.fileEmbed();
-        if (fileEmbed.isPresent()) {
-            Optional<String> shownFileName = newEntryComment.shownFileName();
-            if (shownFileName.isPresent()) {
-                requestBuilder.file(fileEmbed.get(), shownFileName.get());
-            } else {
-                requestBuilder.file(fileEmbed.get());
-            }
-        }
+        newEntryComment.fileEmbed().ifPresent(file ->
+                newEntryComment.shownFileName().ifPresentOrElse(shownFileName ->
+                                requestBuilder.file(file, shownFileName),
+                        () -> requestBuilder.file(file)));
         return new Chain<>(requestBuilder.build(), EntryComment.class);
     }
 
     /**
+     * Deletes entry's comment.
+     *
      * @param commentId comment's id.
-     * @return Deleted comment.
+     * @return deleted comment.
+     * @throws ArchivalContentException       when provided commentId does not exist.
+     * @throws UnableToDeleteCommentException when provided comment does not belong to user.
      */
     public Chain<EntryComment> deleteEntryComment(int commentId) {
         return new Chain<>(new io.github.benzwreck.wykop4j.WykopRequest.Builder()
@@ -368,10 +393,13 @@ public class WykopClient {
     }
 
     /**
+     * Votes up entry's comment.
+     *
      * @param commentId comment's id.
      * @return nothing.
+     * @throws ArchivalContentException when provided commentId does not exist.
      */
-    public Chain<Void> entryCommentVoteUp(int commentId) {
+    public Chain<Void> voteUpEntryComment(int commentId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/CommentVoteUp/id/")
                 .apiParam("id", String.valueOf(commentId))
@@ -379,10 +407,13 @@ public class WykopClient {
     }
 
     /**
+     * Removes entry's comment vote.
+     *
      * @param commentId comment's id.
      * @return nothing.
+     * @throws ArchivalContentException when provided commentId does not exist.
      */
-    public Chain<Void> entryCommentVoteRemove(int commentId) {
+    public Chain<Void> removeVoteFromEntryComment(int commentId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/CommentVoteRemove/id/")
                 .apiParam("id", String.valueOf(commentId))
@@ -390,25 +421,31 @@ public class WykopClient {
     }
 
     /**
-     * @return First page of observed comments.
+     * Fetches first page of observed comments.
+     *
+     * @return list of entry's comments.
      */
-    public Chain<List<EntryComment>> observedComments() {
-        return observedComments(Page.of(1));
+    public Chain<List<EntryComment>> getObservedEntryComments() {
+        return getObservedEntryComments(Page.of(1));
     }
 
     /**
+     * Fetches observed comments for a given page. When the list is over, returns empty one.
+     *
      * @param page page number.
-     * @return Given page of observed comments. When the list is over, returns empty one.
+     * @return list of entry's comments.
      */
-    public Chain<List<EntryComment>> observedComments(Page page) {
+    public Chain<List<EntryComment>> getObservedEntryComments(Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Entries/ObservedComments/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
-                .build(), new TypeReference<List<EntryComment>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
+     * Toggles on/off entry favorite.
+     *
      * @param entryId entry's id.
      * @return true - entry favorite toggled on; false - entry favorite toggled off.
      */
@@ -420,9 +457,11 @@ public class WykopClient {
     }
 
     /**
+     * Answers a survey.
+     *
      * @param entryId  id of entry with survey.
      * @param answerId answer's id.
-     * @return Survey with answered question.
+     * @return survey with answered question.
      * @throws ArchivalContentException when non-existent entryId is provided.
      * @throws NiceTryException         when non-existent answerId is provided.
      */
@@ -435,6 +474,8 @@ public class WykopClient {
     }
 
     /**
+     * Toggles on/off entry's comment favorite.
+     *
      * @param entryCommentId id of entry's comment.
      * @return true - comment favorite toggled on; false - comment favorite toggled off.
      * @throws CommentDoesNotExistException when such comment does not exist.
@@ -449,154 +490,176 @@ public class WykopClient {
     //Link hits
 
     /**
+     * Fetches link hits with given option.
+     *
      * @param option type of links to retrieve.
      * @return list of chosen links.
      */
-    public Chain<List<Link>> linkHits(HitsOption option) {
+    public Chain<List<Link>> getHitLinks(HitsOption option) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Hits/" + option.value() + "/")
-                .build(), new TypeReference<List<Link>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
+     * Fetches link hits for a given month.
+     *
      * @param month month of link's date.
      * @return list of chosen links.
      * @throws DateTimeException when illegal {@link Month} value is passed.
      */
-    public Chain<List<Link>> linkHits(Month month) {
+    public Chain<List<Link>> getHitLinks(Month month) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Hits/Month/year/month")
                 .apiParam("year", Year.now().toString())
                 .apiParam("month", String.valueOf(month.getValue()))
-                .build(), new TypeReference<List<Link>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
+     * Fetches link hits for a given year.
+     *
      * @param year year of link's date.
      * @return list of chosen links.
      */
-    public Chain<List<Link>> linkHits(Year year) {
+    public Chain<List<Link>> getHitLinks(Year year) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Hits/Year/year")
                 .apiParam("year", year.toString())
-                .build(), new TypeReference<List<Link>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
+     * Fetches link hits for a given month and year.
+     *
      * @param month month of link's date.
      * @param year  year of link's date.
      * @return list of chosen links.
      * @throws DateTimeException when illegal {@link Month} value is passed.
      */
-    public Chain<List<Link>> linkHits(Month month, Year year) {
+    public Chain<List<Link>> getHitLinks(Month month, Year year) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Hits/Month/year/month/")
                 .apiParam("year", year.toString())
                 .apiParam("month", String.valueOf(month.getValue()))
-                .build(), new TypeReference<List<Link>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     //Notifications
 
     /**
-     * @return First page of user's directed notifications.
+     * Fetches first page of user's directed notifications.
+     *
+     * @return list of notifications.
      */
-    public Chain<List<Notification>> directedNotifications() {
-        return directedNotifications(Page.of(1));
+    public Chain<List<Notification>> getDirectedNotifications() {
+        return getDirectedNotifications(Page.of(1));
     }
 
     /**
+     * Fetches user's directed notifications for a given page.
+     *
      * @param page page you want to fetch.
-     * @return Given page of user's directed notifications.
+     * @return list of norifications.
      */
-    public Chain<List<Notification>> directedNotifications(Page page) {
+    public Chain<List<Notification>> getDirectedNotifications(Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Notifications/Index/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
                 .fullData(false)        //wykop api crashes otherwise - returns error html page
-                .build(), new TypeReference<List<Notification>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
-     * @return user's directed notifications count.
+     * Fetches user's directed notifications count.
+     *
+     * @return number of notifications.
      */
-    public Chain<Integer> directedNotificationCount() {
+    public Chain<Integer> getDirectedNotificationCount() {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Notifications/Count/")
                 .build(), Integer.class);
     }
 
     /**
-     * @return First page of user's tags notifications.
+     * Fetches first page of user's tags notifications.
+     *
+     * @return list of notifications.
      */
-    public Chain<List<Notification>> tagsNotifications() {
-        return tagsNotifications(Page.of(1));
+    public Chain<List<Notification>> getTagsNotifications() {
+        return getTagsNotifications(Page.of(1));
     }
 
     /**
+     * Fetches user's tags notifications for a given page.
+     *
      * @param page page you want to fetch.
-     * @return Given page of user's tags notifications.
+     * @return list of notifications.
      */
-    public Chain<List<Notification>> tagsNotifications(Page page) {
+    public Chain<List<Notification>> getTagsNotifications(Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Notifications/HashTags/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
                 .fullData(false)
-                .build(), new TypeReference<List<Notification>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
-     * @return user's tags notifications count.
+     * Fetches user's tags notifications count.
+     *
+     * @return number of notifications.
      */
-    public Chain<Integer> tagsNotificationCount() {
+    public Chain<Integer> getTagsNotificationCount() {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Notifications/HashTagsCount/")
                 .build(), Integer.class);
     }
 
     /**
-     * Combines direct notifications and tags notifications.
+     * Fetches fist page of combined direct notifications and tags notifications.
      *
-     * @return First page of all user's notifications.
+     * @return list of notifications.
      */
-    public Chain<List<Notification>> allNotifications() {
-        return allNotifications(Page.of(1));
+    public Chain<List<Notification>> getAllNotifications() {
+        return getAllNotifications(Page.of(1));
     }
 
     /**
-     * Combines direct notifications and tags notifications.
+     * Fetches a given page of combined direct notifications and tags notifications.
      *
      * @param page page you want to fetch.
-     * @return Given page of all user's notifications.
+     * @return list of notifications.
      */
-    public Chain<List<Notification>> allNotifications(Page page) {
+    public Chain<List<Notification>> getAllNotifications(Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Notifications/Total/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
                 .fullData(false)
-                .build(), new TypeReference<List<Notification>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
-     * Combines direct notifications and tags notifications count.
+     * Fetches combined direct notifications and tags notifications count.
      *
      * @return total notification count.
      */
-    public Chain<Integer> allNotificationCount() {
+    public Chain<Integer> getAllNotificationCount() {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Notifications/TotalCount/")
                 .build(), Integer.class);
     }
 
     /**
-     * @return nothing but reads all user's notifications.
+     * Reads all user's notifications.
+     *
+     * @return nothing.
      */
     public Chain<Void> readAllNotifications() {
         return new Chain<>(new WykopRequest.Builder()
@@ -605,7 +668,9 @@ public class WykopClient {
     }
 
     /**
-     * @return nothing but reads all user's directed notifications.
+     * Reads all user's directed notifications.
+     *
+     * @return nothing.
      */
     public Chain<Void> readAllDirectedNotifications() {
         return new Chain<>(new WykopRequest.Builder()
@@ -614,7 +679,9 @@ public class WykopClient {
     }
 
     /**
-     * @return nothing but reads all user's tags notifications.
+     * Reads all user's tags notifications.
+     *
+     * @return nothing.
      */
     public Chain<Void> readAllTagsNotifications() {
         return new Chain<>(new WykopRequest.Builder()
@@ -623,8 +690,10 @@ public class WykopClient {
     }
 
     /**
-     * @param notificationId notification' id you'd like to mark as read.
-     * @return nothing, but marks a notification as read.
+     * Marks a notification as read.
+     *
+     * @param notificationId notification's id.
+     * @return nothing.
      */
     public Chain<Void> markNotificationAsRead(long notificationId) {
         return new Chain<>(new WykopRequest.Builder()
@@ -636,29 +705,35 @@ public class WykopClient {
     //Pm
 
     /**
+     * Fetches list of conversations.
+     *
      * @return list of conversation's basic information.
      */
-    public Chain<List<ConversationInfo>> conversationsList() {
+    public Chain<List<ConversationInfo>> getConversationsList() {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Pm/ConversationsList/")
                 .fullData(false)
-                .build(), new TypeReference<List<ConversationInfo>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
+     * Fetches a conversation with given user.
+     *
      * @param login user's login.
      * @return list of messages.
      */
-    public Chain<List<Message>> conversation(String login) {
+    public Chain<List<Message>> getConversation(String login) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Pm/Conversation/receiver/")
                 .apiParam("receiver", login)
-                .build(), new TypeReference<List<Message>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
+     * Sends a message to a given user.
+     *
      * @param login      user's login.
      * @param newMessage message you'd like to send.
      * @return sent message.
@@ -671,19 +746,16 @@ public class WykopClient {
                 .apiParam("receiver", login);
         newMessage.body().ifPresent(body -> builder.postParam("body", body));
         newMessage.urlEmbed().ifPresent(urlEmbed -> builder.postParam("embed", urlEmbed));
-        Optional<File> fileEmbed = newMessage.fileEmbed();
-        if (fileEmbed.isPresent()) {
-            Optional<String> shownFileName = newMessage.shownFileName();
-            if (shownFileName.isPresent()) {
-                builder.file(fileEmbed.get(), shownFileName.get());
-            } else {
-                builder.file(fileEmbed.get());
-            }
-        }
+        newMessage.fileEmbed().ifPresent(file ->
+                newMessage.shownFileName().ifPresentOrElse(shownFileName ->
+                                builder.file(file, shownFileName),
+                        () -> builder.file(file)));
         return new Chain<>(builder.build(), Message.class);
     }
 
     /**
+     * Deletes a conversation with a given user.
+     *
      * @param login user's login.
      * @return true - deleted.
      */
@@ -697,22 +769,26 @@ public class WykopClient {
     //Profile
 
     /**
+     * Fetches user's profile.
+     *
      * @param login user's login.
-     * @return user's profile.
+     * @return possible user's profile.
      */
-    public Chain<Optional<FullProfile>> profile(String login) {
+    public Chain<Optional<FullProfile>> getProfile(String login) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/Index/login/")
                 .apiParam("login", login)
-                .build(), new TypeReference<Optional<FullProfile>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
+     * Fetches all user's actions.
+     *
      * @param login user's login.
      * @return user's actions.
      */
-    public Chain<Actions> profileActions(String login) {
+    public Chain<Actions> getProfileActions(String login) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/Actions/login/")
                 .apiParam("login", login)
@@ -720,311 +796,369 @@ public class WykopClient {
     }
 
     /**
+     * Fetches first page of links added by user.
+     *
      * @param login user's login.
-     * @return first page of links added by user.
+     * @return list of links.
      */
-    public Chain<List<Link>> profileAddedLinks(String login) {
-        return profileAddedLinks(login, Page.of(1));
+    public Chain<List<Link>> getProfileAddedLinks(String login) {
+        return getProfileAddedLinks(login, Page.of(1));
     }
 
     /**
+     * Fetches a given page of links added by user.
+     *
      * @param login user's login.
      * @param page  page.
-     * @return given page of links added by user.
+     * @return list of links.
      */
-    public Chain<List<Link>> profileAddedLinks(String login, Page page) {
+    public Chain<List<Link>> getProfileAddedLinks(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/Added/login/page/int/")
                 .apiParam("login", login)
                 .namedParam("page", String.valueOf(page.value()))
-                .build(), new TypeReference<List<Link>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
+     * Fetches first page of links commented by user.
+     *
      * @param login user's login.
-     * @return first page of links commented by user.
+     * @return list of links.
      */
-    public Chain<List<Link>> profileCommentedLinks(String login) {
-        return profileCommentedLinks(login, Page.of(1));
+    public Chain<List<Link>> getProfileCommentedLinks(String login) {
+        return getProfileCommentedLinks(login, Page.of(1));
     }
 
     /**
+     * Fetches given page of links commented by user.
+     *
      * @param login user's login.
      * @param page  page.
-     * @return given page of links commented by user.
+     * @return list of links.
      */
-    public Chain<List<Link>> profileCommentedLinks(String login, Page page) {
+    public Chain<List<Link>> getProfileCommentedLinks(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/Commented/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
                 .apiParam("login", login)
-                .build(), new TypeReference<List<Link>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
+     * Fetches first page of links' comments added by user.
+     *
      * @param login user's login.
-     * @return first page of links' comments added by user.
+     * @return list of link's comments.
      */
-    public Chain<List<LinkComment>> profileLinksComments(String login) {
-        return profileLinksComments(login, Page.of(1));
+    public Chain<List<LinkComment>> getProfileLinksComments(String login) {
+        return getProfileLinksComments(login, Page.of(1));
     }
 
     /**
+     * Fetches given page of links' comments added by user.
+     *
      * @param login user's login.
      * @param page  page.
-     * @return given page of links' comments added by user.
+     * @return list of link's comments.
      */
-    public Chain<List<LinkComment>> profileLinksComments(String login, Page page) {
+    public Chain<List<LinkComment>> getProfileLinksComments(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/Comments/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
                 .apiParam("login", login)
-                .build(), new TypeReference<List<LinkComment>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
+     * Fetches first page of links published by user.
+     *
      * @param login user's login.
-     * @return first page of links published by user.
+     * @return list of links.
      */
-    public Chain<List<Link>> profileLinksPublished(String login) {
-        return profileLinksPublished(login, Page.of(1));
+    public Chain<List<Link>> getProfilePublishedLinks(String login) {
+        return getProfilePublishedLinks(login, Page.of(1));
     }
 
     /**
+     * Fetches a given page of links published by user.
+     *
      * @param login user's login.
      * @param page  page.
-     * @return given page of links published by user.
+     * @return list of links.
      */
-    public Chain<List<Link>> profileLinksPublished(String login, Page page) {
+    public Chain<List<Link>> getProfilePublishedLinks(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/Published/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
                 .apiParam("login", login)
-                .build(), new TypeReference<List<Link>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
+     * Fetches first page of entries added by user.
+     *
      * @param login user's login.
-     * @return first page of entries added by user.
+     * @return list of entries.
      */
-    public Chain<List<Entry>> profileEntries(String login) {
-        return profileEntries(login, Page.of(1));
+    public Chain<List<Entry>> getProfileEntries(String login) {
+        return getProfileEntries(login, Page.of(1));
     }
 
     /**
+     * Fetches a given page of entries added by user.
+     *
      * @param login user's login.
      * @param page  page.
-     * @return given page of entries added by user.
+     * @return list of entries.
      */
-    public Chain<List<Entry>> profileEntries(String login, Page page) {
+    public Chain<List<Entry>> getProfileEntries(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/Entries/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
                 .apiParam("login", login)
-                .build(), new TypeReference<List<Entry>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
+     * Fetches first page of entries commented by user.
+     *
      * @param login user's login.
-     * @return first page of entries commented by user.
+     * @return list of entries.
      */
-    public Chain<List<Entry>> profileEntriesCommented(String login) {
-        return profileEntriesCommented(login, Page.of(1));
+    public Chain<List<Entry>> getProfileCommentedEntries(String login) {
+        return getProfileCommentedEntries(login, Page.of(1));
     }
 
     /**
+     * Fetches a given page of entries commented by user.
+     *
      * @param login user's login.
      * @param page  page.
-     * @return given page of entries commented by user.
+     * @return list of entries.
      */
-    public Chain<List<Entry>> profileEntriesCommented(String login, Page page) {
+    public Chain<List<Entry>> getProfileCommentedEntries(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/CommentedEntries/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
                 .apiParam("login", login)
-                .build(), new TypeReference<List<Entry>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
+     * Fetches first page of entries' comments by user.
+     *
      * @param login user's login.
-     * @return first page of entries' comments by user.
+     * @return list of entry's comments.
      */
-    public Chain<List<EntryComment>> profileEntriesComments(String login) {
-        return profileEntriesComments(login, Page.of(1));
+    public Chain<List<EntryComment>> getProfileEntriesComments(String login) {
+        return getProfileEntriesComments(login, Page.of(1));
     }
 
     /**
+     * Fetches a given page of entries' comments by user.
+     *
      * @param login user's login.
      * @param page  page.
-     * @return given page of entries' comments by user.
+     * @return list of entry's comments.
      */
-    public Chain<List<EntryComment>> profileEntriesComments(String login, Page page) {
+    public Chain<List<EntryComment>> getProfileEntriesComments(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/EntriesComments/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
                 .apiParam("login", login)
-                .build(), new TypeReference<List<EntryComment>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
+     * Fetches first page of related links added by user.
+     *
      * @param login user's login.
-     * @return first page of related links added by user.
+     * @return list of links.
      */
-    public Chain<List<Link>> profileRelatedLinks(String login) {
-        return profileRelatedLinks(login, Page.of(1));
+    public Chain<List<Link>> getProfileRelatedLinks(String login) {
+        return getProfileRelatedLinks(login, Page.of(1));
     }
 
     /**
+     * Fetches a given page of related links added by user.
+     *
      * @param login user's login.
      * @param page  page.
-     * @return given page of related links added by user.
+     * @return list of links.
      */
-    public Chain<List<Link>> profileRelatedLinks(String login, Page page) {
+    public Chain<List<Link>> getProfileRelatedLinks(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/EntriesComments/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
                 .apiParam("login", login)
-                .build(), new TypeReference<List<Link>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
+     * Fetches first page of users following particular user.
+     *
      * @param login user's login.
-     * @return first page of users following particular user.
+     * @return list of profiles.
      */
-    public Chain<List<FullProfile>> profileFollowers(String login) {
-        return profileFollowers(login, Page.of(1));
+    public Chain<List<FullProfile>> getProfileFollowers(String login) {
+        return getProfileFollowers(login, Page.of(1));
     }
 
     /**
+     * Fetches a given page of users following particular user.
+     *
      * @param login user's login.
      * @param page  page.
-     * @return given page of users following particular user.
+     * @return list of profiles.
      */
-    public Chain<List<FullProfile>> profileFollowers(String login, Page page) {
+    public Chain<List<FullProfile>> getProfileFollowers(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/Followers/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
                 .apiParam("login", login)
-                .build(), new TypeReference<List<FullProfile>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
+     * Fetches first page of users being followed by particular user.
+     *
      * @param login user's login.
-     * @return first page of users being followed by particular user.
+     * @return list of profiles.
      */
-    public Chain<List<FullProfile>> profileFollowed(String login) {
-        return profileFollowed(login, Page.of(1));
+    public Chain<List<FullProfile>> getProfileFollowed(String login) {
+        return getProfileFollowed(login, Page.of(1));
     }
 
     /**
+     * Fetches a given page of users being followed by particular user.
+     *
      * @param login user's login.
      * @param page  page.
-     * @return given page of users being followed by particular user.
+     * @return list of profiles.
      */
-    public Chain<List<FullProfile>> profileFollowed(String login, Page page) {
+    public Chain<List<FullProfile>> getProfileFollowed(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/Followed/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
                 .apiParam("login", login)
-                .build(), new TypeReference<List<FullProfile>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
+     * Fetches first page of user's badges.
+     *
      * @param login user's login.
-     * @return first page of user's badges.
+     * @return list of badges.
      */
-    public Chain<List<Badge>> profileBadges(String login) {
-        return profileBadges(login, Page.of(1));
+    public Chain<List<Badge>> getProfileBadges(String login) {
+        return getProfileBadges(login, Page.of(1));
     }
 
     /**
+     * Fetches a given page of user's badges.
+     *
      * @param login user's login.
      * @param page  page.
-     * @return given page of user's badges.
+     * @return list of badges.
      */
-    public Chain<List<Badge>> profileBadges(String login, Page page) {
+    public Chain<List<Badge>> getProfileBadges(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/Badges/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
                 .apiParam("login", login)
-                .build(), new TypeReference<List<Badge>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
+     * Fetches first page of user's digged links.
+     *
      * @param login user's login.
-     * @return first page of user's digged links.
+     * @return list of links.
      */
-    public Chain<List<Link>> profileDiggedLinks(String login) {
-        return profileDiggedLinks(login, Page.of(1));
+    public Chain<List<Link>> getProfileDiggedLinks(String login) {
+        return getProfileDiggedLinks(login, Page.of(1));
     }
 
     /**
+     * Fetches a given page of user's digged links.
+     *
      * @param login user's login.
      * @param page  page.
-     * @return given page of user's digged links.
+     * @return list of links.
      */
-    public Chain<List<Link>> profileDiggedLinks(String login, Page page) {
+    public Chain<List<Link>> getProfileDiggedLinks(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/Digged/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
                 .apiParam("login", login)
-                .build(), new TypeReference<List<Link>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
+     * Fetches first page of user's buried links.
+     *
      * @param login user's login.
-     * @return first page of user's buried links.
+     * @return list of links.
      */
-    public Chain<List<Link>> profileBuriedLinks(String login) {
-        return profileBuriedLinks(login, Page.of(1));
+    public Chain<List<Link>> getProfileBuriedLinks(String login) {
+        return getProfileBuriedLinks(login, Page.of(1));
     }
 
     /**
+     * Fetches a given page of user's buried links.
+     *
      * @param login user's login.
      * @param page  page.
-     * @return given page of user's buried links.
+     * @return list of links.
      */
-    public Chain<List<Link>> profileBuriedLinks(String login, Page page) {
+    public Chain<List<Link>> getProfileBuriedLinks(String login, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/Buried/login/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
                 .apiParam("login", login)
-                .build(), new TypeReference<List<Link>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
-     * @return first page of profiles from user rank.
+     * Fetches first page of profiles from user rank.
+     *
+     * @return list of profiles.
      */
-    public Chain<List<FullProfile>> profileRanking() {
-        return profileRanking(Page.of(1));
+    public Chain<List<FullProfile>> getProfileRanking() {
+        return getProfileRanking(Page.of(1));
     }
 
     /**
+     * Fetches a given page of profiles from user rank.
+     *
      * @param page page.
-     * @return given page of profiles from user rank.
+     * @return list of profiles.
      */
-    public Chain<List<FullProfile>> profileRanking(Page page) {
+    public Chain<List<FullProfile>> getProfileRanking(Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Profiles/Rank/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
-                .build(), new TypeReference<List<FullProfile>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
+     * Starts observing a user.
+     *
      * @param login user's login.
      * @return interaction status - being observed or blocked.
      * @throws UserCannotObserveThemselfException when you try to observe yourself.
@@ -1037,6 +1171,8 @@ public class WykopClient {
     }
 
     /**
+     * Stops observing a user.
+     *
      * @param login user's login.
      * @return interaction status - being observed or blocked.
      * @throws UserCannotObserveThemselfException when you try to observe yourself.
@@ -1049,6 +1185,8 @@ public class WykopClient {
     }
 
     /**
+     * Starts blocking a user.
+     *
      * @param login user's login.
      * @return interaction status - being observed or blocked.
      * @throws UserCannotObserveThemselfException when you try to observe yourself.
@@ -1061,6 +1199,8 @@ public class WykopClient {
     }
 
     /**
+     * Stops blocking a user.
+     *
      * @param login user's login.
      * @return interaction status - being observed or blocked.
      * @throws UserCannotObserveThemselfException when you try to observe yourself.
@@ -1075,15 +1215,19 @@ public class WykopClient {
     // Terms
 
     /**
+     * Fetches Wykop Terms of Use.
+     *
      * @return terms of use.
      */
-    public Chain<Terms> terms() {
+    public Chain<Terms> getTerms() {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Terms/Index/")
                 .build(), Terms.class);
     }
 
     /**
+     * Confirms Wykop Terms of Use.
+     *
      * @return confirmation terms status.
      */
     public Chain<Boolean> confirmTerms() {
@@ -1095,19 +1239,23 @@ public class WykopClient {
     // Tags
 
     /**
+     * Fetches first page of actions.
+     *
      * @param tag name of the tag, either with or without '#'.
-     * @return first page of actions.
+     * @return actions.
      */
-    public Chain<Actions> tagActions(String tag) {
-        return tagActions(tag, Page.of(1));
+    public Chain<Actions> getTagActions(String tag) {
+        return getTagActions(tag, Page.of(1));
     }
 
     /**
+     * Fetches a given page of actions.
+     *
      * @param tag  name of the tag, either with or without '#'.
      * @param page page.
-     * @return given page of actions.
+     * @return actions.
      */
-    public Chain<Actions> tagActions(String tag, Page page) {
+    public Chain<Actions> getTagActions(String tag, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Tags/Index/tag/page/int/")
                 .apiParam("tag", tag)
@@ -1116,50 +1264,60 @@ public class WykopClient {
     }
 
     /**
+     * Fetches a first page of list of links.
+     *
      * @param tag name of the tag, either with or without '#'.
-     * @return first page of list of links.
+     * @return list of links.
      */
-    public Chain<List<Link>> tagLinks(String tag) {
-        return tagLinks(tag, Page.of(1));
+    public Chain<List<Link>> getTagLinks(String tag) {
+        return getTagLinks(tag, Page.of(1));
     }
 
     /**
+     * Fetches a given page of list of links.
+     *
      * @param tag  name of the tag, either with or without '#'.
      * @param page page.
-     * @return given page of list of links.
+     * @return list of links.
      */
-    public Chain<List<Link>> tagLinks(String tag, Page page) {
+    public Chain<List<Link>> getTagLinks(String tag, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Tags/Links/tag/page/int/")
                 .apiParam("tag", tag)
                 .namedParam("page", String.valueOf(page.value()))
-                .build(), new TypeReference<List<Link>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
+     * Fetches first page of list of entries.
+     *
      * @param tag name of the tag, either with or without '#'.
-     * @return first page of list of entries.
+     * @return list of entries.
      */
-    public Chain<List<Entry>> tagEntries(String tag) {
-        return tagEntries(tag, Page.of(1));
+    public Chain<List<Entry>> getTagEntries(String tag) {
+        return getTagEntries(tag, Page.of(1));
     }
 
     /**
+     * Fetches a given page of list of entries.
+     *
      * @param tag  name of the tag, either with or without '#'.
      * @param page page.
-     * @return given page of list of entries.
+     * @return list of entries.
      */
-    public Chain<List<Entry>> tagEntries(String tag, Page page) {
+    public Chain<List<Entry>> getTagEntries(String tag, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Tags/Entries/tag/page/int/")
                 .apiParam("tag", tag)
                 .namedParam("page", String.valueOf(page.value()))
-                .build(), new TypeReference<List<Entry>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
+     * Starts observing a tag.
+     *
      * @param tag tag's name.
      * @return interaction status - being observed or blocked.
      */
@@ -1171,6 +1329,8 @@ public class WykopClient {
     }
 
     /**
+     * Stops observing a tag.
+     *
      * @param tag tag's name.
      * @return interaction status - being observed or blocked.
      */
@@ -1182,6 +1342,8 @@ public class WykopClient {
     }
 
     /**
+     * Starts blocking a tag.
+     *
      * @param tag tag's name.
      * @return interaction status - being observed or blocked.
      */
@@ -1193,6 +1355,8 @@ public class WykopClient {
     }
 
     /**
+     * Stops blocking a tag.
+     *
      * @param tag tag's name.
      * @return interaction status - being observed or blocked.
      */
@@ -1204,7 +1368,7 @@ public class WykopClient {
     }
 
     /**
-     * Enable tag notifications.
+     * Enables tag notifications.
      *
      * @param tag tag's name.
      * @return nothing.
@@ -1218,7 +1382,7 @@ public class WykopClient {
     }
 
     /**
-     * Disable tag notifications.
+     * Disables tag notifications.
      *
      * @param tag tag's name.
      * @return nothing.
@@ -1234,6 +1398,8 @@ public class WykopClient {
     // Suggest
 
     /**
+     * Fetches a tag suggestions.
+     *
      * @param tag tag's name.
      * @return list of tag suggestions.
      */
@@ -1241,11 +1407,13 @@ public class WykopClient {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Suggest/Tags/tag/")
                 .apiParam("tag", tag)
-                .build(), new TypeReference<List<TagSuggestion>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
+     * Fetches a user suggestions.
+     *
      * @param login user's login.
      * @return list of user suggestions.
      */
@@ -1253,28 +1421,28 @@ public class WykopClient {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Suggest/Users/login/")
                 .apiParam("login", login)
-                .build(), new TypeReference<List<SimpleProfile>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     // Mywykop
 
     /**
-     * Actions from observed users and tags from MyWykop.
+     * Fetches first page of actions from observed users and tags from MyWykop.
      *
-     * @return first page of list of all actions.
+     * @return actions.
      */
-    public Chain<Actions> myWykopIndexActions() {
-        return myWykopIndexActions(Page.of(1));
+    public Chain<Actions> getMyWykopIndexActions() {
+        return getMyWykopIndexActions(Page.of(1));
     }
 
     /**
-     * Actions from observed users and tags from MyWykop.
+     * Fetches a given page of actions from observed users and tags from MyWykop.
      *
      * @param page page.
-     * @return given page of list of all actions.
+     * @return actions.
      */
-    public Chain<Actions> myWykopIndexActions(Page page) {
+    public Chain<Actions> getMyWykopIndexActions(Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Mywykop/Index/type/string/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
@@ -1282,23 +1450,23 @@ public class WykopClient {
     }
 
     /**
-     * Actions from observed users and tags from MyWykop.
+     * Fetches first page of actions with {@link ActionType} from observed users and tags from MyWykop.
      *
      * @param type type of returning value.
-     * @return first page of list of {@link ActionType} actions.
+     * @return actions.
      */
-    public Chain<Actions> myWykopIndexActions(ActionType type) {
-        return myWykopIndexActions(type, Page.of(1));
+    public Chain<Actions> getMyWykopIndexActions(ActionType type) {
+        return getMyWykopIndexActions(type, Page.of(1));
     }
 
     /**
-     * Actions from observed users and tags from MyWykop.
+     * Fetches a given page of actions with {@link ActionType} from observed users and tags from MyWykop.
      *
      * @param type type of returning value.
      * @param page page.
-     * @return given page of list of {@link ActionType} actions.
+     * @return actions.
      */
-    public Chain<Actions> myWykopIndexActions(ActionType type, Page page) {
+    public Chain<Actions> getMyWykopIndexActions(ActionType type, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Mywykop/Index/type/string/page/int/")
                 .namedParam("type", type.value())
@@ -1307,21 +1475,21 @@ public class WykopClient {
     }
 
     /**
-     * Actions from MyWykop's observed tags.
+     * Fetches first page of actions from MyWykop's observed tags.
      *
-     * @return first page of list of all actions.
+     * @return actions.
      */
-    public Chain<Actions> myWykopTagsActions() {
-        return myWykopTagsActions(Page.of(1));
+    public Chain<Actions> getMyWykopTagsActions() {
+        return getMyWykopTagsActions(Page.of(1));
     }
 
     /**
-     * Actions from MyWykop's observed tags.
+     * Fetches a given page of actions from MyWykop's observed tags.
      *
      * @param page page.
-     * @return given page of list of all actions.
+     * @return actions.
      */
-    public Chain<Actions> myWykopTagsActions(Page page) {
+    public Chain<Actions> getMyWykopTagsActions(Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Mywykop/Tags/type/string/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
@@ -1329,23 +1497,23 @@ public class WykopClient {
     }
 
     /**
-     * Actions from MyWykop's observed tags.
+     * Fetches first page of actions with {@link ActionType} from MyWykop's observed tags.
      *
      * @param type type of returning value.
-     * @return first page of list of {@link ActionType} actions.
+     * @return actions.
      */
-    public Chain<Actions> myWykopTagsActions(ActionType type) {
-        return myWykopIndexActions(type, Page.of(1));
+    public Chain<Actions> getMyWykopTagsActions(ActionType type) {
+        return getMyWykopIndexActions(type, Page.of(1));
     }
 
     /**
-     * Actions from MyWykop's observed tags.
+     * Fetches a given page of actions with {@link ActionType} from MyWykop's observed tags.
      *
      * @param type type of returning value.
      * @param page page.
-     * @return given page of list of {@link ActionType} actions.
+     * @return actions.
      */
-    public Chain<Actions> myWykopTagsActions(ActionType type, Page page) {
+    public Chain<Actions> getMyWykopTagsActions(ActionType type, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Mywykop/Tags/type/string/page/int/")
                 .namedParam("type", type.value())
@@ -1354,21 +1522,21 @@ public class WykopClient {
     }
 
     /**
-     * Actions from MyWykop's observed users.
+     * Fetches first page of actions from MyWykop's observed users.
      *
-     * @return first page of list of all actions.
+     * @return actions.
      */
-    public Chain<Actions> myWykopUsersActions() {
-        return myWykopUsersActions(Page.of(1));
+    public Chain<Actions> getMyWykopUsersActions() {
+        return getMyWykopUsersActions(Page.of(1));
     }
 
     /**
-     * Actions from MyWykop's observed users.
+     * Fetches a given page of actions from MyWykop's observed users.
      *
      * @param page page.
-     * @return given page of list of all actions.
+     * @return actions.
      */
-    public Chain<Actions> myWykopUsersActions(Page page) {
+    public Chain<Actions> getMyWykopUsersActions(Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Mywykop/Users/type/string/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
@@ -1376,23 +1544,23 @@ public class WykopClient {
     }
 
     /**
-     * Actions from MyWykop's observed users.
+     * Fetches first page of actions with {@link ActionType} from MyWykop's observed users.
      *
      * @param type type of returning value.
-     * @return first page of list of {@link ActionType} actions.
+     * @return actions.
      */
-    public Chain<Actions> myWykopUsersActions(ActionType type) {
-        return myWykopUsersActions(type, Page.of(1));
+    public Chain<Actions> getMyWykopUsersActions(ActionType type) {
+        return getMyWykopUsersActions(type, Page.of(1));
     }
 
     /**
-     * Actions from MyWykop's observed users.
+     * Fetches a given page of actions with {@link ActionType} from MyWykop's observed users.
      *
      * @param type type of returning value.
      * @param page page.
-     * @return given page of list of {@link ActionType} actions.
+     * @return actions.
      */
-    public Chain<Actions> myWykopUsersActions(ActionType type, Page page) {
+    public Chain<Actions> getMyWykopUsersActions(ActionType type, Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Mywykop/Users/type/string/page/int/")
                 .namedParam("type", type.value())
@@ -1401,82 +1569,90 @@ public class WykopClient {
     }
 
     /**
-     * Entries from observed users and tags.
+     * Fetches entries from observed users and tags.
      *
      * @return list of entries.
      */
-    public Chain<List<Entry>> myWykopEntries() {
-        return myWykopEntries(Page.of(1));
+    public Chain<List<Entry>> getMyWykopEntries() {
+        return getMyWykopEntries(Page.of(1));
     }
 
     /**
-     * Entries from observed users and tags.
+     * Fetches entries from observed users and tags.
      *
      * @param page page.
      * @return list of entries.
      */
-    public Chain<List<Entry>> myWykopEntries(Page page) {
+    public Chain<List<Entry>> getMyWykopEntries(Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Mywykop/Entries/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
-                .build(), new TypeReference<List<Entry>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
-     * Links from observed users and tags.
+     * Fetches links from observed users and tags.
      *
      * @return list of links.
      */
-    public Chain<List<Link>> myWykopLinks() {
-        return myWykopLinks(Page.of(1));
+    public Chain<List<Link>> getMyWykopLinks() {
+        return getMyWykopLinks(Page.of(1));
     }
 
     /**
-     * Links from observed users and tags.
+     * Fetches links from observed users and tags.
      *
      * @param page page.
      * @return list of links.
      */
-    public Chain<List<Link>> myWykopLinks(Page page) {
+    public Chain<List<Link>> getMyWykopLinks(Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Mywykop/Links/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
-                .build(), new TypeReference<List<Link>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     // Search
 
     /**
+     * Fetches first page of search results for a given phrase.
+     *
      * @param phrase search phrase.
-     * @return first page of list of links
+     * @return list of links
      */
     public Chain<List<Link>> searchLinks(String phrase) {
         return searchLinks(phrase, Page.of(1));
     }
 
     /**
+     * Fetches a given page of search results for a given phrase.
+     *
      * @param phrase search phrase.
      * @param page   page.
-     * @return given page of list of links.
+     * @return list of links.
      */
     public Chain<List<Link>> searchLinks(String phrase, Page page) {
         return searchLinks(new LinkSearchQuery.Builder().phrase(phrase).build(), page);
     }
 
     /**
+     * Fetches first page of search results for a given query.
+     *
      * @param linkSearchQuery search query.
-     * @return first page of list of links.
+     * @return list of links.
      */
     public Chain<List<Link>> searchLinks(LinkSearchQuery linkSearchQuery) {
         return searchLinks(linkSearchQuery, Page.of(1));
     }
 
     /**
+     * Fetches a given page of search results for a given query.
+     *
      * @param linkSearchQuery search query.
      * @param page            page.
-     * @return given page of list of links.
+     * @return list of links.
      */
     public Chain<List<Link>> searchLinks(LinkSearchQuery linkSearchQuery, Page page) {
         WykopRequest.Builder builder = new WykopRequest.Builder()
@@ -1487,39 +1663,47 @@ public class WykopClient {
                 .postParam("when", linkSearchQuery.dateRange().value())
                 .postParam("votes", String.valueOf(linkSearchQuery.minimumVoteCount()));
         linkSearchQuery.phrase().ifPresent(phrase -> builder.postParam("q", phrase));
-        return new Chain<>(builder.build(), new TypeReference<List<Link>>() {
+        return new Chain<>(builder.build(), new TypeReference<>() {
         });
     }
 
     /**
+     * Fetches first page of entry search results for a given phrase.
+     *
      * @param phrase search phrase.
-     * @return first page of list of entries.
+     * @return list of entries.
      */
     public Chain<List<Entry>> searchEntries(String phrase) {
         return searchEntries(phrase, Page.of(1));
     }
 
     /**
+     * Fetches a given page of entry search results for a given phrase.
+     *
      * @param phrase search phrase.
      * @param page   page.
-     * @return given page of list of entries.
+     * @return list of entries.
      */
     public Chain<List<Entry>> searchEntries(String phrase, Page page) {
         return searchEntries(new EntrySearchQuery.Builder().phrase(phrase).build(), page);
     }
 
     /**
+     * Fetches first page of entry search results for a given query.
+     *
      * @param entrySearchQuery search query.
-     * @return first page of list of entries.
+     * @return list of entries.
      */
     public Chain<List<Entry>> searchEntries(EntrySearchQuery entrySearchQuery) {
         return searchEntries(entrySearchQuery, Page.of(1));
     }
 
     /**
+     * Fetches a given page of entry search results for a given query.
+     *
      * @param entrySearchQuery search query.
      * @param page             page.
-     * @return given page of list of entries.
+     * @return list of entries.
      */
     public Chain<List<Entry>> searchEntries(EntrySearchQuery entrySearchQuery, Page page) {
         WykopRequest.Builder builder = new WykopRequest.Builder()
@@ -1527,19 +1711,21 @@ public class WykopClient {
                 .namedParam("page", String.valueOf(page.value()))
                 .postParam("q", entrySearchQuery.phrase())
                 .postParam("when", entrySearchQuery.dateRange().value());
-        return new Chain<>(builder.build(), new TypeReference<List<Entry>>() {
+        return new Chain<>(builder.build(), new TypeReference<>() {
         });
     }
 
     /**
+     * Fetches first page of profile search results for a given user.
+     *
      * @param login login.
-     * @return list of searched profiles.
+     * @return list of profiles.
      */
     public Chain<List<SimpleProfile>> searchProfiles(String login) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Search/Profiles/")
                 .postParam("q", login)
-                .build(), new TypeReference<List<SimpleProfile>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -1552,7 +1738,7 @@ public class WykopClient {
      * @return draft of the link
      * @throws LinkAlreadyExistsException when trying to create a draft and link already exists
      */
-    public Chain<LinkDraft> linkPrepareDraft(String url) {
+    public Chain<LinkDraft> prepareLinkDraft(String url) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Addlink/Draft/")
                 .postParam("url", url)
@@ -1560,10 +1746,12 @@ public class WykopClient {
     }
 
     /**
+     * Prepares an image for a link.
+     *
      * @param key {@link LinkDraft}'s key.
-     * @return possible {@link PreparedImage}.
+     * @return possible {@link LinkImage}.
      */
-    public Chain<Optional<PreparedImage>> linkPrepareImage(String key) {
+    public Chain<Optional<LinkImage>> prepareLinkImage(String key) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Addlink/Images/key/string/")
                 .namedParam("key", key)
@@ -1581,7 +1769,7 @@ public class WykopClient {
      * @return added link.
      * @throws InvalidValueException when some of the fields are missing.
      */
-    public Chain<Link> linkAdd(NewLink newLink) {
+    public Chain<Link> addLink(NewLink newLink) {
         WykopRequest.Builder linkRequest = new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Addlink/Add/key/string/")
                 .namedParam("key", newLink.key())
@@ -1597,83 +1785,99 @@ public class WykopClient {
     // Links
 
     /**
-     * @return first page of promoted links.
+     * Fetches first page of promoted links.
+     *
+     * @return list of links.
      */
-    public Chain<List<Link>> promotedLinks() {
-        return promotedLinks(Page.of(1));
+    public Chain<List<Link>> getPromotedLinks() {
+        return getPromotedLinks(Page.of(1));
     }
 
     /**
+     * Fetches a given page of promoted links.
+     *
      * @param page page.
-     * @return given page of promoted links.
+     * @return list of links.
      */
-    public Chain<List<Link>> promotedLinks(Page page) {
+    public Chain<List<Link>> getPromotedLinks(Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Promoted/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
-                .build(), new TypeReference<List<Link>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
-     * @return first page of upcoming links.
+     * Fetches first page of upcoming links.
+     *
+     * @return list of links.
      */
-    public Chain<List<Link>> upcomingLinks() {
-        return upcomingLinks(Page.of(1));
+    public Chain<List<Link>> getUpcomingLinks() {
+        return getUpcomingLinks(Page.of(1));
     }
 
     /**
+     * Fetches a given page of upcoming links.
+     *
      * @param page page.
-     * @return given page of upcoming links.
+     * @return list of links.
      */
-    public Chain<List<Link>> upcomingLinks(Page page) {
+    public Chain<List<Link>> getUpcomingLinks(Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Upcoming/page/int/")
                 .namedParam("page", String.valueOf(page.value()))
-                .build(), new TypeReference<List<Link>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
-     * @return first page of favorite links.
+     * Fetches first page of favorite links.
+     *
+     * @return list of links.
      */
-    public Chain<List<Link>> favoriteLinks() {
-        return favoriteLinks(Page.of(1));
+    public Chain<List<Link>> getFavoriteLinks() {
+        return getFavoriteLinks(Page.of(1));
     }
 
     /**
+     * Fetches a given page of favorite links.
+     *
      * @param page page.
-     * @return given page of favorite links.
+     * @return list of links
      */
-    public Chain<List<Link>> favoriteLinks(Page page) {
+    public Chain<List<Link>> getFavoriteLinks(Page page) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Observed/page/int/")   //yep, it returns favorite links, not observed ones
                 .namedParam("page", String.valueOf(page.value()))
-                .build(), new TypeReference<List<Link>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
+     * Fetches a link without comments.
+     *
      * @param linkId link's id.
      * @return possible link without comments.
      */
-    public Chain<Optional<Link>> link(int linkId) {
+    public Chain<Optional<Link>> getLink(int linkId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Link/id/")
                 .apiParam("id", String.valueOf(linkId))
-                .build(), new TypeReference<Optional<Link>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
+     * Fetches a link with comments.
+     *
      * @param linkId link's id.
      * @return possible link with comments.
      */
-    public Chain<Optional<LinkWithComments>> linkWithComments(int linkId) {
+    public Chain<Optional<LinkWithComments>> getLinkWithComments(int linkId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Link/id/withcomments/true/")
                 .apiParam("id", String.valueOf(linkId))
-                .build(), new TypeReference<Optional<LinkWithComments>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -1684,7 +1888,7 @@ public class WykopClient {
      * @return link's vote data.
      * @throws ArchivalContentException when id is invalid.
      */
-    public Chain<LinkVoteData> linkVoteUp(int linkId) {
+    public Chain<LinkVoteData> voteUpLink(int linkId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/VoteUp/id/")
                 .apiParam("id", String.valueOf(linkId))
@@ -1698,7 +1902,7 @@ public class WykopClient {
      * @return link's vote data.
      * @throws ArchivalContentException when id is invalid.
      */
-    public Chain<LinkVoteData> linkVoteRemove(int linkId) {
+    public Chain<LinkVoteData> voteRemoveFromLink(int linkId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/VoteRemove/id/")
                 .apiParam("id", String.valueOf(linkId))
@@ -1712,7 +1916,7 @@ public class WykopClient {
      * @return link's vote data.
      * @throws ArchivalContentException when id is invalid.
      */
-    public Chain<LinkVoteData> linkVoteDown(int linkId, VoteDownReason voteDownReason) {
+    public Chain<LinkVoteData> voteDownLink(int linkId, VoteDownReason voteDownReason) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/VoteDown/id/voteType/")
                 .apiParam("id", String.valueOf(linkId))
@@ -1721,74 +1925,86 @@ public class WykopClient {
     }
 
     /**
+     * Fetches all upvotes for a given link.
+     *
      * @param linkId link's id.
-     * @return list of upvotes for a given link.
+     * @return list of upvotes.
      */
-    public Chain<List<Vote>> linkAllUpvotes(int linkId) {
+    public Chain<List<Vote>> getAllUpvotesFromLink(int linkId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Upvoters/link_id/")
                 .apiParam("link_id", String.valueOf(linkId))
-                .build(), new TypeReference<List<Vote>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
+     * Fetches all downvotes for a given link.
+     *
      * @param linkId link's id.
-     * @return list of downvotes for a given link.
+     * @return list of downvotes.
      */
-    public Chain<List<Vote>> linkAllDownvotes(int linkId) {
+    public Chain<List<Vote>> getAllDownvotesFromLink(int linkId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Downvoters/link_id/")
                 .apiParam("link_id", String.valueOf(linkId))
-                .build(), new TypeReference<List<Vote>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
+     * Fetches top links from a given year.
+     *
      * @param year year.
-     * @return list of top links from given year.
+     * @return list of links.
      */
-    public Chain<List<Link>> linkTop(Year year) {
+    public Chain<List<Link>> getTopLinks(Year year) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Top/year/")
                 .apiParam("year", year.toString())
-                .build(), new TypeReference<List<Link>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
+     * Fetches top links from a given year and month.
+     *
      * @param year  year.
      * @param month month.
-     * @return list of top links from a given year and month.
+     * @return list of links.
      */
-    public Chain<List<Link>> linkTop(Year year, Month month) {
+    public Chain<List<Link>> getTopLinks(Year year, Month month) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Top/year/month/")
                 .apiParam("year", year.toString())
                 .apiParam("month", String.valueOf(month.getValue()))
-                .build(), new TypeReference<List<Link>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
     /**
+     * Fetches link's comments sorted by the best.
+     *
      * @param linkId link's id.
      * @return list of link's comments
      */
-    public Chain<List<LinkComment>> linkComments(int linkId) {
-        return linkComments(linkId, LinkCommentsSorting.BEST);
+    public Chain<List<LinkComment>> getLinkComments(int linkId) {
+        return getLinkComments(linkId, LinkCommentsSorting.BEST);
     }
 
     /**
+     * Fetches link's comments with a given sorting.
+     *
      * @param linkId              link's id.
      * @param linkCommentsSorting type of sorting.
      * @return list of link's comments
      */
-    public Chain<List<LinkComment>> linkComments(int linkId, LinkCommentsSorting linkCommentsSorting) {
+    public Chain<List<LinkComment>> getLinkComments(int linkId, LinkCommentsSorting linkCommentsSorting) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Comments/link/sort/string/")
                 .apiParam("link", String.valueOf(linkId))
                 .namedParam("sort", linkCommentsSorting.value())
-                .build(), new TypeReference<List<LinkComment>>() {
+                .build(), new TypeReference<>() {
         });
     }
 
@@ -1800,7 +2016,7 @@ public class WykopClient {
      * @return vote data.
      * @throws LinkCommentNotExistException when link's comment does not exist.
      */
-    public Chain<LinkCommentVoteData> linkCommentVoteUp(int linkId, int linkCommentId) {
+    public Chain<LinkCommentVoteData> voteUpLinkComment(int linkId, int linkCommentId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/CommentVoteUp/link/comment/")
                 .apiParam("link", String.valueOf(linkId))
@@ -1816,7 +2032,7 @@ public class WykopClient {
      * @return vote data.
      * @throws LinkCommentNotExistException when link's comment does not exist.
      */
-    public Chain<LinkCommentVoteData> linkCommentVoteDown(int linkId, int linkCommentId) {
+    public Chain<LinkCommentVoteData> voteDownLinkComment(int linkId, int linkCommentId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/CommentVoteDown/link/comment/")
                 .apiParam("link", String.valueOf(linkId))
@@ -1832,7 +2048,7 @@ public class WykopClient {
      * @return vote data.
      * @throws LinkCommentNotExistException when link's comment does not exist.
      */
-    public Chain<LinkCommentVoteData> linkCommentVoteRemove(int linkId, int linkCommentId) {
+    public Chain<LinkCommentVoteData> removeVoteFromLinkComment(int linkId, int linkCommentId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/CommentVoteCancel/link/comment/")
                 .apiParam("link", String.valueOf(linkId))
@@ -1847,15 +2063,16 @@ public class WykopClient {
      * @param newLinkComment comment to be added to link.
      * @return link's comment.
      */
-    public Chain<LinkComment> linkAddComment(int linkId, NewLinkComment newLinkComment) {
+    public Chain<LinkComment> addLinkComment(int linkId, NewLinkComment newLinkComment) {
         WykopRequest.Builder builder = new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/CommentAdd/link/")
                 .apiParam("link", String.valueOf(linkId));
         newLinkComment.body().ifPresent(body -> builder.postParam("body", body));
         newLinkComment.urlEmbed().ifPresent(urlEmbed -> builder.postParam("embed", urlEmbed));
-        newLinkComment.shownFileName().ifPresentOrElse(shownFileName ->
-                        newLinkComment.fileEmbed().ifPresent(file -> builder.file(file, shownFileName)),
-                () -> newLinkComment.fileEmbed().ifPresent(builder::file));
+        newLinkComment.fileEmbed().ifPresent(file ->
+                newLinkComment.shownFileName().ifPresentOrElse(shownFileName ->
+                                builder.file(file, shownFileName),
+                        () -> builder.file(file)));
         return new Chain<>(builder.build(), LinkComment.class);
     }
 
@@ -1867,17 +2084,17 @@ public class WykopClient {
      * @param newLinkComment comment to be added to link's comment.
      * @return link's comment.
      */
-    public Chain<LinkComment> linkAddComment(int linkId, int linkCommentId, NewLinkComment newLinkComment) {
+    public Chain<LinkComment> addLinkComment(int linkId, int linkCommentId, NewLinkComment newLinkComment) {
         WykopRequest.Builder builder = new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/CommentAdd/link/comment_id/")
                 .apiParam("comment_id", String.valueOf(linkCommentId))
                 .apiParam("link", String.valueOf(linkId));
         newLinkComment.body().ifPresent(body -> builder.postParam("body", body));
         newLinkComment.urlEmbed().ifPresent(urlEmbed -> builder.postParam("embed", urlEmbed));
-        newLinkComment.shownFileName().ifPresentOrElse(shownFileName ->
-                        newLinkComment.fileEmbed().ifPresent(file -> builder.file(file, shownFileName)),
-                () -> newLinkComment.fileEmbed().ifPresent(builder::file));
-
+        newLinkComment.fileEmbed().ifPresent(file ->
+                newLinkComment.shownFileName().ifPresentOrElse(shownFileName ->
+                                builder.file(file, shownFileName),
+                        () -> builder.file(file)));
         return new Chain<>(builder.build(), LinkComment.class);
     }
 
@@ -1893,15 +2110,16 @@ public class WykopClient {
      * @return edited link's comment.
      * @throws CannotEditCommentsWithAnswerException when you try to edit comment when somebody has already answered it.
      */
-    public Chain<LinkComment> linkEditComment(int linkCommentId, NewLinkComment newLinkComment) {
+    public Chain<LinkComment> editLinkComment(int linkCommentId, NewLinkComment newLinkComment) {
         WykopRequest.Builder builder = new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/CommentEdit/comment_id/")
                 .apiParam("comment_id", String.valueOf(linkCommentId));
         newLinkComment.body().ifPresent(body -> builder.postParam("body", body));
         newLinkComment.urlEmbed().ifPresent(urlEmbed -> builder.postParam("embed", urlEmbed));
-        newLinkComment.shownFileName().ifPresentOrElse(shownFileName ->
-                        newLinkComment.fileEmbed().ifPresent(file -> builder.file(file, shownFileName)),
-                () -> newLinkComment.fileEmbed().ifPresent(builder::file));
+        newLinkComment.fileEmbed().ifPresent(file ->
+                newLinkComment.shownFileName().ifPresentOrElse(shownFileName ->
+                                builder.file(file, shownFileName),
+                        () -> builder.file(file)));
         return new Chain<>(builder.build(), LinkComment.class);
     }
 
@@ -1917,7 +2135,7 @@ public class WykopClient {
      * @throws CannotReplyOnDeletedObjectsException when link does not exist or somebody has already answered to this comment.
      * @throws BodyContainsOnlyPmException          when you're trying to change a comment which aren't yours.
      */
-    public Chain<LinkComment> linkDeleteComment(int linkCommentId) {
+    public Chain<LinkComment> deleteLinkComment(int linkCommentId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/CommentDelete/comment_id/")
                 .apiParam("comment_id", String.valueOf(linkCommentId))
@@ -1930,7 +2148,7 @@ public class WykopClient {
      * @param id comment's id.
      * @return possible {@link LinkComment}.
      */
-    public Chain<Optional<LinkComment>> linkComment(int id) {
+    public Chain<Optional<LinkComment>> getLinkComment(int id) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Comment/comment/")
                 .apiParam("comment", String.valueOf(id))
@@ -1944,7 +2162,7 @@ public class WykopClient {
      * @param linkId link's id.
      * @return List of related links.
      */
-    public Chain<List<RelatedLink>> relatedLinks(int linkId) {
+    public Chain<List<RelatedLink>> getRelatedLinks(int linkId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Related/link/")
                 .apiParam("link", String.valueOf(linkId))
@@ -1963,7 +2181,7 @@ public class WykopClient {
      * @param newRelatedLink link you'd like to add to related links.
      * @return related link.
      */
-    public Chain<RelatedLink> addRelatedLinks(int linkId, NewRelatedLink newRelatedLink) {
+    public Chain<RelatedLink> addRelatedLink(int linkId, NewRelatedLink newRelatedLink) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/RelatedAdd/link/")
                 .apiParam("link", String.valueOf(linkId))
@@ -1985,7 +2203,7 @@ public class WykopClient {
      * @param relatedLinkId related link's id.
      * @return vote data with vote count.
      */
-    public Chain<RelatedLinkVoteData> linkRelatedVoteUp(int linkId, int relatedLinkId) {
+    public Chain<RelatedLinkVoteData> voteUpRelatedLink(int linkId, int relatedLinkId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/RelatedVoteUp/link_id/related_link_id/")
                 .apiParam("link_id", String.valueOf(linkId))
@@ -2005,7 +2223,7 @@ public class WykopClient {
      * @param relatedLinkId related link's id.
      * @return vote data with vote count.
      */
-    public Chain<RelatedLinkVoteData> linkRelatedVoteDown(int linkId, int relatedLinkId) {
+    public Chain<RelatedLinkVoteData> voteDownRelatedLink(int linkId, int relatedLinkId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/RelatedVoteDown/link_id/related_link_id/")
                 .apiParam("link_id", String.valueOf(linkId))
@@ -2020,7 +2238,7 @@ public class WykopClient {
      * @param linkId link's id.
      * @return mostly true, but what it does? No idea.
      */
-    public Chain<Boolean> linkFavorite(int linkId) {
+    public Chain<Boolean> toggleLinkFavorite(int linkId) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Links/Favorite/id/int/")
                 .namedParam("int", String.valueOf(linkId))
@@ -2087,15 +2305,15 @@ public class WykopClient {
 
         public WykopClient build() {
             if (applicationCredentials == null)
-                throw new IllegalStateException("Application Credentials must be provided.");
+                throw new IllegalArgumentException("Application Credentials must be provided.");
             WykopHttpClient client = new WykopHttpClient(userCredentials, applicationCredentials);
             WykopObjectMapper wykopObjectMapper = new WykopObjectMapper();
             WykopConnect wykopConnect = new WykopConnect(wykopObjectMapper, applicationCredentials);
-            return new WykopClient(client, wykopObjectMapper, applicationCredentials, wykopConnect);
+            return new WykopClient(client, wykopObjectMapper, wykopConnect);
         }
     }
 
-    public class Chain<T> {
+    class Chain<T> {
         private final WykopRequest wykopRequest;
         private Class<T> clazz;
         private TypeReference<T> typeReference;

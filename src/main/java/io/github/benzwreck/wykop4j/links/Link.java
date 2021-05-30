@@ -5,6 +5,10 @@ import io.github.benzwreck.wykop4j.profiles.SimpleProfile;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+/**
+ * This class represents a single link without links.<br>
+ * Check out {@link LinkWithComments} if you need comments.
+ */
 public class Link {
     private final Integer id;
     private final String title;
@@ -60,68 +64,179 @@ public class Link {
         this.violationUrl = violationUrl;
     }
 
+    /**
+     * Gets link's id.
+     */
     public Integer id() {
         return id;
     }
 
+    /**
+     * Gets link's title.
+     */
     public String title() {
         return title;
     }
 
+    /**
+     * Gets link's description.
+     */
     public String description() {
         return description;
     }
 
+    /**
+     * Gets link's tags.
+     */
     public String tags() {
         return tags;
     }
 
+    /**
+     * Gets link's source url.
+     */
     public String sourceUrl() {
         return sourceUrl;
     }
 
+    /**
+     * Gets link's vote count.
+     */
     public Integer voteCount() {
         return voteCount;
     }
 
+    /**
+     * Gets link's bury count.
+     */
     public Integer buryCount() {
         return buryCount;
     }
 
+    /**
+     * Gets link's comments count.
+     */
     public Integer commentsCount() {
         return commentsCount;
     }
 
+    /**
+     * Gets link's related links count.
+     */
     public Integer relatedCount() {
         return relatedCount;
     }
 
+    /**
+     * Gets link's date and time of creation.
+     */
     public LocalDateTime date() {
         return date;
     }
 
+    /**
+     * Gets link's author.
+     */
     public SimpleProfile author() {
         return author;
     }
 
+    /**
+     * Gets link's preview.
+     */
     public String preview() {
         return preview;
     }
 
+    /**
+     * Returns if link is adult only.
+     */
     public Boolean plus18() {
         return plus18;
     }
 
+    /**
+     * Gets link's status.
+     */
     public String status() {
         return status;
     }
 
+    /**
+     * Returns if user can vote.
+     */
     public Boolean canVote() {
         return canVote;
     }
 
+    /**
+     * Returns if link is hot.
+     */
     public Boolean isHot() {
         return isHot;
+    }
+
+    /**
+     * Returns if link is archived.
+     */
+    public Boolean archived() {
+        return archived;
+    }
+
+    /**
+     * Returns if link is user's favorite.
+     */
+    public Boolean userFavorite() {
+        return userFavorite;
+    }
+
+    /**
+     * Returns if link is observed by user.
+     */
+    public Boolean userObserve() {
+        return userObserve;
+    }
+
+    /**
+     * Returns if link is recommended.
+     */
+    public Boolean isRecommended() {
+        return isRecommended;
+    }
+
+    /**
+     * Gets possible application's name from which link was created.
+     */
+    public Optional<String> app() {
+        return Optional.ofNullable(app);
+    }
+
+    /**
+     * Returns if link is created from an external link or was created by the user.
+     */
+    public Boolean hasOwnContent() {
+        return hasOwnContent;
+    }
+
+    /**
+     * Gets link's url.
+     */
+    public String url() {
+        return url;
+    }
+
+    /**
+     * Gets link's violation url.
+     */
+    public String violationUrl() {
+        return violationUrl;
+    }
+
+    /**
+     * Gets possible link's info e.g. if it's buried.
+     */
+    public Optional<Info> info() {
+        return Optional.ofNullable(info);
     }
 
     @Override
@@ -155,43 +270,11 @@ public class Link {
                 '}';
     }
 
-    public Boolean archived() {
-        return archived;
-    }
-
-    public Boolean userFavorite() {
-        return userFavorite;
-    }
-
-    public Boolean userObserve() {
-        return userObserve;
-    }
-
-    public Boolean isRecommended() {
-        return isRecommended;
-    }
-
-    public String app() {
-        return app;
-    }
-
-    public Boolean hasOwnContent() {
-        return hasOwnContent;
-    }
-
-    public String url() {
-        return url;
-    }
-
-    public String violationUrl() {
-        return violationUrl;
-    }
-
-    public Optional<Info> info() {
-        return Optional.ofNullable(info);
-    }
-
+    /**
+     * This class contains link's info.
+     */
     public static class Info {
+
         private final String body;
         private final Color color;
 
@@ -200,10 +283,16 @@ public class Link {
             this.color = color;
         }
 
+        /**
+         * Gets info's body.
+         */
         public String body() {
             return body;
         }
 
+        /**
+         * Gets info's color.
+         */
         public Color color() {
             return color;
         }
@@ -216,6 +305,9 @@ public class Link {
                     '}';
         }
 
+        /**
+         * This class contains available Info's color.
+         */
         public enum Color {
             RED, YELLOW, GREEN, UNDEFINED
         }

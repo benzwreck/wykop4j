@@ -1,19 +1,19 @@
 package io.github.benzwreck.wykop4j.integration
 
 import io.github.benzwreck.wykop4j.IntegrationWykopClient
+import io.github.benzwreck.wykop4j.Page
 import io.github.benzwreck.wykop4j.WykopClient
 import io.github.benzwreck.wykop4j.entries.Entry
-import io.github.benzwreck.wykop4j.entries.NewEntryComment
 import io.github.benzwreck.wykop4j.entries.NewEntry
-import io.github.benzwreck.wykop4j.Page
+import io.github.benzwreck.wykop4j.entries.NewEntryComment
 import io.github.benzwreck.wykop4j.entries.Period
-import io.github.benzwreck.wykop4j.shared.UserVote
 import io.github.benzwreck.wykop4j.exceptions.ActionForbiddenException
 import io.github.benzwreck.wykop4j.exceptions.ArchivalContentException
 import io.github.benzwreck.wykop4j.exceptions.CommentDoesNotExistException
 import io.github.benzwreck.wykop4j.exceptions.NiceTryException
 import io.github.benzwreck.wykop4j.exceptions.UnableToDeleteCommentException
 import io.github.benzwreck.wykop4j.exceptions.UnableToModifyEntryException
+import io.github.benzwreck.wykop4j.shared.UserVote
 import spock.lang.Specification
 import spock.lang.Unroll
 import spock.util.concurrent.PollingConditions
@@ -35,8 +35,8 @@ class EntrySpec extends Specification {
 
     def "should return first and second page of entries' stream"() {
         when:
-        def entries1 = wykop.entriesStream(Page.of(1)).execute()
-        def entries2 = wykop.entriesStream(Page.of(2)).execute()
+        def entries1 = wykop.getEntriesStream(Page.of(1)).execute()
+        def entries2 = wykop.getEntriesStream(Page.of(2)).execute()
 
         then:
         def allEntries = entries1 + entries2
@@ -47,23 +47,24 @@ class EntrySpec extends Specification {
 
     def "should return list of entries where first entry is the next one of all entries' stream"() {
         when:
-        def entriesStream = wykop.entriesStream().execute()
-        def execute = wykop.entriesStream(entriesStream.get(0).id()).execute()
+        def entriesStream = wykop.getEntriesStream().execute()
+        def execute = wykop.getEntriesStream(entriesStream.get(0).id()).execute()
         then:
         execute.get(0).id() <= entriesStream.get(0).id()
     }
 
     def "should return entry"() {
         when:
-        def randomEntryId = wykop.hotEntries().execute().get(0).id()
-        def entry = wykop.entry(randomEntryId).execute()
+        def randomEntryId = wykop.getHotEntries().execute().get(0).id()
+        def entry = wykop.getEntry(randomEntryId).execute()
         then:
+        println(entry.get().commentsCount())
         randomEntryId == entry.get().id()
     }
 
     def "should return an empty Optional - entry id doesn't exist"() {
         when:
-        def entry = wykop.entry(nonexistentId).execute()
+        def entry = wykop.getEntry(nonexistentId).execute()
         then:
         entry == Optional.empty()
     }
@@ -71,7 +72,7 @@ class EntrySpec extends Specification {
     @Unroll
     def "should return first #period.value() hours hot page"() {
         expect:
-        wykop.hotEntries(period).execute()
+        wykop.getHotEntries(period).execute()
                 .stream()
                 .map(entry -> entry.date())
                 .filter(date -> date.until(LocalDateTime.now(), ChronoUnit.HOURS) > period.value())
@@ -83,28 +84,28 @@ class EntrySpec extends Specification {
 
     def "should return list of active entries from first page"() {
         when:
-        def entries = wykop.activeEntries().execute()
+        def entries = wykop.getActiveEntries().execute()
         then: "active entries must contain comments"
         entries.each { it.commentsCount() > 0 }
     }
 
     def "should return empty list of active entries from non-existent page"() {
         when:
-        def entries = wykop.activeEntries(Page.of(10000)).execute()
+        def entries = wykop.getActiveEntries(Page.of(10000)).execute()
         then:
         entries.isEmpty()
     }
 
     def "should return list of observed entries from first page"() {
         when:
-        def entries = wykop.observedEntries().execute()
+        def entries = wykop.getObservedEntries().execute()
         then:
         entries.forEach { it.favorite() }
     }
 
     def "should return empty list of observed entries from non-existent page"() {
         when:
-        def entries = wykop.observedEntries(Page.of(10000)).execute()
+        def entries = wykop.getObservedEntries(Page.of(10000)).execute()
         then:
         entries.isEmpty()
     }
@@ -119,7 +120,7 @@ class EntrySpec extends Specification {
 
     def "should throw an exception when try to delete somebody else's entry"() {
         setup:
-        def randomId = wykop.entriesStream().execute().get(0).id()
+        def randomId = wykop.getEntriesStream().execute().get(0).id()
         when:
         wykop.deleteEntry(randomId).execute()
         then:
@@ -211,21 +212,21 @@ class EntrySpec extends Specification {
 
     def "should upvote entry and then remove vote"() {
         def conditions = new PollingConditions(timeout: 5, initialDelay: 1)
-        def randomId = wykop.entriesStream().execute().get(0).id()
+        def randomId = wykop.getEntriesStream().execute().get(0).id()
         when:
-        wykop.entryVoteUp(randomId).execute()
+        wykop.voteUpEntry(randomId).execute()
         then:
         conditions.eventually {
-            assert wykop.entry(randomId).execute()
+            assert wykop.getEntry(randomId).execute()
                     .map(e -> e.userVote())
                     .filter(userVote -> userVote == UserVote.VOTED)
                     .isPresent()
         }
         when:
-        wykop.entryRemoveVote(randomId).execute()
+        wykop.voteRemoveFromEntry(randomId).execute()
         then:
         conditions.eventually {
-            assert wykop.entry(randomId).execute()
+            assert wykop.getEntry(randomId).execute()
                     .map(e -> e.userVote())
                     .filter(userVote -> userVote == UserVote.NOT_VOTED)
                     .isPresent()
@@ -234,41 +235,41 @@ class EntrySpec extends Specification {
 
     def "should throw an exception when try to upvote non-existing entry"() {
         when:
-        wykop.entryVoteUp(nonexistentId).execute()
+        wykop.voteUpEntry(nonexistentId).execute()
         then:
         thrown ArchivalContentException
     }
 
     def "should throw an exception when try to remove vote from non-existing entry"() {
         when:
-        wykop.entryRemoveVote(nonexistentId).execute()
+        wykop.voteRemoveFromEntry(nonexistentId).execute()
         then:
         thrown ArchivalContentException
     }
 
     def "should return list of upvoters"() {
         setup:
-        def randomId = wykop.hotEntries().execute().get(0).id()
+        def randomId = wykop.getHotEntries().execute().get(0).id()
         when:
-        def votes = wykop.entryAllUpvotes(randomId).execute()
+        def votes = wykop.getAllUpvotesFromEntry(randomId).execute()
         then:
         !votes.isEmpty()
     }
 
     def "should return comment"() {
         setup:
-        def hotEntries = wykop.hotEntries().execute()
-        def entry = wykop.entry(hotEntries.get(0).id()).execute()
-        def id = entry.get().comments().get().get(0).id()
+        def hotEntries = wykop.getHotEntries().execute()
+        def entry = wykop.getEntry(hotEntries.get(0).id()).execute()
+        def id = entry.get().comments().get(0).id()
         when:
-        def comment = wykop.entryComment(id).execute()
+        def comment = wykop.getEntryComment(id).execute()
         then:
         comment.isPresent()
     }
 
     def "should return empty Optional when given non-existent entry's id"() {
         when:
-        def comment = wykop.entryComment(nonexistentId).execute()
+        def comment = wykop.getEntryComment(nonexistentId).execute()
         then:
         !comment.isPresent()
     }
@@ -278,9 +279,9 @@ class EntrySpec extends Specification {
         def addEntryId = wykop.addEntry(newEntryWithBodyAndUrlMedia).execute().id()
         def comment = wykop.addEntryComment(addEntryId, newCommentWithBodyAndUrlMedia).execute()
         then:
-        wykop.entry(addEntryId).execute()
-                .flatMap(e -> e.comments())
-                .flatMap(list -> list.stream().filter(c -> c.id() == comment.id()).findFirst())
+        wykop.getEntry(addEntryId).execute()
+                .map(e -> e.comments())
+                .map(list -> list.stream().filter(c -> c.id() == comment.id()).findFirst())
                 .isPresent()
         cleanup:
         wykop.deleteEntry(addEntryId).execute()
@@ -312,8 +313,8 @@ class EntrySpec extends Specification {
 
     def "should throw an exception when given commentId does not belong to user's entry"() {
         when:
-        def randomId = wykop.activeEntries().execute().get(0).id()
-        def randomEntryCommentId = wykop.entry(randomId).execute().get().comments().get().get(0).id()
+        def randomId = wykop.getActiveEntries().execute().get(0).id()
+        def randomEntryCommentId = wykop.getEntry(randomId).execute().get().comments().get(0).id()
         wykop.editEntryComment(randomEntryCommentId, newCommentWithBodyAndUrlMedia).execute()
         then:
         thrown UnableToModifyEntryException
@@ -346,8 +347,8 @@ class EntrySpec extends Specification {
 
     def "should throw an exception when try to delete a comment which does not belong to user"() {
         when:
-        def randomEntryId = wykop.activeEntries().execute().get(0).id()
-        def randomCommentId = wykop.entry(randomEntryId).execute().get().comments().get().get(0).id()
+        def randomEntryId = wykop.getActiveEntries().execute().get(0).id()
+        def randomCommentId = wykop.getEntry(randomEntryId).execute().get().comments().get(0).id()
         wykop.deleteEntryComment(randomCommentId).execute()
         then:
         thrown UnableToDeleteCommentException
@@ -356,30 +357,44 @@ class EntrySpec extends Specification {
     def "should vote up entry's comment and remove vote right after"() {
         def conditions = new PollingConditions(timeout: 5, initialDelay: 1)
         when:
-        def activeEntryId = wykop.activeEntries().execute().get(0).id()
-        def entryCommentId = wykop.entry(activeEntryId).execute().get().comments().get().get(0).id()
-        wykop.entryCommentVoteUp(entryCommentId).execute()
+        def activeEntryId = wykop.getActiveEntries().execute().get(0).id()
+        def entryCommentId = wykop.getEntry(activeEntryId).execute().get().comments().get(0).id()
+        wykop.voteUpEntryComment(entryCommentId).execute()
         then:
         conditions.eventually {
-            assert wykop.entryComment(entryCommentId).execute().get().userVote() == UserVote.VOTED
+            assert wykop.getEntryComment(entryCommentId).execute().get().userVote() == UserVote.VOTED
         }
         when:
-        wykop.entryCommentVoteRemove(entryCommentId).execute()
+        wykop.removeVoteFromEntryComment(entryCommentId).execute()
         then:
         conditions.eventually {
-            assert wykop.entryComment(entryCommentId).execute().get().userVote() == UserVote.NOT_VOTED
+            assert wykop.getEntryComment(entryCommentId).execute().get().userVote() == UserVote.NOT_VOTED
         }
+    }
+
+    def "should throw an exception when trying to vote up entry where comment id does not exist"() {
+        when:
+        wykop.voteUpEntryComment(nonexistentId).execute()
+        then:
+        thrown ArchivalContentException
+    }
+
+    def "should throw an exception when trying to remove entry's vote where comment id does not exist"() {
+        when:
+        wykop.removeVoteFromEntryComment(nonexistentId).execute()
+        then:
+        thrown ArchivalContentException
     }
 
     def "should return observed comments"() {
         when:
-        def observedComments = wykop.observedComments().execute()
+        def observedComments = wykop.getObservedEntryComments().execute()
         then: "depending on the user's profile - either nothing or all favorites"
         observedComments.isEmpty() || observedComments.stream().allMatch(entryComment -> entryComment.favorite())
     }
 
     def "should toggle on and off entry favorite"() {
-        def activeEntry = wykop.activeEntries().execute().get(0)
+        def activeEntry = wykop.getActiveEntries().execute().get(0)
         def randomId = activeEntry.id()
         def favorite = activeEntry.favorite()
         when:
@@ -394,14 +409,14 @@ class EntrySpec extends Specification {
         when:
         Optional<Entry> entryWithSurvey = Optional.empty()
         for (i in 0..<1000) {
-            def activeEntries = wykop.activeEntries(Page.of(i)).execute()
+            def activeEntries = wykop.getActiveEntries(Page.of(i)).execute()
             entryWithSurvey = activeEntries.stream().filter(e -> e.survey().isPresent()).findFirst()
             if (entryWithSurvey.isPresent()) break
         }
         def id = entryWithSurvey.get().id()
         wykop.answerSurvey(id, 1).execute()
         then:
-        wykop.entry(id).execute().get().survey().get().userAnswer().get() == 1
+        wykop.getEntry(id).execute().get().survey().get().userAnswer().get() == 1
     }
 
     def "should throw an exception when try to answer non-existent survey"() {
@@ -415,7 +430,7 @@ class EntrySpec extends Specification {
         when:
         Optional<Entry> entryWithSurvey = Optional.empty()
         for (i in 0..<1000) {
-            def activeEntries = wykop.activeEntries(Page.of(i)).execute()
+            def activeEntries = wykop.getActiveEntries(Page.of(i)).execute()
             entryWithSurvey = activeEntries.stream().filter(e -> e.survey().isPresent()).findFirst()
             if (entryWithSurvey.isPresent()) break
         }
@@ -426,9 +441,9 @@ class EntrySpec extends Specification {
     }
 
     def "should toggle on and off entry's comment favorite"() {
-        def activeEntry = wykop.activeEntries().execute().get(0)
-        def fullEntry = wykop.entry(activeEntry.id()).execute()
-        def activeEntryComment = fullEntry.get().comments().get().get(0)
+        def activeEntry = wykop.getActiveEntries().execute().get(0)
+        def fullEntry = wykop.getEntry(activeEntry.id()).execute()
+        def activeEntryComment = fullEntry.get().comments().get(0)
         def favorite = activeEntryComment.favorite()
         when:
         def toggle = wykop.toggleEntryCommentFavorite(activeEntryComment.id()).execute()

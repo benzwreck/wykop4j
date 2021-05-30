@@ -17,7 +17,7 @@ class ProfileSpec extends Specification {
 
     def "should return existing user profile"() {
         when:
-        def profile = wykop.profile(adminLogin).execute().get()
+        def profile = wykop.getProfile(adminLogin).execute().get()
         then:
         profile.login() == adminLogin
         profile.color() == Color.ADMIN
@@ -25,7 +25,7 @@ class ProfileSpec extends Specification {
 
     def "should return empty Optional"() {
         when:
-        def profile = wykop.profile(nonexistentLogin).execute()
+        def profile = wykop.getProfile(nonexistentLogin).execute()
         then:
         profile == Optional.empty()
     }
@@ -37,26 +37,26 @@ class ProfileSpec extends Specification {
         then:
         noExceptionThrown()
         where:
-        result                                    | _
-        wykop.profileActions(adminLogin)          | _
-        wykop.profileCommentedLinks(adminLogin)   | _
-        wykop.profileLinksComments(adminLogin)    | _
-        wykop.profileLinksPublished(adminLogin)   | _
-        wykop.profileLinksPublished(adminLogin)   | _
-        wykop.profileEntriesCommented(adminLogin) | _
-        wykop.profileEntriesComments(adminLogin)  | _
-        wykop.profileRelatedLinks(adminLogin)     | _
-        wykop.profileFollowers(adminLogin)        | _
-        wykop.profileFollowed(adminLogin)         | _
-        wykop.profileBadges(adminLogin)           | _
-        wykop.profileDiggedLinks(adminLogin)      | _
-        wykop.profileBuriedLinks(adminLogin)      | _
-        wykop.profileRanking()                    | _
+        result                                       | _
+        wykop.getProfileActions(adminLogin)          | _
+        wykop.getProfileCommentedLinks(adminLogin)   | _
+        wykop.getProfileLinksComments(adminLogin)    | _
+        wykop.getProfilePublishedLinks(adminLogin)   | _
+        wykop.getProfilePublishedLinks(adminLogin)   | _
+        wykop.getProfileCommentedEntries(adminLogin) | _
+        wykop.getProfileEntriesComments(adminLogin)  | _
+        wykop.getProfileRelatedLinks(adminLogin)     | _
+        wykop.getProfileFollowers(adminLogin)        | _
+        wykop.getProfileFollowed(adminLogin)         | _
+        wykop.getProfileBadges(adminLogin)           | _
+        wykop.getProfileDiggedLinks(adminLogin)      | _
+        wykop.getProfileBuriedLinks(adminLogin)      | _
+        wykop.getProfileRanking()                    | _
     }
 
     def "should return user's added links"() {
         when:
-        def links = wykop.profileAddedLinks(adminLogin).execute()
+        def links = wykop.getProfileAddedLinks(adminLogin).execute()
         then:
         links.stream().allMatch(link -> link.author().login() == adminLogin)
     }
@@ -82,19 +82,19 @@ class ProfileSpec extends Specification {
         expect:
         links.execute().isEmpty()
         where:
-        links                                           | _
-        wykop.profileAddedLinks(nonexistentLogin)       | _
-        wykop.profileCommentedLinks(nonexistentLogin)   | _
-        wykop.profileLinksComments(nonexistentLogin)    | _
-        wykop.profileLinksPublished(nonexistentLogin)   | _
-        wykop.profileLinksPublished(nonexistentLogin)   | _
-        wykop.profileEntriesCommented(nonexistentLogin) | _
-        wykop.profileEntriesComments(nonexistentLogin)  | _
-        wykop.profileRelatedLinks(nonexistentLogin)     | _
-        wykop.profileFollowers(nonexistentLogin)        | _
-        wykop.profileFollowed(nonexistentLogin)         | _
-        wykop.profileBadges(nonexistentLogin)           | _
-        wykop.profileDiggedLinks(nonexistentLogin)      | _
-        wykop.profileBuriedLinks(nonexistentLogin)      | _
+        links                                              | _
+        wykop.getProfileAddedLinks(nonexistentLogin)       | _
+        wykop.getProfileCommentedLinks(nonexistentLogin)   | _
+        wykop.getProfileLinksComments(nonexistentLogin)    | _
+        wykop.getProfilePublishedLinks(nonexistentLogin)   | _
+        wykop.getProfilePublishedLinks(nonexistentLogin)   | _
+        wykop.getProfileCommentedEntries(nonexistentLogin) | _
+        wykop.getProfileEntriesComments(nonexistentLogin)  | _
+        wykop.getProfileRelatedLinks(nonexistentLogin)     | _
+        wykop.getProfileFollowers(nonexistentLogin)        | _
+        wykop.getProfileFollowed(nonexistentLogin)         | _
+        wykop.getProfileBadges(nonexistentLogin)           | _
+        wykop.getProfileDiggedLinks(nonexistentLogin)      | _
+        wykop.getProfileBuriedLinks(nonexistentLogin)      | _
     }
 }

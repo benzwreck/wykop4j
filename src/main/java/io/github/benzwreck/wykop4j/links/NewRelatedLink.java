@@ -2,6 +2,11 @@ package io.github.benzwreck.wykop4j.links;
 
 import java.net.URL;
 
+/**
+ * This class contains a recipe for a new related link.<br>
+ * All fields except photoKey must be given to create {@link NewRelatedLink}.
+ * To create a new class use {@link NewRelatedLink.Builder}.
+ */
 public class NewRelatedLink {
     private final String title;
     private final URL url;
@@ -13,14 +18,23 @@ public class NewRelatedLink {
         this.isAdultOnly = isAdultOnly;
     }
 
+    /**
+     * Gets new related link's title.
+     */
     public String title() {
         return title;
     }
 
+    /**
+     * Gets new related link's url.
+     */
     public URL url() {
         return url;
     }
 
+    /**
+     * Returns if new related link's content is adult only.
+     */
     public boolean isAdultOnly() {
         return isAdultOnly;
     }
@@ -42,6 +56,12 @@ public class NewRelatedLink {
         public Builder() {
         }
 
+        public Builder(NewRelatedLink newRelatedLink) {
+            this.title = newRelatedLink.title;
+            this.url = newRelatedLink.url;
+            this.isAdultOnly = newRelatedLink.isAdultOnly;
+        }
+
         public Builder withTitle(String title) {
             this.title = title;
             return this;
@@ -59,7 +79,7 @@ public class NewRelatedLink {
 
         public NewRelatedLink build() {
             if (title == null || url == null)
-                throw new IllegalStateException("Title and url must be provided.");
+                throw new IllegalArgumentException("Title and url must be provided.");
             return new NewRelatedLink(title, url, isAdultOnly);
         }
     }

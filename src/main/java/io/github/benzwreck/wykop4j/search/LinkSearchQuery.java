@@ -2,6 +2,9 @@ package io.github.benzwreck.wykop4j.search;
 
 import java.util.Optional;
 
+/**
+ * This class represents a single link search query.
+ */
 public class LinkSearchQuery {
     private final String phrase;
     private final Type type;
@@ -17,26 +20,44 @@ public class LinkSearchQuery {
         this.minimumVoteCount = minimumVoteCount;
     }
 
+    /**
+     * Gets possible query's searching phrase.
+     */
     public Optional<String> phrase() {
         return Optional.ofNullable(phrase);
     }
 
+    /**
+     * Gets query's searching type.
+     */
     public Type type() {
         return type;
     }
 
+    /**
+     * Gets query's searching sorting option.
+     */
     public Sorting sorting() {
         return sorting;
     }
 
+    /**
+     * Gets query's searching date range.
+     */
     public DateRange dateRange() {
         return dateRange;
     }
 
+    /**
+     * Gets query's searching minimum vote conut.
+     */
     public int minimumVoteCount() {
         return minimumVoteCount;
     }
 
+    /**
+     * This class contains link searching query types.
+     */
     public enum Type {
         ALL("all"), PROMOTED("promoted"), ARCHIVED("archived"), DUPLICATES("duplicates");
         private final String value;
@@ -50,6 +71,9 @@ public class LinkSearchQuery {
         }
     }
 
+    /**
+     * This class contains link searching query sorting options.
+     */
     public enum Sorting {
         BEST("best"), DIGGS("diggs"), NEW("new");
         private final String value;
@@ -71,6 +95,14 @@ public class LinkSearchQuery {
         private int minimumVoteCount = 0;
 
         public Builder() {
+        }
+
+        public Builder(LinkSearchQuery linkSearchQuery) {
+            this.phrase = linkSearchQuery.phrase;
+            this.type = linkSearchQuery.type;
+            this.sorting = linkSearchQuery.sorting;
+            this.dateRange = linkSearchQuery.dateRange;
+            this.minimumVoteCount = linkSearchQuery.minimumVoteCount;
         }
 
         public Builder phrase(String phrase) {

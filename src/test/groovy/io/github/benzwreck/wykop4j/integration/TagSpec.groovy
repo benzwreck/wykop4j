@@ -15,14 +15,14 @@ class TagSpec extends Specification {
 
     def "should return non-empty actions"() {
         when:
-        def actions = wykop.tagActions(wykopTag).execute()
+        def actions = wykop.getTagActions(wykopTag).execute()
         then:
         !actions.entries().isEmpty() || !actions.links().isEmpty()
     }
 
     def "should return an empty actions"() {
         when:
-        def actions = wykop.tagActions(nonexistentTag).execute()
+        def actions = wykop.getTagActions(nonexistentTag).execute()
         then:
         actions.entries().isEmpty() && actions.links().isEmpty()
     }
@@ -32,9 +32,9 @@ class TagSpec extends Specification {
         expect:
         !result.execute().isEmpty()
         where:
-        result                     | _
-        wykop.tagLinks(wykopTag)   | _
-        wykop.tagEntries(wykopTag) | _
+        result                        | _
+        wykop.getTagLinks(wykopTag)   | _
+        wykop.getTagEntries(wykopTag) | _
     }
 
     @Unroll
@@ -42,9 +42,9 @@ class TagSpec extends Specification {
         expect:
         result.execute().isEmpty()
         where:
-        result                           | _
-        wykop.tagLinks(nonexistentTag)   | _
-        wykop.tagEntries(nonexistentTag) | _
+        result                              | _
+        wykop.getTagLinks(nonexistentTag)   | _
+        wykop.getTagEntries(nonexistentTag) | _
     }
 
     @Unroll
@@ -62,7 +62,7 @@ class TagSpec extends Specification {
         "unblock"   | wykop.unblockTag(wykopTag)   || new InteractionStatus(false, false)
     }
 
-    def "should enable and disable tag notification"(){
+    def "should enable and disable tag notification"() {
         setup:
         wykop.observeTag("wykopobrazapapieza").execute()
         when:

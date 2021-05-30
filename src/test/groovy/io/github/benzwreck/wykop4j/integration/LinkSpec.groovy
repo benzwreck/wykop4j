@@ -19,21 +19,21 @@ class LinkSpec extends Specification {
     @Shared
     WykopClient wykop = IntegrationWykopClient.getInstance()
     @Shared
-    int linkId = wykop.promotedLinks().execute().get(0).id()
+    int linkId = wykop.getPromotedLinks().execute().get(0).id()
     @Shared
-    int linkCommentId = wykop.linkComments(linkId).execute().get(0).id()
+    int linkCommentId = wykop.getLinkComments(linkId).execute().get(0).id()
     static int nonexistentId = -111
 
     def "should throw an exception when trying to prepare link draft and link already exists"() {
         when:
-        wykop.linkPrepareDraft("https://www.wykop.pl").execute()
+        wykop.prepareLinkDraft("https://www.wykop.pl").execute()
         then:
         thrown LinkAlreadyExistsException
     }
 
     def "should return link draft"() {
         when:
-        def linkDraft = wykop.linkPrepareDraft(linkUrl).execute()
+        def linkDraft = wykop.prepareLinkDraft(linkUrl).execute()
         then:
         with linkDraft, {
             key() != null
@@ -44,9 +44,9 @@ class LinkSpec extends Specification {
 
     def "should return image draft"() {
         given:
-        def imageKey = wykop.linkPrepareDraft(imageUrl).execute().key()
+        def imageKey = wykop.prepareLinkDraft(imageUrl).execute().key()
         when:
-        def image = wykop.linkPrepareImage(imageKey).execute().get()
+        def image = wykop.prepareLinkImage(imageKey).execute().get()
         then:
         with image, {
             key() != null
@@ -61,14 +61,14 @@ class LinkSpec extends Specification {
         expect:
         links.execute().stream().allMatch(predicate)
         where:
-        name       | links                 | predicate
-        "promoted" | wykop.promotedLinks() | (link) -> link.status() == "promoted"
-        "upcoming" | wykop.upcomingLinks() | (link) -> link.status() == "upcoming"
+        name       | links                    | predicate
+        "promoted" | wykop.getPromotedLinks() | (link) -> link.status() == "promoted"
+        "upcoming" | wykop.getUpcomingLinks() | (link) -> link.status() == "upcoming"
     }
 
     def "should return favorite links"() {
         when:
-        def links = wykop.favoriteLinks().execute()
+        def links = wykop.getFavoriteLinks().execute()
         then:
         links.isEmpty() || links.stream().allMatch(link -> link.userFavorite())
     }
@@ -78,11 +78,11 @@ class LinkSpec extends Specification {
         expect:
         link.execute().isPresent() == expected
         where:
-        name                 | link                                  | expected
-        "non-empty Optional" | wykop.link(linkId)                    | true
-        "empty Optional"     | wykop.link(nonexistentId)             | false
-        "non-empty Optional" | wykop.linkWithComments(linkId)        | true
-        "empty Optional"     | wykop.linkWithComments(nonexistentId) | false
+        name                 | link                                     | expected
+        "non-empty Optional" | wykop.getLink(linkId)                    | true
+        "empty Optional"     | wykop.getLink(nonexistentId)             | false
+        "non-empty Optional" | wykop.getLinkWithComments(linkId)        | true
+        "empty Optional"     | wykop.getLinkWithComments(nonexistentId) | false
     }
 
     @Unroll
@@ -94,10 +94,10 @@ class LinkSpec extends Specification {
         }
         where:
         name          | data
-        "upvote"      | wykop.linkVoteUp(linkId)
-        "remove vote" | wykop.linkVoteRemove(linkId)
-        "downvote"    | wykop.linkVoteDown(linkId, VoteDownReason.DUPLICATE)
-        "remove vote" | wykop.linkVoteRemove(linkId)
+        "upvote"      | wykop.voteUpLink(linkId)
+        "remove vote" | wykop.voteRemoveFromLink(linkId)
+        "downvote"    | wykop.voteDownLink(linkId, VoteDownReason.DUPLICATE)
+        "remove vote" | wykop.voteRemoveFromLink(linkId)
     }
 
     @Unroll
@@ -108,9 +108,9 @@ class LinkSpec extends Specification {
         thrown(ArchivalContentException)
         where:
         name               | state
-        "vote up"          | wykop.linkVoteUp(nonexistentId)
-        "vote down"        | wykop.linkVoteDown(nonexistentId, VoteDownReason.DUPLICATE)
-        "remove vote from" | wykop.linkVoteRemove(nonexistentId)
+        "vote up"          | wykop.voteUpLink(nonexistentId)
+        "vote down"        | wykop.voteDownLink(nonexistentId, VoteDownReason.DUPLICATE)
+        "remove vote from" | wykop.voteRemoveFromLink(nonexistentId)
     }
 
     @Unroll
@@ -123,8 +123,8 @@ class LinkSpec extends Specification {
         )
         where:
         name        | votes
-        "upvotes"   | wykop.linkAllUpvotes(linkId)
-        "downvotes" | wykop.linkAllDownvotes(linkId)
+        "upvotes"   | wykop.getAllUpvotesFromLink(linkId)
+        "downvotes" | wykop.getAllDownvotesFromLink(linkId)
     }
 
     @Unroll
@@ -133,13 +133,13 @@ class LinkSpec extends Specification {
         links.execute().stream().allMatch(link -> link.isHot())
         where:
         name           | links
-        "2020"         | wykop.linkTop(Year.of(2020))
-        "January 2019" | wykop.linkTop(Year.of(2019), Month.JANUARY)
+        "2020"         | wykop.getTopLinks(Year.of(2020))
+        "January 2019" | wykop.getTopLinks(Year.of(2019), Month.JANUARY)
     }
 
     def "should return list of comments"() {
         when:
-        def comments = wykop.linkComments(linkId).execute()
+        def comments = wykop.getLinkComments(linkId).execute()
         then:
         comments.stream().allMatch(comment -> comment.linkId() == linkId)
     }
@@ -155,9 +155,9 @@ class LinkSpec extends Specification {
         }
         where:
         name               | action
-        "vote up"          | wykop.linkCommentVoteUp(linkId, linkCommentId)
-        "vote down"        | wykop.linkCommentVoteDown(linkId, linkCommentId)
-        "remove vote from" | wykop.linkCommentVoteRemove(linkId, linkCommentId)
+        "vote up"          | wykop.voteUpLinkComment(linkId, linkCommentId)
+        "vote down"        | wykop.voteDownLinkComment(linkId, linkCommentId)
+        "remove vote from" | wykop.removeVoteFromLinkComment(linkId, linkCommentId)
     }
 
     @Unroll
@@ -168,49 +168,49 @@ class LinkSpec extends Specification {
         thrown(LinkCommentNotExistException)
         where:
         name               | state
-        "vote up"          | wykop.linkCommentVoteUp(nonexistentId, nonexistentId)
-        "vote down"        | wykop.linkCommentVoteDown(nonexistentId, nonexistentId)
-        "remove vote from" | wykop.linkCommentVoteRemove(nonexistentId, nonexistentId)
+        "vote up"          | wykop.voteUpLinkComment(nonexistentId, nonexistentId)
+        "vote down"        | wykop.voteDownLinkComment(nonexistentId, nonexistentId)
+        "remove vote from" | wykop.removeVoteFromLinkComment(nonexistentId, nonexistentId)
     }
 
     def "should return link's comment"() {
         given:
-        def linkId = wykop.linkTop(Year.of(2020)).execute().get(0).id()
-        def id = wykop.linkWithComments(linkId).execute().get().comments().get(0).id()
+        def linkId = wykop.getTopLinks(Year.of(2020)).execute().get(0).id()
+        def id = wykop.getLinkWithComments(linkId).execute().get().comments().get(0).id()
         when:
-        def comment = wykop.linkComment(id).execute().get()
+        def comment = wykop.getLinkComment(id).execute().get()
         then:
         comment.id() != null
     }
 
     def "link comment - should return an empty Optional"() {
         when:
-        def comment = wykop.linkComment(nonexistentId).execute()
+        def comment = wykop.getLinkComment(nonexistentId).execute()
         then:
         !comment.isPresent()
     }
 
     def "should return list of related links"() {
         given:
-        def linkId = wykop.linkTop(Year.of(2020)).execute().get(0).id()
+        def linkId = wykop.getTopLinks(Year.of(2020)).execute().get(0).id()
         when:
-        def listOfLinks = wykop.relatedLinks(linkId).execute()
+        def listOfLinks = wykop.getRelatedLinks(linkId).execute()
         then:
         !listOfLinks.isEmpty()
     }
 
     def "related links - should return an empty Optional"() {
         when:
-        def listOfLinks = wykop.relatedLinks(nonexistentId).execute()
+        def listOfLinks = wykop.getRelatedLinks(nonexistentId).execute()
         then:
         listOfLinks.isEmpty()
     }
 
     def "should toggle favorite link"() {
         given:
-        def id = wykop.linkTop(Year.of(2020)).execute().get(0).id()
+        def id = wykop.getTopLinks(Year.of(2020)).execute().get(0).id()
         when:
-        def value = wykop.linkFavorite(id).execute()
+        def value = wykop.toggleLinkFavorite(id).execute()
         then:
         value
     }

@@ -10,7 +10,7 @@ import java.io.IOException;
 class ApiSignInterceptor implements Interceptor {
     private final ApiSignCalculator apiSignCalculator;
 
-    public ApiSignInterceptor(ApplicationCredentials applicationCredentials){
+    ApiSignInterceptor(ApplicationCredentials applicationCredentials){
         this.apiSignCalculator = new ApiSignCalculator(applicationCredentials);
     }
     @NotNull

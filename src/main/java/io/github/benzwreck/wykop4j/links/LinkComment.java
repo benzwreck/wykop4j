@@ -7,6 +7,9 @@ import io.github.benzwreck.wykop4j.shared.UserVote;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+/**
+ * This class represents a single link's comment.
+ */
 public class LinkComment {
     private final Integer id;
     private final LocalDateTime date;
@@ -44,66 +47,114 @@ public class LinkComment {
         this.original = original;
     }
 
+    /**
+     * Gets link comment's id.
+     */
     public Integer id() {
         return id;
     }
 
+    /**
+     * Gets link comment's date and time of creation.
+     */
     public LocalDateTime date() {
         return date;
     }
 
+    /**
+     * Gets link comment's author.
+     */
     public SimpleProfile author() {
         return author;
     }
 
+    /**
+     * Gets link comment's vote count.
+     */
     public Integer voteCount() {
         return voteCount;
     }
 
+    /**
+     * Gets link comment's vote up count.
+     */
     public Integer voteCountPlus() {
         return voteCountPlus;
     }
 
+    /**
+     * Gets link comment's body.
+     */
     public String body() {
         return body;
     }
 
+    /**
+     * Gets the id of commented link or link's comment.
+     */
     public Integer parentId() {
         return parentId;
     }
 
+    /**
+     * Returns if user can vote.
+     */
     public Boolean canVote() {
         return canVote;
     }
 
+    /**
+     * Gets link comment's user vote.
+     */
     public UserVote userVote() {
         return userVote;
     }
 
+    /**
+     * Returns if link is blocked by user.
+     */
     public Boolean blocked() {
         return blocked;
     }
 
+    /**
+     * Returns if link is favorited by user.
+     */
     public Boolean favorite() {
         return favorite;
     }
 
+    /**
+     * Gets link comment's link id.
+     */
     public Integer linkId() {
         return linkId;
     }
 
+    /**
+     * Gets possible link comment's embed media.
+     */
     public Optional<Embed> embed() {
         return Optional.ofNullable(embed);
     }
 
+    /**
+     * Gets link comment's violation url.
+     */
     public String violationUrl() {
         return violationUrl;
     }
 
+    /**
+     * Gets link comment's vote down count.
+     */
     public Integer voteCountMinus() {
         return voteCountMinus;
     }
 
+    /**
+     * Gets link comment's original content.
+     */
     public String original() {
         return original;
     }

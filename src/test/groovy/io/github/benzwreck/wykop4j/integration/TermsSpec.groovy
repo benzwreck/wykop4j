@@ -9,7 +9,7 @@ class TermsSpec extends Specification {
 
     def "should return non-null and non-empty response"() {
         expect:
-        with wykop.terms().execute(), {
+        with wykop.getTerms().execute(), {
             html() != null
             !html().isBlank()
             text() != null

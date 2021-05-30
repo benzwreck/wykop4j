@@ -3,8 +3,9 @@ package io.github.benzwreck.wykop4j.links;
 import java.util.Optional;
 
 /**
- * Provides all mandatory information to create a new {@link Link}.
+ * This class contains a recipe for a new link.<br>
  * All fields except photoKey must be given to create {@link NewLink}.
+ * To create a new class use {@link NewLink.Builder}.
  */
 public class NewLink {
     private final String key;
@@ -25,30 +26,51 @@ public class NewLink {
         this.isAdult = isAdult;
     }
 
+    /**
+     * Gets new link's key.
+     */
     public String key() {
         return key;
     }
 
+    /**
+     * Gets new link's title.
+     */
     public String title() {
         return title;
     }
 
+    /**
+     * Gets new link's description.
+     */
     public String description() {
         return description;
     }
 
+    /**
+     * Gets new link's tags.
+     */
     public String tags() {
         return tags;
     }
 
+    /**
+     * Gets possible new link's photo key.
+     */
     public Optional<String> photoKey() {
         return Optional.of(photoKey);
     }
 
+    /**
+     * Gets new link's url.
+     */
     public String url() {
         return url;
     }
 
+    /**
+     * Returns if new link content is adult only.
+     */
     public boolean isAdult() {
         return isAdult;
     }
@@ -65,14 +87,14 @@ public class NewLink {
         public Builder() {
         }
 
-        public Builder(Builder builder){
-            this.key = builder.key;
-            this.title = builder.title;
-            this.description = builder.description;
-            this.tags = builder.tags;
-            this.photoKey = builder.photoKey;
-            this.url = builder.url;
-            this.isAdult = builder.isAdult;
+        public Builder(NewLink newLink) {
+            this.key = newLink.key;
+            this.title = newLink.title;
+            this.description = newLink.description;
+            this.tags = newLink.tags;
+            this.photoKey = newLink.photoKey;
+            this.url = newLink.url;
+            this.isAdult = newLink.isAdult;
         }
 
         public Builder withKey(String key) {
