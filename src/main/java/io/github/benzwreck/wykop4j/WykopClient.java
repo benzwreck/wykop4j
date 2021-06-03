@@ -2304,19 +2304,20 @@ public class WykopClient {
 
         public T execute() {
             String response = WykopClient.this.client.execute(wykopRequest);
-            if (clazz != null) {
-                return WykopClient.this.wykopObjectMapper.map(response, clazz);
-            } else {
+            if (typeReference != null) {
                 return WykopClient.this.wykopObjectMapper.map(response, typeReference);
+            } else {
+                return WykopClient.this.wykopObjectMapper.map(response, clazz);
             }
         }
 
         public CompletableFuture<T> executeAsync() {
             CompletableFuture<String> execute = WykopClient.this.client.executeAsync(wykopRequest);
-            if (clazz != null) {
-                return execute.thenComposeAsync(response -> WykopClient.this.wykopObjectMapper.asyncMap(response, clazz));
-            } else {
+            if (typeReference != null) {
                 return execute.thenComposeAsync(response -> WykopClient.this.wykopObjectMapper.asyncMap(response, typeReference));
+            } else {
+                return execute.thenComposeAsync(response -> WykopClient.this.wykopObjectMapper.asyncMap(response, clazz));
+
             }
         }
     }
