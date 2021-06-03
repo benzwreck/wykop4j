@@ -59,6 +59,7 @@ import java.time.Month;
 import java.time.Year;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public class WykopClient {
     private final static String WYKOP_URL = "https://a2.wykop.pl";
@@ -2308,7 +2309,15 @@ public class WykopClient {
             } else {
                 return WykopClient.this.wykopObjectMapper.map(response, typeReference);
             }
+        }
 
+        public CompletableFuture<T> executeAsync() {
+            CompletableFuture<String> execute = WykopClient.this.client.executeAsync(wykopRequest);
+            if (clazz != null) {
+                return execute.thenComposeAsync(response -> WykopClient.this.wykopObjectMapper.asyncMap(response, clazz));
+            } else {
+                return execute.thenComposeAsync(response -> WykopClient.this.wykopObjectMapper.asyncMap(response, typeReference));
+            }
         }
     }
 }
