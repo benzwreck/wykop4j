@@ -10,7 +10,7 @@ If you'd like to read more there's also a [wiki](https://www.github.com/benzwrec
 
 #### Dependencies
 
-Add those lines to your:
+Check [Releases](https://github.com/benzwreck/wykop4j/releases/) for the latest available version and add those lines to your:
 
 * pom.xml
 
@@ -18,14 +18,14 @@ Add those lines to your:
 <dependency>
     <groupId>io.github.benzwreck</groupId>
     <artifactId>wykop4j</artifactId>
-    <version>1.0.0</version>
+    <version>x.y.z</version>
 </dependency>
 ```
 
 * gradle.build
 
 ```groovy
-implementation group: 'io.github.benzwreck', name: 'wykop4j', version: '1.0.0'
+implementation group: 'io.github.benzwreck', name: 'wykop4j', version: 'x.y.z'
 ```
 
 #### Creating WykopClient
@@ -33,7 +33,7 @@ implementation group: 'io.github.benzwreck', name: 'wykop4j', version: '1.0.0'
 To create an instance of `WykopClient` you will need your `ApplicationCredentials` and optionally `UserCredentials` (keep in mind that some methods will not work if `UserCredentials` is not passed). How to get one? Check out [this (Polish)](https://github.com/benzwreck/wykop4j/wiki/ApplicationCredentials-i-UserCredentials).
 
 ```java
-WykopClient wykop = new WykopClient.Builder()
+WykopClient wykop = new WykopClientBuilder()
     .withApplicationCredentials(new ApplicationCredentials("appkey", "secret"))
     .withUserCredentials(new UserCredentials("login", "accountkey"))
     .build()
@@ -41,21 +41,21 @@ WykopClient wykop = new WykopClient.Builder()
 
 #### Using WykopClient
 
-We start off with `wykop.methodName()` which returns some `Chain<Something>` and then we can execute our code synchronously with `.execute()` or (in the future - because it's not implemented yet) asynchronously with `.executeAsync()`. E.g.
+We start off with `wykop.methodName()` which returns some `Chain<Something>` and then we can execute our code synchronously with `.execute()` or asynchronously with `.executeAsync()`.
 
 ```java
-Optional<Entry> entry = wykop.entry(entryId).execute();
+Optional<Entry> entry = wykop.getEntry(entryId).execute();
 
-List<Entry> entries = wykop.entriesStream().execute();
+List<Entry> entries = wykop.getEntriesStream().execute();
 ```
 
 All methods that have been implemented so far are shown [here (Polish only)](https://github.com/benzwreck/wykop4j/wiki/Zaimplementowane-metody).
 
 ## Plans for the future
 
-- [ ] Implement missing API methods.
+- [x] ~~Support async operations.~~
+- [x] ~~Implement missing API methods.~~ (It's half done because I'm still getting `AuthorizationException`  on `Profile`'s methods ¯\\\_(ツ)\_/¯ and I see no point in implementing `Login` methods)
 - [ ] Make API less Stringly typed (sometimes official documentation does not provide necessary data to ensure possible return type).
-- [ ] Support async operations.
 - [ ] Add more configuration features.
 - [ ] Replace Okhttp with Java 11 Http Client.
 - [ ] Replace Jackson with own json mapping implementation.
@@ -65,6 +65,3 @@ All methods that have been implemented so far are shown [here (Polish only)](htt
 
 * Http client: OkHttp 4.7.2
 * Json mapper: Jackson 2.12.1
-
-
-
