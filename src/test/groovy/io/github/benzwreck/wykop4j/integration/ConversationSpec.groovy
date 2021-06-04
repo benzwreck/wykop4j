@@ -1,6 +1,6 @@
 package io.github.benzwreck.wykop4j.integration
 
-import io.github.benzwreck.wykop4j.IntegrationData
+
 import io.github.benzwreck.wykop4j.IntegrationWykopClient
 import io.github.benzwreck.wykop4j.TwoAccounts
 import io.github.benzwreck.wykop4j.WykopClient
@@ -19,16 +19,19 @@ class ConversationSpec extends Specification {
             .withMedia(new File("src/test/resources/white.jpg"))
             .build()
 
-    @Unroll
-    def "should not thrown an exception"() {
+    def "should not throw an exception when getting conversation list"() {
         when:
-        result.execute()
+        wykop.getConversationsList().execute()
         then:
         noExceptionThrown()
-        where:
-        result                                                    | _
-        wykop.getConversationsList()                              | _
-        wykop.getConversation(IntegrationData.secondAccountLogin) | _
+    }
+
+    @TwoAccounts
+    def "should not throw an exception when getting conversation with second account"() {
+        when:
+        wykop.getConversation(IntegrationWykopClient.secondAccountLogin()).execute()
+        then:
+        noExceptionThrown()
     }
 
     def "should return empty list"() {
@@ -45,7 +48,7 @@ class ConversationSpec extends Specification {
                 .withMedia("https://www.wykop.pl/cdn/c3201142/comment_1613001626Mwe2NcUAMJ1yLKZJumQQjC.jpg")
                 .build()
         when:
-        def execute = wykop.sendMessage(IntegrationData.secondAccountLogin, newMessage).execute()
+        def execute = wykop.sendMessage(IntegrationWykopClient.secondAccountLogin(), newMessage).execute()
         then:
         execute.body() == "tresc"
         execute.embed().isPresent()
@@ -54,7 +57,7 @@ class ConversationSpec extends Specification {
     @TwoAccounts
     def "should send message with body and file media"() {
         when:
-        def execute = wykop.sendMessage(IntegrationData.secondAccountLogin, newMessage).execute()
+        def execute = wykop.sendMessage(IntegrationWykopClient.secondAccountLogin(), newMessage).execute()
         then:
         execute.body() == "tresc"
         execute.embed().isPresent()
@@ -63,8 +66,8 @@ class ConversationSpec extends Specification {
     @TwoAccounts
     def "should delete conversation"() {
         when:
-        wykop.sendMessage(IntegrationData.secondAccountLogin, newMessage).execute()
-        def deleted = wykop.deleteConversation(IntegrationData.secondAccountLogin).execute()
+        wykop.sendMessage(IntegrationWykopClient.secondAccountLogin(), newMessage).execute()
+        def deleted = wykop.deleteConversation(IntegrationWykopClient.secondAccountLogin()).execute()
         then:
         deleted
     }

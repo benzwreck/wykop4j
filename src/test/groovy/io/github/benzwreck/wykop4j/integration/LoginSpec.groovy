@@ -10,7 +10,8 @@ import java.security.MessageDigest
 
 class LoginSpec extends Specification {
     WykopClient wykop = IntegrationWykopClient.getInstance()
-    ApplicationCredentials applicationCredentials = IntegrationWykopClient.applicationCredentials
+    String appkey = IntegrationWykopClient.appkey()
+    String secret = IntegrationWykopClient.secret()
     String wykopConnectHtmlResponse = "<title>Połącz konto z aplikacją"
 
     def "should return wykop connect html page with redirect url"() {
@@ -33,13 +34,13 @@ class LoginSpec extends Specification {
         given:
         String validLogin = "KochamWykopAPI"
         String validToken = "ZLepszymNigdyNiePracowalem"
-        String validSign = md5(applicationCredentials.secret() + applicationCredentials.appKey() + validLogin + validToken)
-        URL validResponse = prepareTestUrl(applicationCredentials, validLogin, validToken, validSign)
+        String validSign = md5(secret + appkey + validLogin + validToken)
+        URL validResponse = prepareTestUrl(appkey, validLogin, validToken, validSign)
         when:
         def loginData = wykop.parseWykopConnectLoginResponse(validResponse)
         then:
         with loginData, {
-            appkey() == applicationCredentials.appKey()
+            appkey() == appkey
             login() == validLogin
             token() == validToken
             sign() == validSign
@@ -51,7 +52,7 @@ class LoginSpec extends Specification {
         String validLogin = "KochamWykopAPI"
         String validToken = "ZLepszymNigdyNiePracowalem"
         String invalidSign = "blablabla"
-        URL invalidResponse = prepareTestUrl(applicationCredentials, validLogin, validToken, invalidSign)
+        URL invalidResponse = prepareTestUrl(appkey, validLogin, validToken, invalidSign)
         when:
         wykop.parseWykopConnectLoginResponse(invalidResponse)
         then:
@@ -73,10 +74,10 @@ class LoginSpec extends Specification {
         return sb.toString()
     }
 
-    private static URL prepareTestUrl(ApplicationCredentials applicationCredentials, String login, String token, String sign) {
+    private static URL prepareTestUrl(String appkey, String login, String token, String sign) {
         String randomUrl = "https://randompage.com/dsdsadsa-4444-3333-b222-11111?connectData="
         String connectData = Base64.getEncoder()
-                .encodeToString("""{"appkey":"${applicationCredentials.appKey()}","login":"$login","token":"$token","sign":"$sign"}""".getBytes())
+                .encodeToString("""{"appkey":"$appkey","login":"$login","token":"$token","sign":"$sign"}""".getBytes())
         URL validResponse = new URL(randomUrl + connectData)
         validResponse
     }
