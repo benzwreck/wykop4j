@@ -59,6 +59,7 @@ import java.time.Month;
 import java.time.Year;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 public class WykopClient {
     private final static String WYKOP_URL = "https://a2.wykop.pl";
@@ -2286,33 +2287,6 @@ public class WykopClient {
         return wykopConnect.parseResponse(response);
     }
 
-    public static final class Builder {
-        private UserCredentials userCredentials;
-        private ApplicationCredentials applicationCredentials;
-
-        public Builder() {
-        }
-
-        public Builder withUserCredentials(UserCredentials userCredentials) {
-            this.userCredentials = userCredentials;
-            return this;
-        }
-
-        public Builder withApplicationCredentials(ApplicationCredentials applicationCredentials) {
-            this.applicationCredentials = applicationCredentials;
-            return this;
-        }
-
-        public WykopClient build() {
-            if (applicationCredentials == null)
-                throw new IllegalArgumentException("Application Credentials must be provided.");
-            WykopHttpClient client = new WykopHttpClient(userCredentials, applicationCredentials);
-            WykopObjectMapper wykopObjectMapper = new WykopObjectMapper();
-            WykopConnect wykopConnect = new WykopConnect(wykopObjectMapper, applicationCredentials);
-            return new WykopClient(client, wykopObjectMapper, wykopConnect);
-        }
-    }
-
     class Chain<T> {
         private final WykopRequest wykopRequest;
         private Class<T> clazz;
@@ -2330,12 +2304,21 @@ public class WykopClient {
 
         public T execute() {
             String response = WykopClient.this.client.execute(wykopRequest);
-            if (clazz != null) {
-                return WykopClient.this.wykopObjectMapper.map(response, clazz);
-            } else {
+            if (typeReference != null) {
                 return WykopClient.this.wykopObjectMapper.map(response, typeReference);
+            } else {
+                return WykopClient.this.wykopObjectMapper.map(response, clazz);
             }
+        }
 
+        public CompletableFuture<T> executeAsync() {
+            CompletableFuture<String> execute = WykopClient.this.client.executeAsync(wykopRequest);
+            if (typeReference != null) {
+                return execute.thenComposeAsync(response -> WykopClient.this.wykopObjectMapper.asyncMap(response, typeReference));
+            } else {
+                return execute.thenComposeAsync(response -> WykopClient.this.wykopObjectMapper.asyncMap(response, clazz));
+
+            }
         }
     }
 }

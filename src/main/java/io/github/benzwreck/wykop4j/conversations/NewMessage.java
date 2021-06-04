@@ -57,7 +57,7 @@ public class NewMessage {
         return adultOnly;
     }
 
-    public class Builder {
+    public static final class Builder {
         private String body;
         private String urlEmbed;
         private File fileEmbed;

@@ -43,15 +43,17 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 
 class WykopObjectMapper {
     private final ObjectMapper objectMapper;
+    private final ExecutorService mapperExecutorService;
 
-    WykopObjectMapper() {
+    WykopObjectMapper(ExecutorService mapperExecutorService) {
+        this.mapperExecutorService = mapperExecutorService;
         LocalDateTimeDeserializer localDateTimeDeserializer =
                 new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         SimpleModule javaTimeModule = new JavaTimeModule()
@@ -101,6 +103,14 @@ class WykopObjectMapper {
         } catch (IOException e) {
             throw new WykopException(0, e.getMessage(), e.getMessage()); //todo magic numbers
         }
+    }
+
+    public <T> CompletableFuture<T> asyncMap(String payload, Class<T> clazz) {
+        return CompletableFuture.supplyAsync(() -> map(payload, clazz), mapperExecutorService);
+    }
+
+    public <T> CompletableFuture<T> asyncMap(String payload, TypeReference<T> typeReference) {
+        return CompletableFuture.supplyAsync(() -> map(payload, typeReference), mapperExecutorService);
     }
 
     private String parseToProperResponse(String typeReferenceResponse) {
