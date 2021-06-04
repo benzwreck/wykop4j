@@ -1,6 +1,6 @@
 package io.github.benzwreck.wykop4j.integration
 
-import io.github.benzwreck.wykop4j.IntegrationData
+
 import io.github.benzwreck.wykop4j.IntegrationWykopClient
 import io.github.benzwreck.wykop4j.TwoAccounts
 import io.github.benzwreck.wykop4j.WykopClient
@@ -12,7 +12,6 @@ import spock.lang.Unroll
 class ProfileSpec extends Specification {
     static WykopClient wykop = IntegrationWykopClient.getInstance()
     static String nonexistentLogin = UUID.randomUUID().toString()
-    static String secondAccountLogin = IntegrationData.secondAccountLogin
     static String adminLogin = "m__b"
 
     def "should return existing user profile"() {
@@ -70,11 +69,11 @@ class ProfileSpec extends Specification {
             reaction.isBlocked() == isBlocked()
         }
         where:
-        name        | action                                  || reaction
-        "observe"   | wykop.observeUser(secondAccountLogin)   || new InteractionStatus(true, false)
-        "unobserve" | wykop.unobserveUser(secondAccountLogin) || new InteractionStatus(false, false)
-        "block"     | wykop.blockUser(secondAccountLogin)     || new InteractionStatus(false, true)
-        "unblock"   | wykop.unblockUser(secondAccountLogin)   || new InteractionStatus(false, false)
+        name        | action                                                           || reaction
+        "observe"   | wykop.observeUser(IntegrationWykopClient.secondAccountLogin())   || new InteractionStatus(true, false)
+        "unobserve" | wykop.unobserveUser(IntegrationWykopClient.secondAccountLogin()) || new InteractionStatus(false, false)
+        "block"     | wykop.blockUser(IntegrationWykopClient.secondAccountLogin())     || new InteractionStatus(false, true)
+        "unblock"   | wykop.unblockUser(IntegrationWykopClient.secondAccountLogin())   || new InteractionStatus(false, false)
     }
 
     @Unroll

@@ -16,7 +16,7 @@ class SearchSpec extends Specification {
     @Shared
     WykopClient wykop = IntegrationWykopClient.getInstance()
     static String adminLogin = "m__b"
-    static String phrase = "zycie"
+    static String phrase = "taniec"
     static LinkSearchQuery linkSearchQuery = new LinkSearchQuery.Builder()
             .phrase(phrase)
             .build()
@@ -92,19 +92,19 @@ class SearchSpec extends Specification {
         "the newest" | linkWithSortingBy(LinkSearchQuery.Sorting.NEW)   | (link1, link2) -> link1.date().isAfter(link2.date())
     }
 
-    private EntrySearchQuery entryWithDateRange(DateRange dateRange) {
+    private static EntrySearchQuery entryWithDateRange(DateRange dateRange) {
         new EntrySearchQuery.Builder().phrase(phrase).dateRange(dateRange).build()
     }
 
-    private LinkSearchQuery linkWithDateRange(DateRange dateRange) {
+    private static LinkSearchQuery linkWithDateRange(DateRange dateRange) {
         new LinkSearchQuery.Builder().phrase(phrase).dateRange(dateRange).build()
     }
 
-    private LinkSearchQuery linkWithType(LinkSearchQuery.Type type) {
+    private static LinkSearchQuery linkWithType(LinkSearchQuery.Type type) {
         new LinkSearchQuery.Builder().type(type).build()
     }
 
-    private LinkSearchQuery linkWithSortingBy(LinkSearchQuery.Sorting sorting) {
+    private static LinkSearchQuery linkWithSortingBy(LinkSearchQuery.Sorting sorting) {
         new LinkSearchQuery.Builder().phrase(phrase).sorting(sorting).build()
     }
 }
