@@ -2317,7 +2317,6 @@ public class WykopClient {
                 return execute.thenComposeAsync(response -> WykopClient.this.wykopObjectMapper.asyncMap(response, typeReference));
             } else {
                 return execute.thenComposeAsync(response -> WykopClient.this.wykopObjectMapper.asyncMap(response, clazz));
-
             }
         }
     }
