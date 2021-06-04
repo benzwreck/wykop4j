@@ -34,8 +34,8 @@ To create an instance of `WykopClient` you will need your `ApplicationCredential
 
 ```java
 WykopClient wykop = new WykopClientBuilder()
-    .withApplicationCredentials(new ApplicationCredentials("appkey", "secret"))
-    .withUserCredentials(new UserCredentials("login", "accountkey"))
+    .applicationCredentials(new ApplicationCredentials("appkey", "secret"))
+    .userCredentials(new UserCredentials("login", "accountkey"))
     .build()
 ```
 
@@ -45,6 +45,8 @@ We start off with `wykop.methodName()` which returns some `Chain<Something>` and
 
 ```java
 Optional<Entry> entry = wykop.getEntry(entryId).execute();
+
+CompletableFuture<Optional<Entry>> entry = wykop.getEntry(entryId).executeAsync();
 
 List<Entry> entries = wykop.getEntriesStream().execute();
 ```
