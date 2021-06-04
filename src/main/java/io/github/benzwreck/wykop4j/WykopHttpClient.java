@@ -15,18 +15,9 @@ import java.util.concurrent.ExecutorService;
 class WykopHttpClient {
     private final OkHttpClient httpClient;
 
-    WykopHttpClient(UserCredentials userCredentials, ApplicationCredentials applicationCredentials) {
-        httpClient = new OkHttpClient.Builder()
-                .addInterceptor(new AuthInterceptor(userCredentials, applicationCredentials))
-                .addInterceptor(new ApiSignInterceptor(applicationCredentials))
-                .cache(null)
-                .build();
-    }
-
     private WykopHttpClient(OkHttpClient okHttpClient) {
         this.httpClient = okHttpClient;
     }
-
 
     public String execute(WykopRequest wykopRequest) {
         try (Response response = httpClient.newCall(WykopToOkHttpRequestMapper.map(wykopRequest)).execute()) {
