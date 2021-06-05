@@ -4,6 +4,7 @@ import io.github.benzwreck.wykop4j.media.Embed;
 import io.github.benzwreck.wykop4j.profiles.SimpleProfile;
 import io.github.benzwreck.wykop4j.shared.UserVote;
 
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -25,12 +26,12 @@ public class Entry {
     private final Embed embed;
     private final UserVote userVote;
     private final String app;
-    private final String violationUrl;
+    private final URL violationUrl;
     private final String original;
-    private final String url;
+    private final URL url;
 
 
-    public Entry(Integer id, LocalDateTime date, String body, SimpleProfile author, Boolean blocked, Boolean favorite, Integer voteCount, Integer commentsCount, String status, Survey survey, Boolean canComment, Embed embed, UserVote userVote, String app, String violationUrl, String original, String url) {
+    public Entry(Integer id, LocalDateTime date, String body, SimpleProfile author, Boolean blocked, Boolean favorite, Integer voteCount, Integer commentsCount, String status, Survey survey, Boolean canComment, Embed embed, UserVote userVote, String app, URL violationUrl, String original, URL url) {
         this.id = id;
         this.date = date;
         this.body = body;
@@ -137,7 +138,7 @@ public class Entry {
     /**
      * Gets possible entry's url to violation form.
      */
-    public Optional<String> violationUrl() {
+    public Optional<URL> violationUrl() {
         return Optional.ofNullable(violationUrl);
     }
 
@@ -151,7 +152,7 @@ public class Entry {
     /**
      * Gets entry's url.
      */
-    public String url() {
+    public URL url() {
         return url;
     }
 

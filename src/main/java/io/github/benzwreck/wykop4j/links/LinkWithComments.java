@@ -2,6 +2,7 @@ package io.github.benzwreck.wykop4j.links;
 
 import io.github.benzwreck.wykop4j.profiles.SimpleProfile;
 
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -35,10 +36,10 @@ public class LinkWithComments {
     private final String app;
     private final Boolean hasOwnContent;
     private final Info info;
-    private final String url;
-    private final String violationUrl;
+    private final URL url;
+    private final URL violationUrl;
 
-    public LinkWithComments(Integer id, String title, String description, String tags, String sourceUrl, Integer voteCount, Integer buryCount, Integer commentsCount, Integer relatedCount, LocalDateTime date, SimpleProfile author, String preview, Boolean plus18, String status, Boolean canVote, Boolean isHot, Boolean archived, List<LinkComment> comments, Boolean userFavorite, Boolean userObserve, Boolean isRecommended, String app, Boolean hasOwnContent, Info info, String url, String violationUrl) {
+    public LinkWithComments(Integer id, String title, String description, String tags, String sourceUrl, Integer voteCount, Integer buryCount, Integer commentsCount, Integer relatedCount, LocalDateTime date, SimpleProfile author, String preview, Boolean plus18, String status, Boolean canVote, Boolean isHot, Boolean archived, List<LinkComment> comments, Boolean userFavorite, Boolean userObserve, Boolean isRecommended, String app, Boolean hasOwnContent, Info info, URL url, URL violationUrl) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -224,14 +225,14 @@ public class LinkWithComments {
     /**
      * Gets link's url.
      */
-    public String url() {
+    public URL url() {
         return url;
     }
 
     /**
      * Gets link's violation url.
      */
-    public String violationUrl() {
+    public URL violationUrl() {
         return violationUrl;
     }
 

@@ -45,7 +45,7 @@ class ConversationSpec extends Specification {
     def "should send message with body and url media"() {
         def newMessage = new NewMessage.Builder()
                 .withBody("tresc")
-                .withMedia("https://www.wykop.pl/cdn/c3201142/comment_1613001626Mwe2NcUAMJ1yLKZJumQQjC.jpg")
+                .withMedia(new URL("https://www.wykop.pl/cdn/c3201142/comment_1613001626Mwe2NcUAMJ1yLKZJumQQjC.jpg"))
                 .build()
         when:
         def execute = wykop.sendMessage(IntegrationWykopClient.secondAccountLogin(), newMessage).execute()

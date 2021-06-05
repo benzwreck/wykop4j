@@ -14,8 +14,8 @@ import java.time.Month
 import java.time.Year
 
 class LinkSpec extends Specification {
-    static final String imageUrl = "https://art-madam.pl/zdjecie/nowoczesny-obraz-do-salonu-drukowany-na-plotnie,swsbnckstxdjnwbh.jpg"
-    static final String linkUrl = "https://jsonformatter.org/"
+    static final URL imageUrl = new URL("https://art-madam.pl/zdjecie/nowoczesny-obraz-do-salonu-drukowany-na-plotnie,swsbnckstxdjnwbh.jpg")
+    static final URL linkUrl = new URL("https://jsonformatter.org/")
     @Shared
     WykopClient wykop = IntegrationWykopClient.getInstance()
     @Shared
@@ -25,8 +25,10 @@ class LinkSpec extends Specification {
     static int nonexistentId = -111
 
     def "should throw an exception when trying to prepare link draft and link already exists"() {
+        given:
+        URL wykopUrl = new URL("https://www.wykop.pl")
         when:
-        wykop.prepareLinkDraft("https://www.wykop.pl").execute()
+        wykop.prepareLinkDraft(wykopUrl).execute()
         then:
         thrown LinkAlreadyExistsException
     }

@@ -249,7 +249,7 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Entries/Add/")
                 .postParam("adultmedia", String.valueOf(newEntry.adultOnly()));
         newEntry.body().ifPresent(body -> requestBuilder.postParam("body", body));
-        newEntry.urlEmbed().ifPresent(url -> requestBuilder.postParam("embed", url));
+        newEntry.urlEmbed().ifPresent(url -> requestBuilder.postParam("embed", url.toString()));
         newEntry.fileEmbed().ifPresent(file ->
                 newEntry.shownFileName().ifPresentOrElse(shownFileName ->
                                 requestBuilder.file(file, shownFileName),
@@ -271,7 +271,7 @@ public class WykopClient {
                 .apiParam("entry_id", String.valueOf(entryId))
                 .postParam("adultmedia", String.valueOf(newEntry.adultOnly()));
         newEntry.body().ifPresent(body -> requestBuilder.postParam("body", body));
-        newEntry.urlEmbed().ifPresent(url -> requestBuilder.postParam("embed", url));
+        newEntry.urlEmbed().ifPresent(url -> requestBuilder.postParam("embed", url.toString()));
         newEntry.fileEmbed().ifPresent(file ->
                 newEntry.shownFileName().ifPresentOrElse(shownFileName ->
                                 requestBuilder.file(file, shownFileName),
@@ -348,7 +348,7 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Entries/CommentAdd/entry_id/")
                 .apiParam("entry_id", String.valueOf(entryId));
         newEntryComment.body().ifPresent(body -> requestBuilder.postParam("body", body));
-        newEntryComment.urlEmbed().ifPresent(url -> requestBuilder.postParam("embed", url));
+        newEntryComment.urlEmbed().ifPresent(url -> requestBuilder.postParam("embed", url.toString()));
         newEntryComment.fileEmbed().ifPresent(file ->
                 newEntryComment.shownFileName().ifPresentOrElse(shownFileName ->
                                 requestBuilder.file(file, shownFileName),
@@ -370,7 +370,7 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Entries/CommentEdit/comment_id/")
                 .apiParam("comment_id", String.valueOf(commentId));
         newEntryComment.body().ifPresent(body -> requestBuilder.postParam("body", body));
-        newEntryComment.urlEmbed().ifPresent(url -> requestBuilder.postParam("embed", url));
+        newEntryComment.urlEmbed().ifPresent(url -> requestBuilder.postParam("embed", url.toString()));
         newEntryComment.fileEmbed().ifPresent(file ->
                 newEntryComment.shownFileName().ifPresentOrElse(shownFileName ->
                                 requestBuilder.file(file, shownFileName),
@@ -746,7 +746,7 @@ public class WykopClient {
                 .postParam("adultmedia", String.valueOf(newMessage.adultOnly()))
                 .apiParam("receiver", login);
         newMessage.body().ifPresent(body -> builder.postParam("body", body));
-        newMessage.urlEmbed().ifPresent(urlEmbed -> builder.postParam("embed", urlEmbed));
+        newMessage.urlEmbed().ifPresent(urlEmbed -> builder.postParam("embed", urlEmbed.toString()));
         newMessage.fileEmbed().ifPresent(file ->
                 newMessage.shownFileName().ifPresentOrElse(shownFileName ->
                                 builder.file(file, shownFileName),
@@ -1739,10 +1739,10 @@ public class WykopClient {
      * @return draft of the link
      * @throws LinkAlreadyExistsException when trying to create a draft and link already exists
      */
-    public Chain<LinkDraft> prepareLinkDraft(String url) {
+    public Chain<LinkDraft> prepareLinkDraft(URL url) {
         return new Chain<>(new WykopRequest.Builder()
                 .url(WYKOP_URL + "/Addlink/Draft/")
-                .postParam("url", url)
+                .postParam("url", url.toString())
                 .build(), LinkDraft.class);
     }
 
@@ -1777,7 +1777,7 @@ public class WykopClient {
                 .postParam("title", newLink.title())
                 .postParam("description", newLink.description())
                 .postParam("tags", newLink.tags())
-                .postParam("url", newLink.url())
+                .postParam("url", newLink.url().toString())
                 .postParam("plus18", String.valueOf(newLink.isAdult()));
         newLink.photoKey().ifPresent(photoKey -> linkRequest.postParam("photo", photoKey));
         return new Chain<>(linkRequest.build(), Link.class);
@@ -2069,7 +2069,7 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Links/CommentAdd/link/")
                 .apiParam("link", String.valueOf(linkId));
         newLinkComment.body().ifPresent(body -> builder.postParam("body", body));
-        newLinkComment.urlEmbed().ifPresent(urlEmbed -> builder.postParam("embed", urlEmbed));
+        newLinkComment.urlEmbed().ifPresent(urlEmbed -> builder.postParam("embed", urlEmbed.toString()));
         newLinkComment.fileEmbed().ifPresent(file ->
                 newLinkComment.shownFileName().ifPresentOrElse(shownFileName ->
                                 builder.file(file, shownFileName),
@@ -2091,7 +2091,7 @@ public class WykopClient {
                 .apiParam("comment_id", String.valueOf(linkCommentId))
                 .apiParam("link", String.valueOf(linkId));
         newLinkComment.body().ifPresent(body -> builder.postParam("body", body));
-        newLinkComment.urlEmbed().ifPresent(urlEmbed -> builder.postParam("embed", urlEmbed));
+        newLinkComment.urlEmbed().ifPresent(urlEmbed -> builder.postParam("embed", urlEmbed.toString()));
         newLinkComment.fileEmbed().ifPresent(file ->
                 newLinkComment.shownFileName().ifPresentOrElse(shownFileName ->
                                 builder.file(file, shownFileName),
@@ -2116,7 +2116,7 @@ public class WykopClient {
                 .url(WYKOP_URL + "/Links/CommentEdit/comment_id/")
                 .apiParam("comment_id", String.valueOf(linkCommentId));
         newLinkComment.body().ifPresent(body -> builder.postParam("body", body));
-        newLinkComment.urlEmbed().ifPresent(urlEmbed -> builder.postParam("embed", urlEmbed));
+        newLinkComment.urlEmbed().ifPresent(urlEmbed -> builder.postParam("embed", urlEmbed.toString()));
         newLinkComment.fileEmbed().ifPresent(file ->
                 newLinkComment.shownFileName().ifPresentOrElse(shownFileName ->
                                 builder.file(file, shownFileName),

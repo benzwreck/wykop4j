@@ -1,15 +1,17 @@
 package io.github.benzwreck.wykop4j.links;
 
+import java.net.URL;
+
 /**
  * This class represents an image of new link.
  */
 public class LinkImage {
     private final String key;
     private final String type;
-    private final String previewUrl;
-    private final String sourceUrl;
+    private final URL previewUrl;
+    private final URL sourceUrl;
 
-    public LinkImage(String key, String type, String previewUrl, String sourceUrl) {
+    public LinkImage(String key, String type, URL previewUrl, URL sourceUrl) {
         this.key = key;
         this.type = type;
         this.previewUrl = previewUrl;
@@ -33,14 +35,14 @@ public class LinkImage {
     /**
      * Gets image's preview url.
      */
-    public String previewUrl() {
+    public URL previewUrl() {
         return previewUrl;
     }
 
     /**
      * Gets image's source url.
      */
-    public String sourceUrl() {
+    public URL sourceUrl() {
         return sourceUrl;
     }
 

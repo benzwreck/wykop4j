@@ -1,5 +1,6 @@
 package io.github.benzwreck.wykop4j.profiles;
 
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -36,9 +37,9 @@ public class FullProfile {
     private final int entriesComments;
     private final int diggs;
     private final int buries;
-    private final String violationUrl;
+    private final URL violationUrl;
 
-    public FullProfile(String login, Color color, Sex sex, String avatar, LocalDateTime signupAt, String background, boolean isVerified, boolean isObserved, boolean isBlocked, String publicEmail, String about, String name, String www, String jabber, String gg, String city, String facebook, String twitter, String instagram, int linksAddedCount, int linksPublishedCount, int commentsCount, int rank, int followers, int following, int entries, int entriesComments, int diggs, int buries, String violationUrl) {
+    public FullProfile(String login, Color color, Sex sex, String avatar, LocalDateTime signupAt, String background, boolean isVerified, boolean isObserved, boolean isBlocked, String publicEmail, String about, String name, String www, String jabber, String gg, String city, String facebook, String twitter, String instagram, int linksAddedCount, int linksPublishedCount, int commentsCount, int rank, int followers, int following, int entries, int entriesComments, int diggs, int buries, URL violationUrl) {
         this.login = login;
         this.color = color;
         this.sex = sex;
@@ -277,7 +278,7 @@ public class FullProfile {
     /**
      * Gets user's violation url.
      */
-    public String violationUrl() {
+    public URL violationUrl() {
         return violationUrl;
     }
 

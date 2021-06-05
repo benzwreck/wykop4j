@@ -1,5 +1,6 @@
 package io.github.benzwreck.wykop4j.profiles;
 
+import java.net.URL;
 import java.util.Optional;
 
 /**
@@ -10,10 +11,10 @@ public class SimpleProfile {
     private final String login;
     private final Color color;
     private final Sex sex;
-    private final String avatar;
+    private final URL avatar;
 
 
-    public SimpleProfile(String login, Color color, Sex sex, String avatar) {
+    public SimpleProfile(String login, Color color, Sex sex, URL avatar) {
         this.login = login;
         this.color = color;
         this.sex = sex;
@@ -44,7 +45,7 @@ public class SimpleProfile {
     /**
      * Gets user's avatar url.
      */
-    public String avatar() {
+    public URL avatar() {
         return avatar;
     }
 

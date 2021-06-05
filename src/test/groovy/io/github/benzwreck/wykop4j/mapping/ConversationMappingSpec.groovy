@@ -26,7 +26,7 @@ class ConversationMappingSpec extends Specification {
                     login() == "Mama"
                     color() == Color.ORANGE
                     sex().get() == Sex.FEMALE
-                    avatar() == "https://www.wykop.pl/cdn/c3397992/mama_tatat,q150.jpg"
+                    avatar().toString() == "https://www.wykop.pl/cdn/c3397992/mama_tatat,q150.jpg"
                 }
                 status() == "read"
             }
@@ -36,7 +36,7 @@ class ConversationMappingSpec extends Specification {
                     login() == "Tata"
                     color() == Color.ORANGE
                     sex().get() == Sex.MALE
-                    avatar() == "https://www.wykop.pl/cdn/c3397992/avatar_def,q150.png"
+                    avatar().toString() == "https://www.wykop.pl/cdn/c3397992/avatar_def,q150.png"
                 }
                 status() == "read"
             }
