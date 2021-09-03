@@ -4,6 +4,7 @@ import io.github.benzwreck.wykop4j.media.Embed;
 import io.github.benzwreck.wykop4j.profiles.SimpleProfile;
 import io.github.benzwreck.wykop4j.shared.UserVote;
 
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -24,11 +25,11 @@ public class LinkComment {
     private final Boolean favorite;
     private final Integer linkId;
     private final Embed embed;
-    private final String violationUrl;
+    private final URL violationUrl;
     private final Integer voteCountMinus;
     private final String original;
 
-    public LinkComment(Integer id, LocalDateTime date, SimpleProfile author, Integer voteCount, Integer voteCountPlus, String body, Integer parentId, Boolean canVote, UserVote userVote, Boolean blocked, Boolean favorite, Integer linkId, Embed embed, String violationUrl, Integer voteCountMinus, String original) {
+    public LinkComment(Integer id, LocalDateTime date, SimpleProfile author, Integer voteCount, Integer voteCountPlus, String body, Integer parentId, Boolean canVote, UserVote userVote, Boolean blocked, Boolean favorite, Integer linkId, Embed embed, URL violationUrl, Integer voteCountMinus, String original) {
         this.id = id;
         this.date = date;
         this.author = author;
@@ -141,7 +142,7 @@ public class LinkComment {
     /**
      * Gets link comment's violation url.
      */
-    public String violationUrl() {
+    public URL violationUrl() {
         return violationUrl;
     }
 

@@ -1,5 +1,6 @@
 package io.github.benzwreck.wykop4j.links;
 
+import java.net.URL;
 import java.util.Optional;
 
 /**
@@ -13,10 +14,10 @@ public class NewLink {
     private final String description;
     private final String tags;
     private final String photoKey;
-    private final String url;
+    private final URL url;
     private final boolean isAdult;
 
-    private NewLink(String key, String title, String description, String tags, String photoKey, String url, boolean isAdult) {
+    private NewLink(String key, String title, String description, String tags, String photoKey, URL url, boolean isAdult) {
         this.key = key;
         this.title = title;
         this.description = description;
@@ -64,7 +65,7 @@ public class NewLink {
     /**
      * Gets new link's url.
      */
-    public String url() {
+    public URL url() {
         return url;
     }
 
@@ -81,7 +82,7 @@ public class NewLink {
         private String description;
         private String tags;
         private String photoKey;
-        private String url;
+        private URL url;
         private boolean isAdult = false;
 
         public Builder() {
@@ -122,7 +123,7 @@ public class NewLink {
             return this;
         }
 
-        public Builder withUrl(String url) {
+        public Builder withUrl(URL url) {
             this.url = url;
             return this;
         }

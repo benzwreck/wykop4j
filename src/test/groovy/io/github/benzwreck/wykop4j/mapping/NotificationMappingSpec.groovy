@@ -25,14 +25,14 @@ class NotificationMappingSpec extends Specification {
                     login() == "nobodycares"
                     color() == Color.ORANGE
                     sex().get() == Sex.FEMALE
-                    avatar() == "https://www.wykop.pl/cdn/c331111/blabla,q150.jpg"
+                    avatar().toString() == "https://www.wykop.pl/cdn/c331111/blabla,q150.jpg"
                 }
                 date() == LocalDateTime.of(2021, 2, 18, 21, 16, 32)
                 body() == "nobodycares napisała do Ciebie w komentarzu do \"/Jestem tu\"."
                 type() == "entry_comment_directed"
                 itemId() == "88888888"
                 subitemId() == "123123123"
-                url() == "https://www.wykop.pl/wpis/88888888/jestem-tu-/#comment-123123123"
+                url().toString() == "https://www.wykop.pl/wpis/88888888/jestem-tu-/#comment-123123123"
                 isNew() == true
             }
             with get(1), {
@@ -41,14 +41,14 @@ class NotificationMappingSpec extends Specification {
                     login() == "ziomeczek"
                     color() == Color.GREEN
                     sex().get() == Sex.MALE
-                    avatar() == "https://www.wykop.pl/cdn/c111111/ziomeczek,q150.jpg"
+                    avatar().toString() == "https://www.wykop.pl/cdn/c111111/ziomeczek,q150.jpg"
                 }
                 date() == LocalDateTime.of(2021, 2, 18, 9, 42, 36)
                 body() == "ziomeczek napisał do Ciebie w komentarzu do \"Jestem tam\"."
                 type() == "entry_comment_directed"
                 itemId() == "55555555"
                 subitemId() == "321321321"
-                url() == "https://www.wykop.pl/wpis/55555555/notifications-index-gt-jestem-tam-/#comment-321321321"
+                url().toString() == "https://www.wykop.pl/wpis/55555555/notifications-index-gt-jestem-tam-/#comment-321321321"
                 isNew() == false
             }
         }

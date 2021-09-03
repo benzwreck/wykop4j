@@ -1,6 +1,7 @@
 package io.github.benzwreck.wykop4j.links;
 
 import java.io.File;
+import java.net.URL;
 import java.util.Optional;
 
 /**
@@ -10,11 +11,11 @@ import java.util.Optional;
  */
 public class NewLinkComment {
     private final String body;
-    private final String urlEmbed;
+    private final URL urlEmbed;
     private final File fileEmbed;
     private final String shownFileName;
 
-    private NewLinkComment(String body, String urlEmbed, File fileEmbed, String shownFileName) {
+    private NewLinkComment(String body, URL urlEmbed, File fileEmbed, String shownFileName) {
         this.body = body;
         this.urlEmbed = urlEmbed;
         this.fileEmbed = fileEmbed;
@@ -31,7 +32,7 @@ public class NewLinkComment {
     /**
      * Gets possible new link's urls to embed media.
      */
-    public Optional<String> urlEmbed() {
+    public Optional<URL> urlEmbed() {
         return Optional.ofNullable(urlEmbed);
     }
 
@@ -51,7 +52,7 @@ public class NewLinkComment {
 
     public static class Builder {
         private String body;
-        private String urlEmbed;
+        private URL urlEmbed;
         private File fileEmbed;
         private String shownFileName;
 
@@ -70,7 +71,7 @@ public class NewLinkComment {
             return this;
         }
 
-        public NewLinkComment.Builder withMedia(String urlEmbed) {
+        public NewLinkComment.Builder withMedia(URL urlEmbed) {
             this.urlEmbed = urlEmbed;
             return this;
         }

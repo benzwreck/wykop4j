@@ -1,11 +1,13 @@
 package io.github.benzwreck.wykop4j.media;
 
+import java.net.URL;
+
 /**
  * This class represents an embed media. Holds data for images, videos, gifs etc.
  */
 public class Embed {
     private final String type;
-    private final String url;
+    private final URL url;
     private final String source;
     private final String preview;
     private final Boolean plus18;
@@ -13,7 +15,7 @@ public class Embed {
     private final Boolean animated;
     private final Float ratio;
 
-    public Embed(String type, String url, String source, String preview, Boolean plus18, String size, Boolean animated, Float ratio) {
+    public Embed(String type, URL url, String source, String preview, Boolean plus18, String size, Boolean animated, Float ratio) {
         this.type = type;
         this.url = url;
         this.source = source;
@@ -34,7 +36,7 @@ public class Embed {
     /**
      * Gets url to media source.
      */
-    public String url() {
+    public URL url() {
         return url;
     }
 

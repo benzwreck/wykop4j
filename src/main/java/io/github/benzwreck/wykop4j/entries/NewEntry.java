@@ -1,6 +1,7 @@
 package io.github.benzwreck.wykop4j.entries;
 
 import java.io.File;
+import java.net.URL;
 import java.util.Optional;
 
 /**
@@ -9,12 +10,12 @@ import java.util.Optional;
  */
 public class NewEntry {
     private final String body;
-    private final String urlEmbed;
+    private final URL urlEmbed;
     private final File fileEmbed;
     private final String shownFileName;
     private final boolean isAdult;
 
-    private NewEntry(String body, String urlEmbed, File fileEmbed, String shownFileName, boolean isAdult) {
+    private NewEntry(String body, URL urlEmbed, File fileEmbed, String shownFileName, boolean isAdult) {
         this.body = body;
         this.urlEmbed = urlEmbed;
         this.fileEmbed = fileEmbed;
@@ -32,7 +33,7 @@ public class NewEntry {
     /**
      * Gets possible new entry's embed's url.
      */
-    public Optional<String> urlEmbed() {
+    public Optional<URL> urlEmbed() {
         return Optional.ofNullable(urlEmbed);
     }
 
@@ -59,7 +60,7 @@ public class NewEntry {
 
     public static class Builder {
         private String body;
-        private String urlEmbed;
+        private URL urlEmbed;
         private File fileEmbed;
         private String shownFileName;
         private boolean isAdult = false;
@@ -81,12 +82,11 @@ public class NewEntry {
          * @throws IllegalArgumentException when body's length is less than 5 characters.
          */
         public Builder withBody(String body) {
-            if (body.length() < 5) throw new IllegalArgumentException("Entry's body must have at least 5 characters.");
             this.body = body;
             return this;
         }
 
-        public Builder withMedia(String url) {
+        public Builder withMedia(URL url) {
             this.urlEmbed = url;
             return this;
         }
@@ -111,8 +111,11 @@ public class NewEntry {
         }
 
         public NewEntry build() {
-            if ((body == null && fileEmbed == null && urlEmbed == null)) {
+            if (body == null && fileEmbed == null && urlEmbed == null) {
                 throw new IllegalArgumentException("Between Body or Media, at least one of them should be provided.");
+            }
+            if (body != null && body.length() < 5) {
+                throw new IllegalArgumentException("Entry's body must have at least 5 characters.");
             }
             return new NewEntry(body, urlEmbed, fileEmbed, shownFileName, isAdult);
         }

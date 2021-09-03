@@ -25,7 +25,7 @@ class EntryMappingSpec extends Specification {
                 login() == "quatroo96"
                 color() == Color.ORANGE
                 sex() == Optional.empty()
-                avatar() == "https://www.wykop.pl/cdn/c3397992/avatar_def,q150.png"
+                avatar().toString() == "https://www.wykop.pl/cdn/c3397992/avatar_def,q150.png"
             }
             blocked() == false
             favorite() == false
@@ -34,7 +34,7 @@ class EntryMappingSpec extends Specification {
             status() == "visible"
             with embed().get(), {
                 type() == "image"
-                url() == "https://www.wykop.pl/cdn/c3201142/comment_1612384536orZ67OolQ7sBDR7ndIFbr5.jpg"
+                url().toString() == "https://www.wykop.pl/cdn/c3201142/comment_1612384536orZ67OolQ7sBDR7ndIFbr5.jpg"
                 source() == "1612384532815.gif"
                 preview() == "https://www.wykop.pl/cdn/c3201142/comment_1612384536orZ67OolQ7sBDR7ndIFbr5,w400.jpg"
                 plus18() == false
@@ -44,9 +44,9 @@ class EntryMappingSpec extends Specification {
             }
             userVote() == UserVote.NOT_VOTED
             app().get() == "Android"
-            violationUrl().get() == "https://a2.wykop.pl/naruszenia/form/ot/entry/od/55333215/ud/5xOL/hs/69ab7ab81eef21c24ac559438e9ed9125d73d5cb/rn/RZj76Aozhe/"
+            violationUrl().get().toString() == "https://a2.wykop.pl/naruszenia/form/ot/entry/od/55333215/ud/5xOL/hs/69ab7ab81eef21c24ac559438e9ed9125d73d5cb/rn/RZj76Aozhe/"
             original() == "#jp2gmd #2137 #jp2 #papiez\nJuż za chwilkę"
-            url() == "https://www.wykop.pl/wpis/55333215/jp2gmd-2137-jp2-papiez-juz-za-chwilke/"
+            url().toString() == "https://www.wykop.pl/wpis/55333215/jp2gmd-2137-jp2-papiez-juz-za-chwilke/"
         }
     }
 

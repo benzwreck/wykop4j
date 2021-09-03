@@ -50,7 +50,7 @@ class ProfileMappingSpec extends Specification {
             entriesComments() == 2456
             diggs() == 28172
             buries() == 0
-            violationUrl() == "https://a2.wykop.pl/naruszenia/form/ot/profile/od/33639/ud/5xOL/hs/bc2d92529ce3367938eeda280d806f0c8d637c57/rn/iiwjKoXzwp/"
+            violationUrl().toString() == "https://a2.wykop.pl/naruszenia/form/ot/profile/od/33639/ud/5xOL/hs/bc2d92529ce3367938eeda280d806f0c8d637c57/rn/iiwjKoXzwp/"
         }
     }
 

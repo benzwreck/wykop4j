@@ -26,11 +26,11 @@ class EntrySpec extends Specification {
     private int nonexistentId = -111111
     private def newEntryWithBodyAndUrlMedia = new NewEntry.Builder()
             .withBody("obraz")
-            .withMedia("https://www.wykop.pl/cdn/c3201142/comment_1613001626Mwe2NcUAMJ1yLKZJumQQjC.jpg")
+            .withMedia(new URL("https://www.wykop.pl/cdn/c3201142/comment_1613001626Mwe2NcUAMJ1yLKZJumQQjC.jpg"))
             .build()
     private def newCommentWithBodyAndUrlMedia = new NewEntryComment.Builder()
             .withBody("obraz")
-            .withMedia("https://www.wykop.pl/cdn/c3201142/comment_1613001626Mwe2NcUAMJ1yLKZJumQQjC.jpg")
+            .withMedia(new URL("https://www.wykop.pl/cdn/c3201142/comment_1613001626Mwe2NcUAMJ1yLKZJumQQjC.jpg"))
             .build()
 
     def "should return first and second page of entries' stream"() {
@@ -158,7 +158,7 @@ class EntrySpec extends Specification {
 
     def "should add new entry without embed when given media url does not exist"() {
         def newEntry = new NewEntry.Builder()
-                .withMedia("https://www.wykop.pl/cdn/c3201142/comment_1613001626Mwe2NcUAMJ1yLKZJumQQjC.jpg")
+                .withMedia(new URL("https://www.wykop.pl/cdn/c3201142/comment_1613001626Mwe2NcUAMJ1yLKZJumQQjC.jpg"))
                 .build()
         when:
         def entry = wykop.addEntry(newEntry).execute()
@@ -182,7 +182,7 @@ class EntrySpec extends Specification {
         setup:
         def newEntry = new NewEntry.Builder()
                 .withBody("obraz")
-                .withMedia("https://www.wykop.pl/cdn/c3201142/comment_1613001626Mwe2NcUAMJ1yLKZJumQQjC.jpg")
+                .withMedia(new URL("https://www.wykop.pl/cdn/c3201142/comment_1613001626Mwe2NcUAMJ1yLKZJumQQjC.jpg"))
                 .build()
         def addEntry = wykop.addEntry(newEntry).execute()
         def editedNewEntry = new NewEntry.Builder(newEntry)
@@ -202,7 +202,7 @@ class EntrySpec extends Specification {
         setup:
         def editedNewEntry = new NewEntry.Builder()
                 .withBody("obraz")
-                .withMedia("https://www.wykop.pl/cdn/c3201142/comment_1613001626Mwe2NcUAMJ1yLKZJumQQjC.jpg")
+                .withMedia(new URL("https://www.wykop.pl/cdn/c3201142/comment_1613001626Mwe2NcUAMJ1yLKZJumQQjC.jpg"))
                 .build()
         when:
         wykop.editEntry(-100000, editedNewEntry).execute()

@@ -2,6 +2,7 @@ package io.github.benzwreck.wykop4j.notifications;
 
 import io.github.benzwreck.wykop4j.profiles.SimpleProfile;
 
+import java.net.URL;
 import java.time.LocalDateTime;
 
 /**
@@ -15,10 +16,10 @@ public class Notification {
     private final String type;
     private final String itemId;
     private final String subitemId;
-    private final String url;
+    private final URL url;
     private final Boolean isNew;
 
-    public Notification(Long id, SimpleProfile author, LocalDateTime date, String body, String type, String itemId, String subitemId, String url, Boolean isNew) {
+    public Notification(Long id, SimpleProfile author, LocalDateTime date, String body, String type, String itemId, String subitemId, URL url, Boolean isNew) {
         this.id = id;
         this.author = author;
         this.date = date;
@@ -82,7 +83,7 @@ public class Notification {
     /**
      * Gets notification's url.
      */
-    public String url() {
+    public URL url() {
         return url;
     }
 
